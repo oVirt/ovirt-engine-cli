@@ -1,0 +1,19 @@
+== Introduction ==
+
+This is a command-line interface for oVirt Virtualization.
+
+== Installation ==
+
+NOTE: osh depends on ovirt-engine-sdk, 
+
+Installation from the source directory:
+
+ $ python setup.py build
+ # python setup.py install
+
+== Usage ==
+
+osh comes with an extensive only help system. To start out, use:
+
+ $ osh --help
+ $ osh

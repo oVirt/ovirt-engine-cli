@@ -1,0 +1,2 @@
+ovirt-engine-sdk >= 0.1
+pexpect <= 2.3
