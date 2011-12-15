@@ -43,13 +43,13 @@ class ConnectCommand(OvirtCommand):
         if len(args) == 3:
             url, username, password = args
         else:
-            url = settings.get('osh:url')
+            url = settings.get('ovirt-shell:url')
             if not url:
                 self.error('missing configuration variable: url')
-            username = settings.get('osh:username')
+            username = settings.get('ovirt-shell:username')
             if not username:
                 self.error('missing configuration variable: username')
-            password = settings.get('osh:password')
+            password = settings.get('ovirt-shell:password')
             if not password:
                 self.error('missing configuration variable: password')
 #        if settings['cli:verbosity']:

@@ -28,7 +28,7 @@ def spawn(cmd, args, debug=False):
         os.close(stdin)
         return (pid, pstdin)
     # Put ourselves in a new session so that we don't get any signal related
-    # to the terminal that osh is running in.
+    # to the terminal that ovirt-shell is running in.
     os.setsid()
     os.close(pstdin)
     if stdin != stdin_fileno:

@@ -24,7 +24,7 @@ class HelpCommand(OvirtCommand):
     helptext1 = """\
         == Introduction ==
 
-        Welcome to osh. This program is an interactive command-line
+        Welcome to ovirt-shell. This program is an interactive command-line
         interface into Red Hat Enterprise Virtualization. You can type any
         command in the interface below.
 
@@ -69,7 +69,7 @@ class HelpCommand(OvirtCommand):
         == Configuration Variables ==
 
         A numer of configuration variables are defined that allow you to
-        customize the way in which osh operations. Type 'show' to see a
+        customize the way in which ovirt-shell operations. Type 'show' to see a
         list of all configuration variables and their current values.
 
         == Environment Variables ==

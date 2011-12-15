@@ -5,15 +5,15 @@ from cli.settings import Settings, enum, boolean
 class OvirtCliSettings(Settings):
 
     settings = Settings.settings + [
-        ('osh:url', str, ''),
-        ('osh:username', str, ''),
-        ('osh:password', str, ''),
-        ('osh:input_format', enum('xml'), 'xml'),
-        ('osh:output_format', enum('xml', 'text'), 'text'),
-        ('osh:wide', boolean, False),
-        ('osh:header', boolean, True),
-        ('osh:fields', str, None),
-        ('osh:fields.*', str, None),
-        ('osh:ps1.connected', str, '(oVirt %(version)s) > '),
-        ('osh:ps1.disconnected', str, '(disconnected) > ')
+        ('ovirt-shell:url', str, ''),
+        ('ovirt-shell:username', str, ''),
+        ('ovirt-shell:password', str, ''),
+        ('ovirt-shell:input_format', enum('xml'), 'xml'),
+        ('ovirt-shell:output_format', enum('xml', 'text'), 'text'),
+        ('ovirt-shell:wide', boolean, False),
+        ('ovirt-shell:header', boolean, True),
+        ('ovirt-shell:fields', str, None),
+        ('ovirt-shell:fields.*', str, None),
+        ('ovirt-shell:ps1.connected', str, '(oVirt %(version)s) > '),
+        ('ovirt-shell:ps1.disconnected', str, '(disconnected) > ')
     ]

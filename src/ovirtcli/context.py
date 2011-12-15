@@ -15,7 +15,7 @@ class OvirtCliExecutionContext(ExecutionContext):
 
     Settings = OvirtCliSettings
 
-    name = 'osh'
+    name = 'ovirt-shell'
     welcome = textwrap.dedent("""\
         Welcome to Red Hat Enterprise Virtualization.
 
@@ -29,9 +29,9 @@ class OvirtCliExecutionContext(ExecutionContext):
     def __init__(self):
         super(OvirtCliExecutionContext, self).__init__()
         self.connection = None
-        self.formatter = create(Formatter, self.settings['osh:output_format'])
+        self.formatter = create(Formatter, self.settings['ovirt-shell:output_format'])
         self.settings.add_callback('cli:verbosity', self._set_verbosity)
-        self.settings.add_callback('osh:output_format', self._set_formatter)
+        self.settings.add_callback('ovirt-shell:output_format', self._set_formatter)
 
     def _set_verbosity(self, key, value):
         if self.connection is None:
@@ -93,10 +93,10 @@ class OvirtCliExecutionContext(ExecutionContext):
     def _set_prompt(self):
         """Update the prompt."""
         if self.connection is None:
-            prompt = self.settings['osh:ps1.disconnected']
+            prompt = self.settings['ovirt-shell:ps1.disconnected']
         else:
 #            subst = self._get_prompt_variables()
-#            prompt = self.settings['osh:ps1.connected'] % subst
+#            prompt = self.settings['ovirt-shell:ps1.connected'] % subst
             prompt = '[oVirt-shell:connected]# '
         self.settings['cli:ps1'] = prompt
 

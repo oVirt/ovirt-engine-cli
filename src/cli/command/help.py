@@ -67,7 +67,7 @@ class HelpCommand(Command):
         == Configuration Variables ==
 
         A numer of configuration variables are defined that allow you to
-        customize the way in which osh operations. Type 'show' to see a
+        customize the way in which ovirt-shell operations. Type 'show' to see a
         list of all configuration variables and their current values.
 
         == Examples ==

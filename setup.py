@@ -7,7 +7,7 @@ from setuptools import setup, Command
 
 
 version_info = {
-    'name': 'osh',
+    'name': 'ovirt-shell',
     'version': '1.0-SNAPSHOT',
     'description': 'A command-line interface to oVirt'
                    ' Virtualization',
@@ -31,6 +31,6 @@ setup(
                  'ovirtcli.platform', 'ovirtcli.platform.posix',
                  'ovirtcli.platform.windows' ],
     install_requires=[ 'ovirt-engine-sdk >= 0.1', 'pexpect <= 2.3' ],
-    entry_points={ 'console_scripts': [ 'osh = ovirtcli.main:main' ] },
+    entry_points={ 'console_scripts': [ 'ovirt-shell = ovirtcli.main:main' ] },
     **version_info
 )

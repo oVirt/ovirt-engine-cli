@@ -1,5 +1,5 @@
 Metadata-Version: 1.0
-Name: osh
+Name: ovirt-shell
 Version: 1.0-SNAPSHOT
 Summary: A command-line interface to oVirt Virtualization
 Home-page: www.ovirt.org

@@ -11,7 +11,7 @@ def copy_environment_vars(context):
     execution context."""
     for var in ('url', 'username', 'password'):
         envvar = 'oVirt_%s' % var.upper()
-        confvar = 'osh:%s' % var
+        confvar = 'ovirt-shell:%s' % var
         if envvar in os.environ:
             try:
                 context.settings[confvar] = os.environ[envvar]
@@ -33,7 +33,7 @@ def copy_cmdline_options(options, context, parser):
         if opt.dest in ('debug', 'verbosity'):
             dest = 'cli:%s' % opt.dest
         else:
-            dest = 'osh:%s' % opt.dest
+            dest = 'ovirt-shell:%s' % opt.dest
         try:
             context.settings[dest] = value
         except KeyError:
@@ -45,7 +45,7 @@ def copy_cmdline_options(options, context, parser):
 
 
 def main():
-    """Entry point for osh."""
+    """Entry point for ovirt-shell."""
     parser = create(OvirtCliOptionParser)
     opts, args = parser.parse_args()
 

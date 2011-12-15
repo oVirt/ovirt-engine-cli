@@ -18,11 +18,11 @@ class TextFormatter(Formatter):
         #info = schema.type_info(typ)
         #collection_member = type(typ).__name__.lower()[0 : len(type(typ).__name__) - 1]
 #        assert info is not None
-#        override = self.context.settings.get('osh:fields.%s' % info[2])
+#        override = self.context.settings.get('ovirt-shell:fields.%s' % info[2])
         assert typ is not None
-        override = self.context.settings.get('osh:fields.%s' % type(typ).__name__)
+        override = self.context.settings.get('ovirt-shell:fields.%s' % type(typ).__name__)
         if override is None:
-            override = self.context.settings.get('osh:fields')
+            override = self.context.settings.get('ovirt-shell:fields')
         if override is None:
             fields = metadata.get_fields(typ, flag, scope)
         else:
@@ -40,7 +40,7 @@ class TextFormatter(Formatter):
         for field in fields:
             width0 = max(width0, len(field.name))
         format0 = '%%-%ds' % width0
-        if stdout.isatty() and not settings['osh:wide']:
+        if stdout.isatty() and not settings['ovirt-shell:wide']:
             width1 = context.terminal.width - width0 - 2
             format1 = '%%-%d.%ds' % (width1, width1)
         else:
@@ -95,7 +95,7 @@ class TextFormatter(Formatter):
                     widths[i] = max(widths[i], len(value))
             total = sum(widths) + 2 * len(fields)
             # Now downsize if it doesn't fit
-            if stdout.isatty() and not settings['osh:wide'] and \
+            if stdout.isatty() and not settings['ovirt-shell:wide'] and \
                     total > context.terminal.width:
                 fraction = 1.0 * context.terminal.width / total
                 fwidths = [0] * len(fields)
@@ -110,7 +110,7 @@ class TextFormatter(Formatter):
                 for i in range(min(len(fields), available)):
                     widths[remainders[i][1]] += 1
             formats = ['%%-%d.%ds' % (w, w) for w in widths ]
-            if settings['osh:header']:
+            if settings['ovirt-shell:header']:
                 # Header
                 for i in range(len(fields)):
                     stdout.write(formats[i] % fields[i].name)

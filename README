@@ -4,7 +4,7 @@ This is a command-line interface for oVirt Virtualization.
 
 == Installation ==
 
-NOTE: osh depends on ovirt-engine-sdk, 
+NOTE: ovirt-shell depends on ovirt-engine-sdk, 
 
 Installation from the source directory:
 
@@ -13,7 +13,7 @@ Installation from the source directory:
 
 == Usage ==
 
-osh comes with an extensive only help system. To start out, use:
+ovirt-shell comes with an extensive only help system. To start out, use:
 
- $ osh --help
- $ osh
+ $ ovirt-shell --help
+ $ ovirt-shell
