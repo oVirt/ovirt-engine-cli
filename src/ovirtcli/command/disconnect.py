@@ -5,7 +5,7 @@ from ovirtcli.command.command import OvirtCommand
 class DisconnectCommand(OvirtCommand):
 
     name = 'disconnect'
-    description = 'disconnect from RHEV manager'
+    description = 'disconnect from oVirt manager'
     helptext = """\
         == Usage ==
 
@@ -13,7 +13,7 @@ class DisconnectCommand(OvirtCommand):
 
         == Description ==
 
-        Disconnect an active connection to RHEV manager, if any. This method
+        Disconnect an active connection to oVirt manager, if any. This method
         can be called multiple times. It is not an error to disconnect when
         not connected.
         """
@@ -28,5 +28,5 @@ class DisconnectCommand(OvirtCommand):
             connection.close()
         except Exception:
             pass
-        stdout.write('disconnected from RHEV manager\n')
+        stdout.write('disconnected from oVirt manager\n')
         self.context.connection = None

@@ -19,7 +19,7 @@ class GetKeyCommand(OvirtCommand):
 
         == Description ==
 
-        This commands dumps the private ssh key that RHEV manager is using to
+        This commands dumps the private ssh key that oVirt manager is using to
         communicate with the hypervisor nodes. It can be used to connect via
         ssh to hypervisor nodes.
         """

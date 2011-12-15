@@ -10,7 +10,7 @@ def copy_environment_vars(context):
     """Copy environment variables into configuration variables in the
     execution context."""
     for var in ('url', 'username', 'password'):
-        envvar = 'RHEV_%s' % var.upper()
+        envvar = 'oVirt_%s' % var.upper()
         confvar = 'osh:%s' % var
         if envvar in os.environ:
             try:

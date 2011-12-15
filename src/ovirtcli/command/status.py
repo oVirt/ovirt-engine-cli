@@ -16,7 +16,7 @@ class StatusCommand(OvirtCommand):
         == Description ==
 
         Show the exist status of the last command and the staus of the
-        connection to RHEV manager.
+        connection to oVirt manager.
         """
 
     def execute(self):

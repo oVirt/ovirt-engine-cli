@@ -13,7 +13,6 @@ from cli.parser import Parser
 from cli.platform import Terminal
 from cli import platform
 
-
 class ExecutionContext(object):
     """A CLI execution context."""
 

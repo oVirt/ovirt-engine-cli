@@ -17,8 +17,8 @@ class PosixTerminal(Terminal):
 
     def __init__(self, *args):
         super(PosixTerminal, self).__init__(*args)
-#        self._tty = os.open('/dev/tty', os.O_RDWR)
-        self._tty = os.open('/tmp/xxx', os.O_RDWR)
+        self._tty = os.open('/dev/tty', os.O_RDWR)
+#        self._tty = os.open('/tmp/xxx', os.O_RDWR)
         curses.setupterm()
 
     def _get_width(self):

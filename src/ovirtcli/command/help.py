@@ -34,7 +34,7 @@ class HelpCommand(OvirtCommand):
 
         Type 'help <command>' for any of these commands to show detailed help.
         The first command you probably want to issue is 'help connect' to
-        learn how to connect to a RHEV manager.
+        learn how to connect to a oVirt manager.
 
         == Command Syntax ==
 
@@ -76,9 +76,9 @@ class HelpCommand(OvirtCommand):
 
         The following environment variables are recognized:
 
-          * RHEV_URL        - The URL to connect to, same as --url.
-          * RHEV_USERNAME   - The username, same as --username
-          * RHEV_PASSWORD   - The password, same as --password.
+          * oVirt_URL        - The URL to connect to, same as --url.
+          * oVirt_USERNAME   - The username, same as --username
+          * oVirt_PASSWORD   - The password, same as --password.
 
         == Examples ==
 

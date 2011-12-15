@@ -202,7 +202,7 @@ class StatisticValueField(Field):
 
 
 class VersionField(Field):
-    """A RHEV version."""
+    """A oVirt version."""
 
     _re_version = re.compile('(\d)\.(\d)')
 

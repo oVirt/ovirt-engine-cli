@@ -9,7 +9,7 @@ from ovirtsdk.api import API
 class ConnectCommand(OvirtCommand):
 
     name = 'connect'
-    description = 'connect to a RHEV manager'
+    description = 'connect to a oVirt manager'
     args_check = (0, 3)
 
     helptext = """\
@@ -20,7 +20,7 @@ class ConnectCommand(OvirtCommand):
 
         == Description ==
 
-        Connect to a RHEV manager. This command has two forms. In the first
+        Connect to a oVirt manager. This command has two forms. In the first
         form, no arguments are provided, and the connection details are read
         from their respective configuration variables (see 'show'). In
         the second form, the connection details are provided as arguments.
@@ -63,7 +63,6 @@ class ConnectCommand(OvirtCommand):
                                           password=password)
         except socket.error, e:
             self.error(e.strerror.lower())
-#        except rhev.Error, e:
         except e:
             self.error(str(e))
-        stdout.write('connected to RHEV manager at %s\n' % url)
+        stdout.write('connected to oVirt manager at %s\n' % url)

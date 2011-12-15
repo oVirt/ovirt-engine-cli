@@ -13,8 +13,8 @@ class PingCommand(OvirtCommand):
 
         == Description ==
 
-        Test the connection to the RHEV manager. This command will go out to
-        the RHEV manager and retrieve a remote resource. If it succeeds, you
+        Test the connection to the oVirt manager. This command will go out to
+        the oVirt manager and retrieve a remote resource. If it succeeds, you
         know that the URL, username and password are working.
         """
 

@@ -14,6 +14,6 @@ class OvirtCliSettings(Settings):
         ('osh:header', boolean, True),
         ('osh:fields', str, None),
         ('osh:fields.*', str, None),
-        ('osh:ps1.connected', str, '(RHEV-M %(version)s) > '),
+        ('osh:ps1.connected', str, '(oVirt %(version)s) > '),
         ('osh:ps1.disconnected', str, '(disconnected) > ')
     ]

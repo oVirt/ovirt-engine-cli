@@ -10,7 +10,7 @@ from ovirtsdk.utils.parsehelper import ParseHelper
 
 
 class OvirtCommand(Command):
-    """Base class for RHEV commands."""
+    """Base class for oVirt commands."""
 
     def check_connection(self):
         """ensure we have a connection."""
