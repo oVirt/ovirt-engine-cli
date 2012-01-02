@@ -9,11 +9,10 @@ from setuptools import setup, Command
 version_info = {
     'name': 'ovirt-shell',
     'version': '1.0-SNAPSHOT',
-    'description': 'A command-line interface to oVirt'
-                   ' Virtualization',
-    'author': 'Unknown',
+    'description': 'A command-line interface to oVirt Virtualization',
+    'author': 'www.ovirt.org',
     'author_email': 'engine-devel@ovirt.org',
-    'url': 'www.ovirt.org',
+    'url': 'http://www.ovirt.org/wiki/CLI',
     'license': 'ASL2',
     'classifiers': [
         'Development Status :: 1 - Beta',

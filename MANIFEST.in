@@ -1,5 +1,5 @@
 include setup.py
 include README AUTHORS MANIFEST.in
-recursive-include lib *.py
+recursive-include src *.py
 exclude parser_lex.py
 exclude parser_tab.py
