@@ -236,9 +236,9 @@ class VersionField(Field):
         if match is None:
             raise ValueError, 'Illegal version: %s' % value
 #        version = schema.new(schema.Version)
-        version = params.Version
-        version.major = match.group(1)
-        version.minor = match.group(2)
+        version = params.Version()
+        version.major = int(match.group(1))
+        version.minor = int(match.group(2))
         setattr(obj, attr, version)
 
 
