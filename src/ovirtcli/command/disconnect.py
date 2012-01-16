@@ -41,7 +41,7 @@ class DisconnectCommand(OvirtCommand):
             stdout.write('not connected\n')
             return
         try:
-            connection.close()
+            connection.disconnect()
         except Exception:
             pass
         stdout.write('disconnected from oVirt manager\n')

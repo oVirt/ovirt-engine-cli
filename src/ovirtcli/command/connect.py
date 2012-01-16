@@ -77,8 +77,19 @@ class ConnectCommand(OvirtCommand):
             self.context.connection = API(url=url,
                                           username=username,
                                           password=password)
-        except socket.error, e:
-            self.error(e.strerror.lower())
-        except e:
+            self.testConnectivity()
+            stdout.write('connected to oVirt manager at %s\n' % url)
+        except Exception, e:
+            self.__cleanContext()
             self.error(str(e))
-        stdout.write('connected to oVirt manager at %s\n' % url)
+
+    def testConnectivity(self):
+        self.context.connection.test()
+
+    def __cleanContext(self):
+        if self.context.connection is not None:
+            try:
+                self.context.connection.disconnect()
+            except Exception, e:
+                self.error(e.strerror.lower())
+        self.context.connection = None
