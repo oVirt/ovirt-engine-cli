@@ -11,7 +11,7 @@ BuildRequires: python2-devel
 BuildRequires: python-setuptools-devel
 
 Requires: python
-Requires: ovirt-engine-sdk >= 1.1
+Requires: ovirt-engine-sdk >= 1.2
 Requires: pexpect
 Requires: python-setuptools
 Requires: python-ply
@@ -40,6 +40,12 @@ The command line interface for oVirt-Engine.
 %doc LICENSE
 
 %changelog
+* Thu Jan 19 2012 Michael Pasternak <mpastern@redhat.com> - 1.2-1
+- unable to add host #782734
+  https://bugzilla.redhat.com/show_bug.cgi?id=782734
+- unable to add new cluster #782707
+  https://bugzilla.redhat.com/show_bug.cgi?id=782707
+
 * Mon Jan 16 2012 Michael Pasternak <mpastern@redhat.com> - 1.1-1
 - unable to create data-center: problem with --version param #781834
   https://bugzilla.redhat.com/show_bug.cgi?id=781834
