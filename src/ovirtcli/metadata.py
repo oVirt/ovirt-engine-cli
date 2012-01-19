@@ -108,6 +108,15 @@ _mapping_data = {
     ],
     params.File: [
         StringField('name', 'The file name', 'SL')
+    ],
+    params.Host: [
+        StringField('id', 'A unique ID for this host', 'S'),
+        StringField('name', 'The name of this host', 'SLUC'),
+        StringField('description', 'A description for this host', 'SUC'),
+        StringField('status', 'The status of this host', 'SL',
+                    attribute='status.state'),
+        StringField('address', 'The address of this host', 'SLUC'),
+        StringField('root_password', 'The root password of this host', 'C')
     ]
 }
 
