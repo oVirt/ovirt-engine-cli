@@ -43,7 +43,6 @@ class Field(object):
         until its parent is reached, creating classes on the fly where
         required."""
         baseobj = obj
-        basetype = type(obj)
         walked = []
         path = attr.split('.')
         for pa in path[:-1]:
@@ -53,17 +52,12 @@ class Field(object):
             except AttributeError:
                 m = 'no such attribute: %s' % '.'.join(walked)
                 raise ValueError, m
-            if subobj is None:
-                prop = getattr(type(baseobj), pa)
-#                subtype = schema.subtype(prop)
-                #subtype = params.subtype(prop)
-#TODO: check
-                subtype = prop.factory()
-#                if issubclass(subtype, schema.ComplexType):
+            if subobj is None and hasattr(baseobj, pa):
+                subtype = ParseHelper.getXmlType(pa)
                 if issubclass(subtype, params.BaseResource) or issubclass(subtype, params.BaseDevice) or \
-                   issubclass(subtype, params.BaseResources) or issubclass(subtype, params.BaseDevices):
-#                    setattr(baseobj, pa, schema.new(subtype))
-                    setattr(baseobj, pa, eval(subtype))
+                   issubclass(subtype, params.BaseResources) or issubclass(subtype, params.BaseDevices) or \
+                   issubclass(subtype, params.GeneratedsSuper):
+                    setattr(baseobj, pa, subtype.factory())
                     subobj = getattr(baseobj, pa)
             baseobj = subobj
         return baseobj, path[-1]
@@ -235,7 +229,6 @@ class VersionField(Field):
         match = self._re_version.match(value)
         if match is None:
             raise ValueError, 'Illegal version: %s' % value
-#        version = schema.new(schema.Version)
         version = params.Version()
         version.major = int(match.group(1))
         version.minor = int(match.group(2))

@@ -115,8 +115,15 @@ _mapping_data = {
         StringField('description', 'A description for this host', 'SUC'),
         StringField('status', 'The status of this host', 'SL',
                     attribute='status.state'),
-        StringField('address', 'The address of this host', 'SLUC'),
+        StringField('address', 'The address of this host', 'SUC'),
         StringField('root_password', 'The root password of this host', 'C')
+    ],
+    params.Cluster: [
+        StringField('id', 'A unique ID for this cluster', 'S'),
+        StringField('name', 'The name of this cluster', 'SLUC'),
+        StringField('description', 'A description for this cluster', 'SUC'),
+        ReferenceField('datacenter', 'The dataCenter of this cluster', 'CS', attribute='data_center'),
+        StringField('cpu', 'The supported CPUs for this cluster', 'CS', attribute='cpu.id')
     ]
 }
 
