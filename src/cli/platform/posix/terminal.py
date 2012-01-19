@@ -50,10 +50,7 @@ class PosixTerminal(Terminal):
         return height
 
     def clear(self):
-        if not self.stdout.isatty():
-            return
-        chars = curses.tigetstr('clear')
-        self.stdout.write(chars)
+        os.system("clear")
 
     def set_echo(self, echo):
         attrs = termios.tcgetattr(self._tty)
