@@ -65,8 +65,7 @@ class TextFormatter(Formatter):
         stdout.write('\n')
         for field in fields:
             value = field.get(resource, self.context)
-            if not value:
-                continue
+            if not value: value = ''
             stdout.write(format0 % field.name)
             stdout.write(': ')
             stdout.write(format1 % value)

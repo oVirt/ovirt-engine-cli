@@ -135,9 +135,11 @@ class ReferenceField(Field):
     def get(self, obj, context):
         obj, attr = self._resolve_parent(obj, self.attribute)
         value = getattr(obj, attr)
-        if value.name:
-            return value.name
-        return value.id
+        if value: 
+            if value.name:
+                return value.name
+            return value.id
+        return None
 
     def set(self, obj, value, context):
 #FIXME:
