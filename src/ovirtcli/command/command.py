@@ -167,18 +167,20 @@ class OvirtCommand(Command):
             return None
 
     def _get_types(self, plural):
-#        """INTERNAL: return a list of types."""
-#        connection = self.check_connection()
-#        links = connection.get_links(connection.api())
-##        types = [schema.type_info(link) for link in links ]
-##FIXME: support types exposer
-#        types = []
-#        ix = 2 + int(plural)
-#        types = [ info[ix] for info in types if info and info[ix] ]
-#        return types
-
-        #return TypeHelper.getKnownTypes()
-        return []
+        """INTERNAL: return a list of types."""
+        connection = self.check_connection()
+        types = connection.__dict__.keys()
+        
+        if not plural:
+            sing_types = []
+            for item in types:
+                if hasattr(connection, item) and hasattr(getattr(connection, item), 'add'):
+                    if item.endswith('s'):
+                        sing_types.append(item[:len(item)-1])
+                    else:
+                        sing_types.append(item)
+            return sing_types
+        return types
 
     def get_singular_types(self):
         """Return a list of singular types."""

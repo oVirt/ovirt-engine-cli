@@ -17,6 +17,7 @@
 
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
+from ovirtsdk.utils.parsehelper import ParseHelper
 
 class CreateCommand(OvirtCommand):
 
@@ -129,27 +130,23 @@ class CreateCommand(OvirtCommand):
     def show_help(self):
         """Show help for "create"."""
         args = self.arguments
-        opts = self.options
-        connection = self.check_connection()
+        opts = self.options        
         stdout = self.context.terminal.stdout
+        types = self.get_singular_types()
+        connection = self.check_connection()
         subst = {}
         if len(args) == 0:
-            helptext = self.helptext0
-            types = self.get_singular_types()
+            helptext = self.helptext0            
             subst['types'] = self.format_list(types)
         elif len(args) == 1:
-#            info = schema.type_info(args[0])
-#FIXME:
-            info = None
-            if info is None:
+            if args[0] not in types:
                 self.error('unknown type: %s' % args[0])
             base = self.resolve_base(opts)
-            methods = connection.get_methods(info[1], base=base)
-            if 'POST' not in methods:
+            if not (hasattr(connection, args[0] + 's') or hasattr(getattr(connection, args[0] + 's'), 'add')):
                 self.error('type cannot be created: %s' % args[0])
             helptext = self.helptext1
             subst['type'] = args[0]
-            options = self.get_options(info[0], 'C')
+            options = self.get_options(ParseHelper.getXmlType(args[0]), 'C')
             subst['options'] = self.format_list(options)
         statuses = self.get_statuses()
         subst['statuses'] = self.format_list(statuses)
