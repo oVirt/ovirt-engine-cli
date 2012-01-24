@@ -26,7 +26,11 @@ class TypeHelper():
     def _getKnownTypes():
         known_wrapper_types = {}
         for name, obj in inspect.getmembers(params):
-            if inspect.isclass(obj):
+            if inspect.isclass(obj) and (isinstance(obj, type(params.BaseResource)) or
+                                         isinstance(obj, type(params.BaseResources)) or
+                                         isinstance(obj, type(params.GeneratedsSuper)) or
+                                         isinstance(obj, type(params.BaseDevices)) or
+                                         isinstance(obj, type(params.BaseDevice))):
                 known_wrapper_types[name.lower()] = name
         return known_wrapper_types
 

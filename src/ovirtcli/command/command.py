@@ -170,13 +170,13 @@ class OvirtCommand(Command):
         """INTERNAL: return a list of types."""
         connection = self.check_connection()
         types = connection.__dict__.keys()
-        
+
         if not plural:
             sing_types = []
             for item in types:
-                if hasattr(connection, item) and hasattr(getattr(connection, item), 'add'):
+                if item and hasattr(connection, item) and type(getattr(connection, item)).__dict__.has_key('add'):
                     if item.endswith('s'):
-                        sing_types.append(item[:len(item)-1])
+                        sing_types.append(item[:len(item) - 1])
                     else:
                         sing_types.append(item)
             return sing_types
@@ -190,9 +190,43 @@ class OvirtCommand(Command):
         """Return a list of plural types."""
         return self._get_types(True)
 
-    def get_options(self, typ, flag, scope=None):
+    def get_options(self, method, resource, sub_resource=None):
         """Return a list of options for typ/action."""
-        fields = metadata.get_fields(typ, flag, scope=scope)
-        options = [ '--%-20s %s' % (field.name, field.description)
-                    for field in fields ]
-        return options
+
+        connection = self.check_connection()
+        if not sub_resource:
+            if resource and hasattr(connection, resource + 's') and \
+               type(getattr(connection, resource + 's')).__dict__.has_key(method):
+                method = getattr(getattr(connection, resource + 's'), method)
+        else:
+            if hasattr(sub_resource, resource + 's') and \
+               hasattr(getattr(sub_resource, resource + 's'), method):
+                method = getattr(getattr(sub_resource, resource + 's'), method)
+
+        if not method:
+            self.error('type cannot be created: %s' % resource)
+
+        doc = method.__doc__
+        params_arr = doc.split('\n')
+        params_list = []
+        params_hash = {}
+
+        for var in params_arr:
+            if '' != var and var.find('@param') != -1:
+                splitted_line = var.strip().split(' ')
+                if len(splitted_line) >= 2:
+                    prefix = splitted_line[0].replace('@param ', '--').replace('@param', '--')
+                    param = splitted_line[1]
+                    typ = ''.join(splitted_line[2:])
+                    if param.find('.') != -1:
+                        splitted_param = param.split('.')
+                        new_param = '_'.join(splitted_param[1:])
+                        if new_param.find('id|name') != -1:
+                            param = new_param.replace('_id|name', '')
+                        else:
+                            param = new_param
+
+                    params_hash[param.replace(':', '')] = splitted_line[1].replace(':', '') \
+                                                                          .replace('id|name', 'name')
+                    params_list.append(prefix + param + ' ' + typ)
+        return params_list

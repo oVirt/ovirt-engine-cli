@@ -130,24 +130,22 @@ class CreateCommand(OvirtCommand):
     def show_help(self):
         """Show help for "create"."""
         args = self.arguments
-        opts = self.options        
+        opts = self.options
         stdout = self.context.terminal.stdout
         types = self.get_singular_types()
-        connection = self.check_connection()
         subst = {}
         if len(args) == 0:
-            helptext = self.helptext0            
+            helptext = self.helptext0
             subst['types'] = self.format_list(types)
         elif len(args) == 1:
-            if args[0] not in types:
+            if not TypeHelper.isKnownType(args[0]):
                 self.error('unknown type: %s' % args[0])
-            base = self.resolve_base(opts)
-            if not (hasattr(connection, args[0] + 's') or hasattr(getattr(connection, args[0] + 's'), 'add')):
-                self.error('type cannot be created: %s' % args[0])
             helptext = self.helptext1
+            params_list = self.get_options(method='add',
+                                           resource=args[0],
+                                           sub_resource=self.resolve_base(opts))
+            subst['options'] = self.format_list(params_list)
             subst['type'] = args[0]
-            options = self.get_options(ParseHelper.getXmlType(args[0]), 'C')
-            subst['options'] = self.format_list(options)
         statuses = self.get_statuses()
         subst['statuses'] = self.format_list(statuses)
         helptext = self.format_help(helptext, subst)

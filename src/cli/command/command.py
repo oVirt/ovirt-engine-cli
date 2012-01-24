@@ -113,7 +113,6 @@ class Command(object):
 
     def format_list(self, lst, bullet='*', indent=0):
         """Format a list of items, to be used with format_help()."""
-        lst.sort()
         formatted = []
         for elem in lst:
             line = ' ' * indent
