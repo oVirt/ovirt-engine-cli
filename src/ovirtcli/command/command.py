@@ -23,6 +23,9 @@ from ovirtcli.utils.typehelper import TypeHelper
 
 from ovirtsdk.xml import params
 from ovirtsdk.utils.parsehelper import ParseHelper
+from ovirtsdk.infrastructure import brokers
+import inspect
+from ovirtcli.utils.methodhelper import MethodHelper
 
 
 class OvirtCommand(Command):
@@ -166,15 +169,29 @@ class OvirtCommand(Command):
         except:
             return None
 
-    def _get_types(self, plural):
+    def _get_types(self, plural, method=None):
         """INTERNAL: return a list of types."""
         connection = self.check_connection()
         types = connection.__dict__.keys()
+        sing_types = []
+
+        if method:
+            for decorator in TypeHelper.getKnownDecoratorsTypes():
+                dct = getattr(brokers, decorator).__dict__
+                if dct.has_key(method):
+                    if decorator.endswith('s'):
+                        cls_name = TypeHelper.getDecoratorType(decorator[:len(decorator) - 1])
+                        if cls_name:
+                            args = MethodHelper.getMethodArgs(brokers, cls_name, '__init__')
+                            if len(args) == 3:
+                                sing_types.append(args[2] + ' --' + args[1] + 'id')
+                            elif len(args) == 2:
+                                sing_types.append(args[1])
+            return sing_types
 
         if not plural:
-            sing_types = []
             for item in types:
-                if item and hasattr(connection, item) and type(getattr(connection, item)).__dict__.has_key('add'):
+                if item and hasattr(connection, item) and type(getattr(connection, item)).__dict__.has_key(method):
                     if item.endswith('s'):
                         sing_types.append(item[:len(item) - 1])
                     else:
@@ -182,13 +199,13 @@ class OvirtCommand(Command):
             return sing_types
         return types
 
-    def get_singular_types(self):
+    def get_singular_types(self, method=None):
         """Return a list of singular types."""
-        return self._get_types(False)
+        return self._get_types(False, method)
 
-    def get_plural_types(self):
+    def get_plural_types(self, method=None):
         """Return a list of plural types."""
-        return self._get_types(True)
+        return self._get_types(True, method)
 
     def get_options(self, method, resource, sub_resource=None):
         """Return a list of options for typ/action."""

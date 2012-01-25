@@ -49,6 +49,7 @@ class ExecutionContext(object):
 
     def __init__(self, cmdin=None):
         """Constructor."""
+        self.parameters_cash = {}
         self.cmdin = cmdin or sys.stdin
         self.commands = []
         self.status = None
@@ -96,8 +97,10 @@ class ExecutionContext(object):
         for i in range(len(self.commands)):
             if self.commands[i].name == command.name:
                 self.commands[i] = command
+                self.parameters_cash[command.name.lower()] = {}
                 break
         else:
+            self.parameters_cash[command.name.lower()] = {}
             self.commands.append(command)
 
     def execute_loop(self):

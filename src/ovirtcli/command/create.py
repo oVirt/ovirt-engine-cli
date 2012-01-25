@@ -67,13 +67,13 @@ class CreateCommand(OvirtCommand):
 
         == Examples ==
 
-        This create a new virtual machine in the Default cluster based on the
-        Blank template:
+        - This example create a new virtual machine in the Default cluster based on the
+          Blank template:
 
           $ create vm --name myvm --memory 512 --type SERVER \\
                       --cluster Default --template Blank
-
-        This example does the same but now using pre-formatted input:
+                      
+        - This example does the same but now using pre-formatted input:
 
           $ create vm << EOM
           > <vm>
@@ -84,6 +84,17 @@ class CreateCommand(OvirtCommand):
           >   <template><name>Blank</name></template>
           > </vm>
           > EOM
+
+
+        - This example create vm nic:
+        
+          $ create nic --vmid myvm --name mynic --network engine --interface virtio 
+          
+        - For detail help:
+         
+          'help create sub-resource --resourceid xxx', i.e:
+          
+          help create nic --vmid myvm
 
         == Return Values ==
 
@@ -132,7 +143,7 @@ class CreateCommand(OvirtCommand):
         args = self.arguments
         opts = self.options
         stdout = self.context.terminal.stdout
-        types = self.get_singular_types()
+        types = self.get_singular_types(method='add')
         subst = {}
         if len(args) == 0:
             helptext = self.helptext0
