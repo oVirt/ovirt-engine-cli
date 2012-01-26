@@ -40,7 +40,6 @@ class OvirtCommand(Command):
     def resolve_base(self, options):
         """resolve a base object from a set of '--typeid value' options."""
         connection = self.check_connection()
-#        path = {}
 
         for opt, val in options.items():
             if not opt.endswith('id'):
@@ -61,32 +60,6 @@ class OvirtCommand(Command):
                 if base is None and len(options) > 0:
                     self.error('cannot find object %s' % val)
                 return base
-
-
-##            info = schema.type_info(typename)
-#            if info is None:
-#                self.error('unknown type: %s' % typename)
-#            path[info[3]] = (options[opt], info)
-##        base = connection.get(schema.API)
-##        info = schema.type_info(type(base))
-##FIXME:
-#        info = None
-#        while path:
-##            links = connection.get_links(base)
-##FIXME:
-#            links = None
-#            for link in links:
-#                if link in path:
-#                    break
-#            else:
-#                self.error('cannot find object in %s' % info[2])
-#            id, info = path.pop(link)
-##            base = self.get_object(info[0], id, base)
-#            base = False
-##FIXME:
-#            if base is None:
-#                self.error('%s does not exist: %s' % (info[2], id))
-#        return base
 
     def create_object(self, typ, options, scope=None):
         """Create a new object of type `typ' based on the command-line
@@ -184,7 +157,7 @@ class OvirtCommand(Command):
                         if cls_name:
                             args = MethodHelper.getMethodArgs(brokers, cls_name, '__init__')
                             if len(args) == 3:
-                                sing_types.append(args[2] + ' --' + args[1] + 'id')
+                                sing_types.append(args[2] + ' (context "' + args[1] + '")')
                             elif len(args) == 2:
                                 sing_types.append(args[1])
             return sing_types
@@ -211,19 +184,27 @@ class OvirtCommand(Command):
         """Return a list of options for typ/action."""
 
         connection = self.check_connection()
-        if not sub_resource:
-            if resource and hasattr(connection, resource + 's') and \
-               type(getattr(connection, resource + 's')).__dict__.has_key(method):
-                method = getattr(getattr(connection, resource + 's'), method)
-        else:
-            if hasattr(sub_resource, resource + 's') and \
-               hasattr(getattr(sub_resource, resource + 's'), method):
-                method = getattr(getattr(sub_resource, resource + 's'), method)
 
-        if not method:
-            self.error('type cannot be created: %s' % resource)
+        if isinstance(resource, type('')):
+            if method == 'add':
+                if not sub_resource:
+                    if resource and hasattr(connection, resource + 's') and \
+                       type(getattr(connection, resource + 's')).__dict__.has_key(method):
+                        method_ref = getattr(getattr(connection, resource + 's'), method)
+                else:
+                    if hasattr(sub_resource, resource + 's') and \
+                       hasattr(getattr(sub_resource, resource + 's'), method):
+                        method_ref = getattr(getattr(sub_resource, resource + 's'), method)
+                if not method_ref:
+                    self.error('type cannot be created: %s' % resource)
+        elif isinstance(resource, brokers.Base):
+            if not sub_resource:
+                if hasattr(resource, method):
+                    method_ref = getattr(resource, method)
+            else:
+                pass
 
-        doc = method.__doc__
+        doc = method_ref.__doc__
         params_arr = doc.split('\n')
         params_list = []
         params_hash = {}

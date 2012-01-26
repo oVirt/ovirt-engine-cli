@@ -26,5 +26,8 @@ class MethodHelper():
             if cls_ref and hasattr(cls_ref, method):
                 method_ref = getattr(cls_ref, method)
                 if method_ref:
-                    return getattr(inspect.getargspec(method_ref), 'args')
+                    try:
+                        return getattr(inspect.getargspec(method_ref), 'args')
+                    except:
+                        pass
         return []

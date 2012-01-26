@@ -19,6 +19,8 @@ from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
 
 from ovirtsdk.utils.parsehelper import ParseHelper
+from ovirtsdk.infrastructure import brokers
+from ovirtcli.utils.methodhelper import MethodHelper
 
 class ActionCommand(OvirtCommand):
 
@@ -93,8 +95,7 @@ class ActionCommand(OvirtCommand):
         == Attribute Options ==
 
         The following attribute options are understood. Note: this lists all
-        available attribute options for actions. Not every action supports
-        every object!
+        available attribute options for action '$action'.
 
           $options
 
@@ -153,46 +154,82 @@ class ActionCommand(OvirtCommand):
         subst = {}
         if len(args) < 2:
             helptext = self.helptext0
-            types = self.get_singular_types()
+            types = self._get_actionable_types()
             subst['types'] = self.format_list(types)
         elif len(args) == 2:
             helptext = self.helptext1
-#            info = schema.type_info(args[0])
-            info = None
-#FIXME:            
-            if info is None:
-                self.error('no such type: %s' % args[0])
+            if not TypeHelper.isKnownType(args[0]):
+                self.error('unknown type: %s' % args[0])
+
             subst['type'] = args[0]
             subst['id'] = args[1]
             base = self.resolve_base(opts)
-            obj = self.get_object(info[0], args[1], base)
+            obj = self.get_object(args[0], args[1], base)
             if obj is None:
                 self.error('no such %s: %s' % (args[0], args[1]))
-            actions = connection.get_actions(obj)
+            actions = self._get_actions(obj)
             subst['actions'] = self.format_list(actions)
         elif len(args) == 3:
             helptext = self.helptext1
-#            info = schema.type_info(args[0])
-#FIXME:      
-            info = None
-            if info is None:
-                self.error('no such type: %s' % args[0])
+            if not TypeHelper.isKnownType(args[0]):
+                self.error('unknown type: %s' % args[0])
+
             subst['type'] = args[0]
             subst['id'] = args[1]
             subst['action'] = args[2]
+
             base = self.resolve_base(self.options)
-            obj = self.get_object(info[0], args[1], base)
+            obj = self.get_object(args[0], args[1], base)
             if obj is None:
                 self.error('no such %s: %s' % (args[0], args[1]))
-            actions = connection.get_actions(obj)
+
+            actions = self._get_actions(obj)
             if args[2] not in actions:
                 self.error('no such action: %s' % args[2])
-            scope = '%s:%s' % (info[0].__name__, args[2])
-#            options = self.get_options(schema.Action, 'C', scope=scope)
-#FIXME:      
-            options = None
+
+            options = self.get_options(method=args[2],
+                                       resource=obj,
+                                       sub_resource=base)
+
+#            scope = '%s:%s' % (type(obj).__name__, args[2])
+
+            subst['actions'] = self.format_list(actions)
             subst['options'] = self.format_list(options, bullet='')
         statuses = self.get_statuses()
         subst['statuses'] = self.format_list(statuses)
         helptext = self.format_help(helptext, subst)
         stdout.write(helptext)
+
+    def _get_actions(self, obj):
+        """INTERNAL: return a list of type actions."""
+        actions = []
+        exceptions = ['delete', 'update']
+
+        dct = type(obj).__dict__
+        if dct and len(dct) > 0:
+            for method in dct:
+                if method not in exceptions and not method.startswith('_'):
+                    actions.append(method)
+        return actions
+
+    def _get_actionable_types(self):
+        """INTERNAL: return a list of actionable types."""
+        sing_types = []
+        exceptions = ['delete', 'update']
+
+        for decorator in TypeHelper.getKnownDecoratorsTypes():
+                if not decorator.endswith('s'):
+                    dct = getattr(brokers, decorator).__dict__
+                    if dct and len(dct) > 0:
+                        for method in dct:
+                            if method not in exceptions and not method.startswith('_'):
+                                args = MethodHelper.getMethodArgs(brokers, decorator, '__init__')
+                                if args:
+                                    if len(args) == 3:
+                                        cls_name = args[2] + ' (context "' + args[1] + '")'
+                                    elif len(args) == 2:
+                                        cls_name = args[1]
+                                    if cls_name not in sing_types:
+                                        sing_types.append(cls_name)
+                                    break
+        return sing_types
