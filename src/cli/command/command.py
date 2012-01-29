@@ -123,6 +123,21 @@ class Command(object):
         formatted = '\n'.join(formatted)
         return formatted
 
+    def format_map(self, mp, bullet='*', indent=0):
+        """Format a list of items, to be used with format_help()."""
+        formatted = []
+        for elem in mp.keys():
+            line = ' ' * indent
+            if bullet:
+                line += bullet + ' '
+            if mp[elem] != None:
+                line += elem + ' (context: ' + mp[elem] + ')'
+            else:
+                line += elem
+            formatted.append(line)
+        formatted = '\n'.join(formatted)
+        return formatted
+
     def _indent_level(self, s):
         """INTERNAL: return the indentation level of a string."""
         for i in range(len(s)):

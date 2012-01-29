@@ -17,6 +17,8 @@
 
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
+from ovirtsdk.infrastructure import brokers
+from ovirtcli.utils.methodhelper import MethodHelper
 
 
 class DeleteCommand(OvirtCommand):
@@ -76,6 +78,27 @@ class DeleteCommand(OvirtCommand):
           $statuses
         """
 
+    helptext1 = """\
+        == Usage ==
+
+        delete <type> <id> [object identifiers]
+
+        == Description ==
+
+        Delete an object with type $type. See 'help delete' for generic
+        help on deleting objects.
+
+        == Attribute Options ==
+
+        The following options are available for objects with type $type:
+
+          $options
+
+        == Return Values ==
+
+          $statuses
+        """
+
     def execute(self):
         """Execute "delete"."""
         args = self.arguments
@@ -97,12 +120,58 @@ class DeleteCommand(OvirtCommand):
     def show_help(self):
         """Show help for "delete"."""
         self.check_connection()
-        helptext = self.helptext
+        args = self.arguments
+        opts = self.options
+
         subst = {}
-        types = self.get_singular_types()
-        subst['types'] = self.format_list(types)
+        types = self._get_deleteable_types()
+
+        subst['types'] = self.format_map(types)
         statuses = self.get_statuses()
         subst['statuses'] = self.format_list(statuses)
+
+        if len(args) == 2:
+            if self.is_supported_type(types.keys(), args[0]):
+                base = self.resolve_base(self.options)
+                obj = self.get_object(args[0], args[1], base)
+                if obj is None:
+                    self.error('no such "%s": "%s"' % (args[0], args[1]))
+                helptext = self.helptext1
+                params_list = self.get_options(method='delete',
+                                               resource=obj,
+                                               sub_resource=base)
+                subst['options'] = self.format_list(params_list)
+                subst['type'] = args[0]
+
+        elif len(args) == 1 and len(opts) == 2 and \
+        self.is_supported_type(types.keys(), args[0]):
+            helptext = self.helptext1
+
+            subst['type'] = args[0]
+
+            options = self.get_options(method='delete',
+                                       resource=args[0],
+                                       sub_resource=self.resolve_base(self.options))
+            subst['options'] = self.format_list(options)
+            subst['type'] = args[0]
+        else:
+            helptext = self.helptext
+            if len(args) == 1: self.is_supported_type(types.keys(), args[0])
+
         helptext = self.format_help(helptext, subst)
         stdout = self.context.terminal.stdout
         stdout.write(helptext)
+
+    def _get_deleteable_types(self):
+        """INTERNAL: return a list of deleteable types."""
+        types = {}
+
+        for decorator in TypeHelper.getKnownDecoratorsTypes():
+                if not decorator.endswith('s'):
+                    dct = getattr(brokers, decorator).__dict__
+                    if dct and len(dct) > 0:
+                        for method in dct:
+                            if method == 'delete':
+                                self._get_method_params(brokers, decorator, '__init__', types)
+                                break
+        return types

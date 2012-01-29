@@ -17,7 +17,6 @@
 
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
-from ovirtsdk.utils.parsehelper import ParseHelper
 
 class CreateCommand(OvirtCommand):
 
@@ -147,10 +146,8 @@ class CreateCommand(OvirtCommand):
         subst = {}
         if len(args) == 0:
             helptext = self.helptext0
-            subst['types'] = self.format_list(types)
-        elif len(args) == 1:
-            if not TypeHelper.isKnownType(args[0]):
-                self.error('unknown type: %s' % args[0])
+            subst['types'] = self.format_map(types)
+        elif len(args) == 1 and self.is_supported_type(types.keys(), args[0]):
             helptext = self.helptext1
             params_list = self.get_options(method='add',
                                            resource=args[0],

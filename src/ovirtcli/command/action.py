@@ -149,17 +149,12 @@ class ActionCommand(OvirtCommand):
         """Show help for the action command."""
         args = self.arguments
         opts = self.options
-        connection = self.check_connection()
         stdout = self.context.terminal.stdout
+        types = self._get_actionable_types()
         subst = {}
-        if len(args) < 2:
-            helptext = self.helptext0
-            types = self._get_actionable_types()
-            subst['types'] = self.format_list(types)
-        elif len(args) == 2:
+
+        if len(args) == 2 and self.is_supported_type(types.keys(), args[0]):
             helptext = self.helptext1
-            if not TypeHelper.isKnownType(args[0]):
-                self.error('unknown type: %s' % args[0])
 
             subst['type'] = args[0]
             subst['id'] = args[1]
@@ -169,10 +164,8 @@ class ActionCommand(OvirtCommand):
                 self.error('no such %s: %s' % (args[0], args[1]))
             actions = self._get_actions(obj)
             subst['actions'] = self.format_list(actions)
-        elif len(args) == 3:
+        elif len(args) == 3 and self.is_supported_type(types.keys(), args[0]):
             helptext = self.helptext1
-            if not TypeHelper.isKnownType(args[0]):
-                self.error('unknown type: %s' % args[0])
 
             subst['type'] = args[0]
             subst['id'] = args[1]
@@ -181,20 +174,23 @@ class ActionCommand(OvirtCommand):
             base = self.resolve_base(self.options)
             obj = self.get_object(args[0], args[1], base)
             if obj is None:
-                self.error('no such %s: %s' % (args[0], args[1]))
+                self.error('no such "%s": "%s"' % (args[0], args[1]))
 
             actions = self._get_actions(obj)
             if args[2] not in actions:
-                self.error('no such action: %s' % args[2])
+                self.error('no such action "%s"' % args[2])
 
             options = self.get_options(method=args[2],
                                        resource=obj,
                                        sub_resource=base)
+            subst['actions'] = self.format_list(actions)
+            subst['options'] = self.format_list(options, bullet='')
+        else:
+            helptext = self.helptext0
+            subst['types'] = self.format_map(types)
 
 #            scope = '%s:%s' % (type(obj).__name__, args[2])
 
-            subst['actions'] = self.format_list(actions)
-            subst['options'] = self.format_list(options, bullet='')
         statuses = self.get_statuses()
         subst['statuses'] = self.format_list(statuses)
         helptext = self.format_help(helptext, subst)
@@ -214,7 +210,7 @@ class ActionCommand(OvirtCommand):
 
     def _get_actionable_types(self):
         """INTERNAL: return a list of actionable types."""
-        sing_types = []
+        types = {}
         exceptions = ['delete', 'update']
 
         for decorator in TypeHelper.getKnownDecoratorsTypes():
@@ -223,13 +219,6 @@ class ActionCommand(OvirtCommand):
                     if dct and len(dct) > 0:
                         for method in dct:
                             if method not in exceptions and not method.startswith('_'):
-                                args = MethodHelper.getMethodArgs(brokers, decorator, '__init__')
-                                if args:
-                                    if len(args) == 3:
-                                        cls_name = args[2] + ' (context "' + args[1] + '")'
-                                    elif len(args) == 2:
-                                        cls_name = args[1]
-                                    if cls_name not in sing_types:
-                                        sing_types.append(cls_name)
-                                    break
-        return sing_types
+                                self._get_method_params(brokers, decorator, '__init__', types)
+                                break
+        return types

@@ -142,11 +142,33 @@ class OvirtCommand(Command):
         except:
             return None
 
+
+    def _get_method_params(self, module, clazz, method, holder={}):
+        args = MethodHelper.getMethodArgs(module, clazz, method)
+        if args:
+            if len(args) == 3:
+                if not holder.has_key(args[2]):
+                    holder[args[2]] = args[1]
+                else:
+                    if holder[args[2]] == None:
+                        holder[args[2]] = 'None, ' + args[1]
+                    else:
+                        holder[args[2]] = holder[args[2]] + ', ' + args[1]
+            elif len(args) == 2:
+                if not holder.has_key(args[1]):
+                    holder[args[1]] = None
+                else:
+                    if holder[args[1]] == None:
+                        holder[args[1]] = 'None' + ', ' + holder[args[1]]
+                    else:
+                        holder[args[1]] = holder[args[1]] + ', ' + 'None'
+        return holder
+
     def _get_types(self, plural, method=None):
         """INTERNAL: return a list of types."""
         connection = self.check_connection()
         types = connection.__dict__.keys()
-        sing_types = []
+        sing_types = {}
 
         if method:
             for decorator in TypeHelper.getKnownDecoratorsTypes():
@@ -155,20 +177,16 @@ class OvirtCommand(Command):
                     if decorator.endswith('s'):
                         cls_name = TypeHelper.getDecoratorType(decorator[:len(decorator) - 1])
                         if cls_name:
-                            args = MethodHelper.getMethodArgs(brokers, cls_name, '__init__')
-                            if len(args) == 3:
-                                sing_types.append(args[2] + ' (context "' + args[1] + '")')
-                            elif len(args) == 2:
-                                sing_types.append(args[1])
+                            self._get_method_params(brokers, cls_name, '__init__', sing_types)
             return sing_types
 
         if not plural:
             for item in types:
                 if item and hasattr(connection, item) and type(getattr(connection, item)).__dict__.has_key(method):
                     if item.endswith('s'):
-                        sing_types.append(item[:len(item) - 1])
+                        sing_types[item[:len(item) - 1]] = None
                     else:
-                        sing_types.append(item)
+                        sing_types[item] = None
             return sing_types
         return types
 
@@ -180,23 +198,44 @@ class OvirtCommand(Command):
         """Return a list of plural types."""
         return self._get_types(True, method)
 
+    def to_plural(self, string):
+        if string.endswith('s'):
+            return string[:len(string) - 1]
+        return string
+
     def get_options(self, method, resource, sub_resource=None):
         """Return a list of options for typ/action."""
+
+        PARAM_ANNOTATION = '@param'
 
         connection = self.check_connection()
 
         if isinstance(resource, type('')):
-            if method == 'add':
-                if not sub_resource:
+            if not sub_resource:
                     if resource and hasattr(connection, resource + 's') and \
                        type(getattr(connection, resource + 's')).__dict__.has_key(method):
-                        method_ref = getattr(getattr(connection, resource + 's'), method)
-                else:
-                    if hasattr(sub_resource, resource + 's') and \
-                       hasattr(getattr(sub_resource, resource + 's'), method):
-                        method_ref = getattr(getattr(sub_resource, resource + 's'), method)
-                if not method_ref:
-                    self.error('type cannot be created: %s' % resource)
+                        method_ref = getattr(getattr(connection,
+                                                     resource + 's'),
+                                             method)
+            else:
+                if hasattr(sub_resource, resource + 's') and \
+                type(getattr(sub_resource, resource + 's')).__dict__.has_key(method):
+                    method_ref = getattr(getattr(sub_resource,
+                                                 resource + 's'),
+                                         method)
+                elif hasattr(sub_resource, resource + 's') and \
+                hasattr(brokers, self.to_plural(type(getattr(sub_resource,
+                                                             resource + 's')).__name__)) and \
+                hasattr(getattr(brokers, self.to_plural(type(getattr(sub_resource,
+                                                                     resource + 's')).__name__)),
+                        method):
+                    method_ref = getattr(getattr(brokers,
+                                                 self.to_plural(type(getattr(sub_resource,
+                                                                             resource + 's')).__name__)),
+                                         method)
+
+            if not method_ref:
+                self.error('type %s, cannot be %s' % (resource, method + 'ed' if not method.endswith('e') else 'd'))
         elif isinstance(resource, brokers.Base):
             if not sub_resource:
                 if hasattr(resource, method):
@@ -204,27 +243,34 @@ class OvirtCommand(Command):
             else:
                 pass
 
-        doc = method_ref.__doc__
-        params_arr = doc.split('\n')
-        params_list = []
-        params_hash = {}
+        if method_ref:
+            doc = method_ref.__doc__
+            params_arr = doc.split('\n')
+            params_list = []
+            params_hash = {}
 
-        for var in params_arr:
-            if '' != var and var.find('@param') != -1:
-                splitted_line = var.strip().split(' ')
-                if len(splitted_line) >= 2:
-                    prefix = splitted_line[0].replace('@param ', '--').replace('@param', '--')
-                    param = splitted_line[1]
-                    typ = ''.join(splitted_line[2:])
-                    if param.find('.') != -1:
-                        splitted_param = param.split('.')
-                        new_param = '_'.join(splitted_param[1:])
-                        if new_param.find('id|name') != -1:
-                            param = new_param.replace('_id|name', '')
-                        else:
-                            param = new_param
+            for var in params_arr:
+                if '' != var and var.find(PARAM_ANNOTATION) != -1:
+                    splitted_line = var.strip().split(' ')
+                    if len(splitted_line) >= 2:
+                        prefix = splitted_line[0].replace((PARAM_ANNOTATION + ' '), '--').replace(PARAM_ANNOTATION, '--')
+                        param = splitted_line[1]
+                        typ = ''.join(splitted_line[2:])
+                        if param.find('.') != -1:
+                            splitted_param = param.split('.')
+                            new_param = '_'.join(splitted_param[1:])
+                            if new_param.find('id|name') != -1:
+                                param = new_param.replace('_id|name', '')
+                            else:
+                                param = new_param
 
-                    params_hash[param.replace(':', '')] = splitted_line[1].replace(':', '') \
-                                                                          .replace('id|name', 'name')
-                    params_list.append(prefix + param + ' ' + typ)
+                        params_hash[param.replace(':', '')] = splitted_line[1].replace(':', '') \
+                                                                              .replace('id|name', 'name')
+                        params_list.append(prefix + param + ' ' + typ)
         return params_list
+
+    def is_supported_type(self, types, typ):
+        if typ not in types:
+            self.error('not supported type "%s"' % typ)
+            return False
+        return True

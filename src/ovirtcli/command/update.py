@@ -144,7 +144,8 @@ class UpdateCommand(OvirtCommand):
                 self.error('type cannot be updated: %s' % args[0])
             helptext = self.helptext1
             subst['type'] = args[0]
-            options = self.get_options(info, 'U')
+#            options = self.get_options(info, 'U')
+            options = params_list = self.get_options(method='update', coll=args[0], sub_coll=base)
             subst['options'] = self.format_list(options)
         statuses = self.get_statuses()
         subst['statuses'] = self.format_list(statuses)
