@@ -153,7 +153,41 @@ class ActionCommand(OvirtCommand):
         types = self._get_actionable_types()
         subst = {}
 
-        if len(args) == 2 and self.is_supported_type(types.keys(), args[0]):
+        if len(args) == 2 and len(opts) == 2 and self.is_supported_type(types.keys(), args[0]):
+            helptext = self.helptext1
+
+            subst['type'] = args[0]
+            subst['id'] = args[1]
+            #subst['action'] = args[0]
+
+            base = self.resolve_base(self.options)
+            obj = self.get_object(args[0], args[1], base)
+            if obj is None:
+                self.error('no such "%s": "%s"' % (args[1], args[1]))
+
+            actions = self._get_actions(obj)
+            subst['actions'] = self.format_list(actions)
+        if len(args) == 3 and len(opts) == 2 and self.is_supported_type(types.keys(), args[1]):
+            helptext = self.helptext1
+
+            subst['type'] = args[0]
+            subst['id'] = args[1]
+            subst['action'] = args[0]
+
+            base = self.resolve_base(self.options)
+            obj = self.get_object(args[1], args[2], base)
+            if obj is None:
+                self.error('no such "%s": "%s"' % (args[0], args[1]))
+
+            actions = self._get_actions(obj)
+            if args[0] not in actions:
+                self.error('no such action "%s"' % args[2])
+
+            options = self.get_options(method=args[0],
+                                       resource=obj)
+            subst['actions'] = self.format_list(actions)
+            subst['options'] = self.format_list(options, bullet='')
+        elif len(args) == 2 and self.is_supported_type(types.keys(), args[0]):
             helptext = self.helptext1
 
             subst['type'] = args[0]
@@ -164,6 +198,7 @@ class ActionCommand(OvirtCommand):
                 self.error('no such %s: %s' % (args[0], args[1]))
             actions = self._get_actions(obj)
             subst['actions'] = self.format_list(actions)
+
         elif len(args) == 3 and self.is_supported_type(types.keys(), args[0]):
             helptext = self.helptext1
 

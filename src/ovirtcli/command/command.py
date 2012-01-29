@@ -243,7 +243,7 @@ class OvirtCommand(Command):
             else:
                 pass
 
-        if method_ref:
+        if method_ref and method_ref.__doc__:
             doc = method_ref.__doc__
             params_arr = doc.split('\n')
             params_list = []
