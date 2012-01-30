@@ -88,12 +88,12 @@ class ListCommand(OvirtCommand):
 
         == Description ==
 
-        Lists an objects with type $type. See 'help list' for generic
+        Lists an objects with type '$type'. See 'help list' for generic
         help on listing objects.
 
         == Attribute Options ==
 
-        The following options are available for objects with type $type:
+        The following options are available for objects with type '$type':
 
           $options
 

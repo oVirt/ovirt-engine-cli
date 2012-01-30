@@ -208,7 +208,7 @@ class OvirtCommand(Command):
         """Return a list of options for typ/action."""
 
         PARAM_ANNOTATION = '@param'
-
+        method_ref = None
         connection = self.check_connection()
 
         if isinstance(resource, type('')):
@@ -236,14 +236,14 @@ class OvirtCommand(Command):
                                          method)
 
             if not method_ref:
-                self.error('type %s, cannot be %s' % (resource,
-                                                      method + 'ed' if not method.endswith('e') else 'd'))
+                self.error('cannot find any context for type "%s"' % resource)
+
         elif isinstance(resource, brokers.Base):
-            if not sub_resource:
-                if hasattr(resource, method):
-                    method_ref = getattr(resource, method)
-            else:
-                pass
+            if hasattr(resource, method):
+                method_ref = getattr(resource, method)
+            elif hasattr(brokers, type(resource).__name__ + 's') and \
+            hasattr(getattr(brokers, type(resource).__name__ + 's'), method):
+                method_ref = getattr(getattr(brokers, type(resource).__name__ + 's'), method)
 
         if method_ref and method_ref.__doc__:
             doc = method_ref.__doc__
