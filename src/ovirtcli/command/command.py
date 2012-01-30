@@ -151,7 +151,8 @@ class OvirtCommand(Command):
                     holder[args[2]] = args[1]
                 else:
                     if holder[args[2]] == None:
-                        holder[args[2]] = 'None, ' + args[1]
+                        if args[1] != None:
+                            holder[args[2]] = 'None, ' + args[1]
                     else:
                         holder[args[2]] = holder[args[2]] + ', ' + args[1]
             elif len(args) == 2:
@@ -159,15 +160,14 @@ class OvirtCommand(Command):
                     holder[args[1]] = None
                 else:
                     if holder[args[1]] == None:
-                        holder[args[1]] = 'None' + ', ' + holder[args[1]]
+                        if holder[args[1]] != None:
+                            holder[args[1]] = 'None' + ', ' + holder[args[1]]
                     else:
                         holder[args[1]] = holder[args[1]] + ', ' + 'None'
         return holder
 
-    def _get_types(self, plural, method=None):
-        """INTERNAL: return a list of types."""
-        connection = self.check_connection()
-        types = connection.__dict__.keys()
+    def _get_types(self, plural, method):
+        """INTERNAL: return a list of types that implement given method and context/s of this types."""
         sing_types = {}
 
         if method:
@@ -178,17 +178,13 @@ class OvirtCommand(Command):
                         cls_name = TypeHelper.getDecoratorType(decorator[:len(decorator) - 1])
                         if cls_name:
                             self._get_method_params(brokers, cls_name, '__init__', sing_types)
-            return sing_types
 
-        if not plural:
-            for item in types:
-                if item and hasattr(connection, item) and type(getattr(connection, item)).__dict__.has_key(method):
-                    if item.endswith('s'):
-                        sing_types[item[:len(item) - 1]] = None
-                    else:
-                        sing_types[item] = None
+            if plural:
+                sing_types_plural = {}
+                for k in sing_types.keys():
+                    sing_types_plural[self.to_plural(k)] = sing_types[k]
+                return sing_types_plural
             return sing_types
-        return types
 
     def get_singular_types(self, method=None):
         """Return a list of singular types."""
@@ -198,9 +194,14 @@ class OvirtCommand(Command):
         """Return a list of plural types."""
         return self._get_types(True, method)
 
-    def to_plural(self, string):
+    def to_singular(self, string):
         if string.endswith('s'):
             return string[:len(string) - 1]
+        return string
+
+    def to_plural(self, string):
+        if not string.endswith('s'):
+            return string + 's'
         return string
 
     def get_options(self, method, resource, sub_resource=None):
@@ -224,18 +225,19 @@ class OvirtCommand(Command):
                                                  resource + 's'),
                                          method)
                 elif hasattr(sub_resource, resource + 's') and \
-                hasattr(brokers, self.to_plural(type(getattr(sub_resource,
+                hasattr(brokers, self.to_singular(type(getattr(sub_resource,
                                                              resource + 's')).__name__)) and \
-                hasattr(getattr(brokers, self.to_plural(type(getattr(sub_resource,
+                hasattr(getattr(brokers, self.to_singular(type(getattr(sub_resource,
                                                                      resource + 's')).__name__)),
                         method):
                     method_ref = getattr(getattr(brokers,
-                                                 self.to_plural(type(getattr(sub_resource,
+                                                 self.to_singular(type(getattr(sub_resource,
                                                                              resource + 's')).__name__)),
                                          method)
 
             if not method_ref:
-                self.error('type %s, cannot be %s' % (resource, method + 'ed' if not method.endswith('e') else 'd'))
+                self.error('type %s, cannot be %s' % (resource,
+                                                      method + 'ed' if not method.endswith('e') else 'd'))
         elif isinstance(resource, brokers.Base):
             if not sub_resource:
                 if hasattr(resource, method):
@@ -247,15 +249,23 @@ class OvirtCommand(Command):
             doc = method_ref.__doc__
             params_arr = doc.split('\n')
             params_list = []
-            params_hash = {}
+#            params_hash = {}
 
             for var in params_arr:
                 if '' != var and var.find(PARAM_ANNOTATION) != -1:
                     splitted_line = var.strip().split(' ')
                     if len(splitted_line) >= 2:
-                        prefix = splitted_line[0].replace((PARAM_ANNOTATION + ' '), '--').replace(PARAM_ANNOTATION, '--')
-                        param = splitted_line[1]
-                        typ = ''.join(splitted_line[2:])
+                        prefix = splitted_line[0].replace((PARAM_ANNOTATION + ' '),
+                                                          '--').replace(PARAM_ANNOTATION, '--')
+                        param = splitted_line[1].replace('**', '')
+
+                        if len(splitted_line) > 3 and splitted_line[3].startswith('('):
+                            typ = ''.join(splitted_line[2:3])
+                            if prefix.startswith('['):
+                                typ = typ + ']'
+                        else:
+                            typ = ''.join(splitted_line[2:])
+
                         if param.find('.') != -1:
                             splitted_param = param.split('.')
                             new_param = '_'.join(splitted_param[1:])
@@ -264,8 +274,8 @@ class OvirtCommand(Command):
                             else:
                                 param = new_param
 
-                        params_hash[param.replace(':', '')] = splitted_line[1].replace(':', '') \
-                                                                              .replace('id|name', 'name')
+#                        params_hash[param.replace(':', '')] = splitted_line[1].replace(':', '') \
+#                                                                              .replace('id|name', 'name')
                         params_list.append(prefix + param + ' ' + typ)
         return params_list
 

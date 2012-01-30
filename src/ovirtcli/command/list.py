@@ -17,6 +17,7 @@
 
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
+from ovirtsdk.infrastructure import brokers
 
 class ListCommand(OvirtCommand):
 
@@ -41,8 +42,7 @@ class ListCommand(OvirtCommand):
 
         == Available Types ==
 
-        The <type> parameter must be one of the following. Note: not all types
-        implement search!
+        The <type> parameter must be one of the following.
 
           $types
 
@@ -79,11 +79,31 @@ class ListCommand(OvirtCommand):
           $statuses
         """
 
-# TODO: support this:
-#        List all disks by vm_name in virtual machine 'myvm':
-#
-#          $ list disks --vmname myvm
+    helptext1 = """\
+        == Usage ==
 
+        - list <type>
+            
+        - list <type> <id> [object identifiers]
+
+        == Description ==
+
+        Lists an objects with type $type. See 'help list' for generic
+        help on listing objects.
+
+        == Attribute Options ==
+
+        The following options are available for objects with type $type:
+
+          $options
+
+        == Return values ==
+
+        This command will exit with one of the following statuses. To see the
+        exit status of the last command, type 'status'.
+
+          $statuses
+        """
 
     def execute(self):
         """Execute "list"."""
@@ -101,12 +121,30 @@ class ListCommand(OvirtCommand):
     def show_help(self):
         """Show help for "list"."""
         self.check_connection()
-        helptext = self.helptext
+        args = self.arguments
+        opts = self.options
+
         subst = {}
-        types = self.get_plural_types()
-        subst['types'] = self.format_list(types)
+
+        types = self.get_plural_types(method='list')
+        subst['types'] = self.format_map(types)
+
         statuses = self.get_statuses()
         subst['statuses'] = self.format_list(statuses)
+
+        if len(args) == 1 and self.is_supported_type(types.keys(), args[0]):
+            helptext = self.helptext1
+            params_list = self.get_options(method='list',
+                                           resource=self.to_singular(args[0]),
+                                           sub_resource=self.resolve_base(opts))
+            subst['options'] = self.format_list(params_list)
+            subst['type'] = args[0]
+        else:
+            helptext = self.helptext
+            if len(args) == 1: self.is_supported_type(types.keys(), args[0])
+
+
         helptext = self.format_help(helptext, subst)
         stdout = self.context.terminal.stdout
         stdout.write(helptext)
+

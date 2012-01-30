@@ -147,13 +147,14 @@ class CreateCommand(OvirtCommand):
         if len(args) == 0:
             helptext = self.helptext0
             subst['types'] = self.format_map(types)
-        elif len(args) == 1 and self.is_supported_type(types.keys(), args[0]):
-            helptext = self.helptext1
-            params_list = self.get_options(method='add',
-                                           resource=args[0],
-                                           sub_resource=self.resolve_base(opts))
-            subst['options'] = self.format_list(params_list)
-            subst['type'] = args[0]
+        elif len(args) == 1:
+            if self.is_supported_type(types.keys(), args[0]):
+                helptext = self.helptext1
+                params_list = self.get_options(method='add',
+                                               resource=args[0],
+                                               sub_resource=self.resolve_base(opts))
+                subst['options'] = self.format_list(params_list)
+                subst['type'] = args[0]
         statuses = self.get_statuses()
         subst['statuses'] = self.format_list(statuses)
         helptext = self.format_help(helptext, subst)

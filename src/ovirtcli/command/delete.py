@@ -130,21 +130,19 @@ class DeleteCommand(OvirtCommand):
         statuses = self.get_statuses()
         subst['statuses'] = self.format_list(statuses)
 
-        if len(args) == 2:
-            if self.is_supported_type(types.keys(), args[0]):
-                base = self.resolve_base(self.options)
-                obj = self.get_object(args[0], args[1], base)
-                if obj is None:
-                    self.error('no such "%s": "%s"' % (args[0], args[1]))
-                helptext = self.helptext1
-                params_list = self.get_options(method='delete',
-                                               resource=obj,
-                                               sub_resource=base)
-                subst['options'] = self.format_list(params_list)
-                subst['type'] = args[0]
+        if len(args) == 2 and self.is_supported_type(types.keys(), args[0]):
+            base = self.resolve_base(self.options)
+            obj = self.get_object(args[0], args[1], base)
+            if obj is None:
+                self.error('no such "%s": "%s"' % (args[0], args[1]))
+            helptext = self.helptext1
+            params_list = self.get_options(method='delete',
+                                           resource=obj,
+                                           sub_resource=base)
+            subst['options'] = self.format_list(params_list)
+            subst['type'] = args[0]
 
-        elif len(args) == 1 and len(opts) == 2 and \
-        self.is_supported_type(types.keys(), args[0]):
+        elif len(args) == 1 and len(opts) == 2 and self.is_supported_type(types.keys(), args[0]):
             helptext = self.helptext1
 
             subst['type'] = args[0]
