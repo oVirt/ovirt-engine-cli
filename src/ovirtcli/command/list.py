@@ -18,6 +18,7 @@
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
 from ovirtsdk.infrastructure import brokers
+from ovirtcli.command.show import ShowCommand
 
 class ListCommand(OvirtCommand):
 
@@ -116,7 +117,8 @@ class ListCommand(OvirtCommand):
         self.context.formatter.format(self.context,
                                       self.get_collection(args[0],
                                                           args[1:] if len(args) > 1 else [],
-                                                          base=self.resolve_base(opts)))
+                                                          base=self.resolve_base(opts)),
+                                      show_all=True if opts and opts.has_key(ShowCommand.SHOW_ALL_KEY) else False)
 
     def show_help(self):
         """Show help for "list"."""
