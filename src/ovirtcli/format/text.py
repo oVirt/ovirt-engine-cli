@@ -88,16 +88,23 @@ class TextFormatter(Formatter):
         context = self.context
         stdout = context.terminal.stdout
 
-        stdout.write(format0 % (field if resource_context is None else resource_context.lower() + '.' + field))
+        val = str(value)
+        fil = (field if resource_context is None
+                     else resource_context.lower() + '.' + field)\
+              .replace('.', '-')
+        fil = fil[:len(fil) - 1] if fil.endswith('_') \
+                                 else fil
+
+        stdout.write(format0 % fil)
         stdout.write(': ')
-        stdout.write(format1 % str(value))
+        stdout.write(format1 % val)
         stdout.write('\n')
-        value = str(value)[width1:]
-        while len(str(value)) > 0:
+        val = val[width1:]
+        while len(val) > 0:
             stdout.write(width1 * ' ')
-            stdout.write(format1 % str(value))
+            stdout.write(format1 % val)
             stdout.write('\n')
-            value = str(value)[width1:]
+            val = val[width1:]
 
     def _format_resource(self, resource, width= -1, show_empty=False, resource_context=None):
         context = self.context
