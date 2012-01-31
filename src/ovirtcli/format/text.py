@@ -50,11 +50,13 @@ class TextFormatter(Formatter):
                                 width0 = max(width0, self.__get_max_field_width(resource=value,
                                                                                 fields_exceptions=fields_exceptions,
                                                                                 width=width0,
+                                                                                show_empty=show_empty,
                                                                                 resource_context=(resource_context + '.' + field)))
                             else:
                                 width0 = max(width0, self.__get_max_field_width(resource=value,
                                                                                 fields_exceptions=fields_exceptions,
                                                                                 width=width0,
+                                                                                show_empty=show_empty,
                                                                                 resource_context=field))
                             continue
                         if not value and show_empty == False:
@@ -67,15 +69,17 @@ class TextFormatter(Formatter):
                             width0 = max(width0, self.__get_max_field_width(resource=value,
                                                                             fields_exceptions=fields_exceptions,
                                                                             width=width0,
+                                                                            show_empty=show_empty,
                                                                             resource_context=(resource_context + '.' + field)))
                         else:
                             width0 = max(width0, self.__get_max_field_width(resource=value,
                                                                             fields_exceptions=fields_exceptions,
                                                                             width=width0,
+                                                                            show_empty=show_empty,
                                                                             resource_context=field))
                         continue
-                        if not value and show_empty == False:
-                            continue
+                    if not value and show_empty == False:
+                        continue
                     new_field = field if resource_context is None else resource_context.lower() + '.' + field
                     width0 = max(width0, len(new_field))
         return width0

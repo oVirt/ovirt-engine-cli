@@ -267,9 +267,9 @@ class OvirtCommand(Command):
 
                         if param.find('.') != -1:
                             splitted_param = param.split('.')
-                            new_param = '_'.join(splitted_param[1:])
+                            new_param = '-'.join(splitted_param[1:])
                             if new_param.find('id|name') != -1:
-                                param = new_param.replace('_id|name', '')
+                                param = new_param.replace('-id|name', '')
                             else:
                                 param = new_param
 
