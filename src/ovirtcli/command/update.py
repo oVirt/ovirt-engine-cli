@@ -18,8 +18,6 @@
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
 
-from ovirtsdk.utils.parsehelper import ParseHelper
-
 
 class UpdateCommand(OvirtCommand):
 
@@ -28,7 +26,7 @@ class UpdateCommand(OvirtCommand):
     args_check = 2
     valid_options = [ ('*', str) ]
 
-    helptext0 = """\
+    helptext = """\
         == Usage ==
 
         update <type> <id> [base identifiers] [attribute options]
@@ -87,11 +85,11 @@ class UpdateCommand(OvirtCommand):
           * type        The type of object to delete.
           * id          The identifier of the object to delete
 
-        See 'help create' for generic help on creating objects.
+        See 'help update' for generic help on creating objects.
 
         == Attribute Options ==
 
-        The following options are available for objects with type $type:
+        The following options are available for objects with type '$type':
 
           $options
 
@@ -123,32 +121,44 @@ class UpdateCommand(OvirtCommand):
 
     def show_help(self):
         """Show help for "update"."""
+
+        self.check_connection()
         args = self.arguments
         opts = self.options
-        connection = self.check_connection()
+
         subst = {}
-        if len(args) < 2:
-            helptext = self.helptext0
-            types = self.get_singular_types()
-            subst['types'] = self.format_list(types)
-        elif len(args) == 2:
-            info = ParseHelper.getXmlWrapperType(args[0])
-            if info is None:
-                self.error('no such type: %s' % args[0])
-            base = self.resolve_base(opts)
-            obj = self.get_object(info, args[1], base=base)
-            if obj is None:
-                self.error('no such %s: %s' % (args[0], args[1]))
-            methods = connection.get_methods(obj)
-            if 'PUT' not in methods:
-                self.error('type cannot be updated: %s' % args[0])
-            helptext = self.helptext1
-            subst['type'] = args[0]
-#            options = self.get_options(info, 'U')
-            options = params_list = self.get_options(method='update', coll=args[0], sub_coll=base)
-            subst['options'] = self.format_list(options)
+        types = self.get_types_by_method('update')
+
+        subst['types'] = self.format_map(types)
         statuses = self.get_statuses()
         subst['statuses'] = self.format_list(statuses)
+
+        if len(args) == 2 and self.is_supported_type(types.keys(), args[0]):
+            base = self.resolve_base(self.options)
+            obj = self.get_object(args[0], args[1], base)
+            if obj is None:
+                self.error('no such "%s": "%s"' % (args[0], args[1]))
+            helptext = self.helptext1
+            params_list = self.get_options(method='update',
+                                           resource=obj,
+                                           sub_resource=base)
+            subst['options'] = self.format_list(params_list)
+            subst['type'] = args[0]
+
+        elif len(args) == 1 and len(opts) == 2 and self.is_supported_type(types.keys(), args[0]):
+            helptext = self.helptext1
+
+            subst['type'] = args[0]
+
+            options = self.get_options(method='update',
+                                       resource=args[0],
+                                       sub_resource=self.resolve_base(self.options))
+            subst['options'] = self.format_list(options)
+            subst['type'] = args[0]
+        else:
+            helptext = self.helptext
+            if len(args) == 1: self.is_supported_type(types.keys(), args[0])
+
         helptext = self.format_help(helptext, subst)
         stdout = self.context.terminal.stdout
         stdout.write(helptext)

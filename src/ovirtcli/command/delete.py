@@ -85,12 +85,12 @@ class DeleteCommand(OvirtCommand):
 
         == Description ==
 
-        Delete an object with type $type. See 'help delete' for generic
+        Delete an object with type '$type'. See 'help delete' for generic
         help on deleting objects.
 
         == Attribute Options ==
 
-        The following options are available for objects with type $type:
+        The following options are available for objects with type '$type':
 
           $options
 
@@ -124,7 +124,7 @@ class DeleteCommand(OvirtCommand):
         opts = self.options
 
         subst = {}
-        types = self._get_deleteable_types()
+        types = self.get_types_by_method('delete')
 
         subst['types'] = self.format_map(types)
         statuses = self.get_statuses()
@@ -159,17 +159,3 @@ class DeleteCommand(OvirtCommand):
         helptext = self.format_help(helptext, subst)
         stdout = self.context.terminal.stdout
         stdout.write(helptext)
-
-    def _get_deleteable_types(self):
-        """INTERNAL: return a list of deleteable types."""
-        types = {}
-
-        for decorator in TypeHelper.getKnownDecoratorsTypes():
-                if not decorator.endswith('s'):
-                    dct = getattr(brokers, decorator).__dict__
-                    if dct and len(dct) > 0:
-                        for method in dct:
-                            if method == 'delete':
-                                self._get_method_params(brokers, decorator, '__init__', types)
-                                break
-        return types

@@ -20,7 +20,6 @@ from ovirtcli.utils.typehelper import TypeHelper
 
 from ovirtsdk.utils.parsehelper import ParseHelper
 from ovirtsdk.infrastructure import brokers
-from ovirtcli.utils.methodhelper import MethodHelper
 
 class ActionCommand(OvirtCommand):
 
