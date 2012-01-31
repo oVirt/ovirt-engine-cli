@@ -24,7 +24,6 @@ from ovirtcli.utils.typehelper import TypeHelper
 from ovirtsdk.xml import params
 from ovirtsdk.utils.parsehelper import ParseHelper
 from ovirtsdk.infrastructure import brokers
-import inspect
 from ovirtcli.utils.methodhelper import MethodHelper
 
 

@@ -25,6 +25,7 @@ class ShowCommand(OvirtCommand):
     description = 'show one object'
     args_check = 2
     valid_options = [ ('*', str) ]
+    SHOW_ALL_KEY = '--showall'
 
     helptext = """\
         == Usage ==
@@ -112,7 +113,8 @@ class ShowCommand(OvirtCommand):
 
         self.context.formatter.format(self.context, self.get_object(args[0],
                                                                     args[1],
-                                                                    base=self.resolve_base(opts)))
+                                                                    base=self.resolve_base(opts)),
+                                      show_all=True if opts and opts.has_key(ShowCommand.SHOW_ALL_KEY) else False)
 
     def __get(self, collection, search_pattern):
         connection = self.check_connection()

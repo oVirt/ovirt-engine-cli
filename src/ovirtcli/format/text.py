@@ -18,11 +18,11 @@
 import sys
 
 from ovirtcli.format.format import Formatter
-from ovirtcli import metadata
 
 from ovirtsdk.xml import params
 from ovirtsdk.utils.parsehelper import ParseHelper
 from ovirtsdk.infrastructure.common import Base
+from ovirtsdk.infrastructure import brokers
 
 
 class TextFormatter(Formatter):
@@ -30,31 +30,83 @@ class TextFormatter(Formatter):
 
     name = 'text'
 
-    def _get_fields(self, typ, flag, scope=None):
-        #info = schema.type_info(typ)
-        #collection_member = type(typ).__name__.lower()[0 : len(type(typ).__name__) - 1]
-#        assert info is not None
-#        override = self.context.settings.get('ovirt-shell:fields.%s' % info[2])
+    def _get_fields(self, typ):
         assert typ is not None
-        override = self.context.settings.get('ovirt-shell:fields.%s' % type(typ).__name__)
-        if override is None:
-            override = self.context.settings.get('ovirt-shell:fields')
-        if override is None:
-            fields = metadata.get_fields(typ, flag, scope)
-        else:
-            override = override.split(',')
-            fields = metadata.get_fields(typ, '')
-            fields = filter(lambda f: f.name in override, fields)
-        return fields
+        return typ.__dict__.keys()
 
-    def _format_resource(self, resource, scope=None):
+    def __get_max_field_width(self, resource, fields_exceptions, width= -1, show_empty=False, resource_context=None):
+        new_field = None
+        width0 = width
+
+        for field in self._get_fields(resource):
+            if field not in fields_exceptions:
+                value = resource.__dict__[field]
+                if isinstance(value, list):
+                    value_list = value
+                    for item in value_list:
+                        value = item
+                        if hasattr(params, type(value).__name__) or hasattr(brokers, type(value).__name__):
+                            if resource_context is not None:
+                                width0 = max(width0, self.__get_max_field_width(resource=value,
+                                                                                fields_exceptions=fields_exceptions,
+                                                                                width=width0,
+                                                                                resource_context=(resource_context + '.' + field)))
+                            else:
+                                width0 = max(width0, self.__get_max_field_width(resource=value,
+                                                                                fields_exceptions=fields_exceptions,
+                                                                                width=width0,
+                                                                                resource_context=field))
+                            continue
+                        if not value and show_empty == False:
+                            continue
+                        new_field = field if resource_context is None else resource_context.lower() + '.' + field
+                        width0 = max(width0, len(new_field))
+                else:
+                    if hasattr(params, type(value).__name__) or hasattr(brokers, type(value).__name__):
+                        if resource_context is not None:
+                            width0 = max(width0, self.__get_max_field_width(resource=value,
+                                                                            fields_exceptions=fields_exceptions,
+                                                                            width=width0,
+                                                                            resource_context=(resource_context + '.' + field)))
+                        else:
+                            width0 = max(width0, self.__get_max_field_width(resource=value,
+                                                                            fields_exceptions=fields_exceptions,
+                                                                            width=width0,
+                                                                            resource_context=field))
+                        continue
+                        if not value and show_empty == False:
+                            continue
+                    new_field = field if resource_context is None else resource_context.lower() + '.' + field
+                    width0 = max(width0, len(new_field))
+        return width0
+
+    def __write_context(self, format0, format1, width1, field, value, resource_context):
+        context = self.context
+        stdout = context.terminal.stdout
+
+        stdout.write(format0 % (field if resource_context is None else resource_context.lower() + '.' + field))
+        stdout.write(': ')
+        stdout.write(format1 % str(value))
+        stdout.write('\n')
+        value = str(value)[width1:]
+        while len(str(value)) > 0:
+            stdout.write(width1 * ' ')
+            stdout.write(format1 % str(value))
+            stdout.write('\n')
+            value = str(value)[width1:]
+
+    def _format_resource(self, resource, width= -1, show_empty=False, resource_context=None):
         context = self.context
         settings = context.settings
         stdout = context.terminal.stdout
-        fields = self._get_fields(type(resource), 'S', scope)
-        width0 = 0
-        for field in fields:
-            width0 = max(width0, len(field.name))
+        fields_exceptions = ['link', 'href']
+
+        fields = self._get_fields(resource)
+        width0 = width
+
+        if width0 == -1:
+            width0 = self.__get_max_field_width(resource, fields_exceptions, width, show_empty, resource_context)
+
         format0 = '%%-%ds' % width0
         if stdout.isatty() and not settings['ovirt-shell:wide']:
             width1 = context.terminal.width - width0 - 2
@@ -62,21 +114,49 @@ class TextFormatter(Formatter):
         else:
             width1 = sys.maxint
             format1 = '%s'
-        stdout.write('\n')
+
         for field in fields:
-            value = field.get(resource, self.context)
-            if not value: value = ''
-            stdout.write(format0 % field.name)
-            stdout.write(': ')
-            stdout.write(format1 % value)
-            stdout.write('\n')
-            value = value[width1:]
-            while len(value) > 0:
-                stdout.write(width1 * ' ')
-                stdout.write(format1 % value)
-                stdout.write('\n')
-                value = value[width1:]
-        stdout.write('\n')
+            if field not in fields_exceptions:
+                value = resource.__dict__[field]
+                if isinstance(value, list):
+                    value_list = value
+                    for item in value_list:
+                        value = item
+                        if hasattr(params, type(value).__name__) or hasattr(brokers, type(value).__name__):
+                            if resource_context is not None:
+                                self._format_resource(resource=value,
+                                                      width=width0,
+                                                      show_empty=show_empty,
+                                                      resource_context=(resource_context + '.' + field))
+                            else:
+                                self._format_resource(resource=value,
+                                                      width=width0,
+                                                      show_empty=show_empty,
+                                                      resource_context=field)
+                            continue
+                        if not value and show_empty == True:
+                            value = ''
+                        elif not value: continue
+                        self.__write_context(format0, format1, width1, field, value, resource_context)
+                else:
+                    if hasattr(params, type(value).__name__) or hasattr(brokers, type(value).__name__):
+                        if resource_context is not None:
+                            self._format_resource(resource=value,
+                                                  width=width0,
+                                                  show_empty=show_empty,
+                                                  resource_context=(resource_context + '.' + field))
+                        else:
+                            self._format_resource(resource=value,
+                                                  width=width0,
+                                                  show_empty=show_empty,
+                                                  resource_context=field)
+                        continue
+                    if not value and show_empty == True:
+                        value = ''
+                    elif not value: continue
+                    self.__write_context(format0, format1, width1, field, value, resource_context)
+
+        #stdout.write('\n')
 
     def _format_collection(self, collection, scope=None):
         context = self.context
@@ -151,19 +231,12 @@ class TextFormatter(Formatter):
                     stdout.write('\n')
             stdout.write('\n')
 
-    def format(self, context, result, scope=None):
-##        if isinstance(result, schema.BaseResource):
-#        if isinstance(result, params.BaseResource):
-#            self._format_resource(result, scope)
-##        elif isinstance(result, schema.BaseResources):
-#        elif isinstance(result, params.BaseResources):
-#            self._format_collection(result, scope)
-
+    def format(self, context, result, show_all=False):
         self.context = context
         if isinstance(result, params.BaseResource):
             if isinstance(result, Base):
-                self._format_resource(result.superclass, scope)
+                self._format_resource(result.superclass, show_empty=show_all)
             else:
-                self._format_resource(result, scope)
+                self._format_resource(resource=result, show_empty=show_all)
         elif isinstance(result, list):
-            self._format_collection(result, scope)
+            self._format_collection(resource=result, show_empty=show_all)
