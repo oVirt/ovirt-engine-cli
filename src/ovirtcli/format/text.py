@@ -205,9 +205,13 @@ class TextFormatter(Formatter):
 
         for resource in collection:
             if isinstance(resource, Base):
-                self._format_resource(resource=resource.superclass, show_empty=show_empty, mode=FormatMode.REDUCED)
+                self._format_resource(resource=resource.superclass,
+                                      mode=FormatMode.REDUCED if not show_empty
+                                                              else FormatMode.FULL)
             else:
-                self._format_resource(resource=resource, show_empty=show_empty, mode=FormatMode.REDUCED)
+                self._format_resource(resource=resource,
+                                      mode=FormatMode.REDUCED if not show_empty
+                                                              else FormatMode.FULL)
             stdout.write('\n')
 
 ##FIXME: add attribute/field overriding caps as in self._get_fields()
