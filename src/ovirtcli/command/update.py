@@ -112,7 +112,7 @@ class UpdateCommand(OvirtCommand):
         if resource is None:
             self.error('object does not exist: %s/%s' % (args[0], args[1]))
         elif hasattr(resource, 'update'):
-            obj = self.update_object(resource, opts)
+            obj = self.update_object_data(resource, opts)
             result = obj.update()
         else:
             self.error('object : %s/%s is immutable' % (args[0], args[1]))

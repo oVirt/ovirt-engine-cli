@@ -15,16 +15,15 @@
 #
 
 
-import uuid
-
 from ovirtcli import metadata
 from cli.command import Command
 from ovirtcli.utils.typehelper import TypeHelper
 
 from ovirtsdk.xml import params
 from ovirtsdk.utils.parsehelper import ParseHelper
-from ovirtsdk.infrastructure import brokers
+import uuid
 from ovirtcli.utils.methodhelper import MethodHelper
+from ovirtsdk.infrastructure import brokers
 
 
 class OvirtCommand(Command):
@@ -75,14 +74,48 @@ class OvirtCommand(Command):
             return obj
         return None
 
-    def update_object(self, obj, options, scope=None):
-        """Create a new binding type of type `typ', and set its attributes
-        with values from `options'."""
-        fields = metadata.get_fields(type(obj.superclass), 'U', scope)
-        for field in fields:
-            key = '--%s' % field.name
-            if key in options:
-                field.set(obj, options[key], self.context)
+    def __do_set_data(self, obj, prop, fq_prop, val):
+        """INTERNAL: set data in to object based on 'prop' map segmentation""" 
+        if prop.find('-') != -1:
+            props = prop.split('-')
+            props_len = len(props)
+
+            for i in range(props_len):
+                if i == (props_len - 1):
+                    self.__set_property(obj, props[i], val, fq_prop)
+                    return
+                if hasattr(obj, props[i]):
+                    content = getattr(obj, props[i])
+                    if content is None:
+                        cand1 = ParseHelper.getXmlType(props[i])
+                        if cand1:
+                            cand = cand1.factory()
+                            setattr(obj, props[i], cand)
+                            obj = cand
+                        else:
+                            self.error('failed locating "%s" type.' % props[i])
+                    else:
+                        obj = content
+                else:
+                    self.error('*%s* is not valid argument segment.' % props[i])
+        else:
+            self.__set_property(obj, prop, val, fq_prop)
+
+    def __set_property(self, obj, prop, val, fq_prop):
+        """INTERNAL: set data in to property""" 
+        if hasattr(obj, prop):
+            setattr(obj, prop, val)
+        else:
+            self.error('%s is not valid argument.' % fq_prop)
+
+    def update_object_data(self, obj, options, scope=None):
+        """Updates object properties with values from `options'."""
+
+        for key in options.keys():
+            prop = key.replace('--', '')
+            val = options[key]
+            self.__do_set_data(obj=obj, prop=prop, fq_prop=key, val=val)
+
         return obj
 
     def read_object(self):
