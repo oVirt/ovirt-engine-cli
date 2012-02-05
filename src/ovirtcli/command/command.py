@@ -77,12 +77,22 @@ class OvirtCommand(Command):
                             cand = cand1.factory()
                             setattr(obj, props[i], cand)
                             obj = cand
-                        else:
-                            self.error('failed locating "%s" type.' % props[i])
                     else:
                         obj = content
                 else:
-                    self.error('*%s* is not valid argument segment.' % props[i])
+                    cand2 = ParseHelper.getXmlTypeInstance(props[i])
+                    if cand2 and hasattr(obj, cand2):
+                        cand1 = ParseHelper.getXmlType(cand2)
+                        if cand1:
+                            props[i] = cand2
+                            cand = cand1.factory()
+                            setattr(obj, props[i], cand)
+                            obj = cand
+                        else:
+                            self.error('failed locating "%s" type.' % cand2)
+                    else:
+#                        self.error('failed locating "%s" type.' % props[i])
+                        self.error('*%s* is not valid argument segment.' % props[i])
         else:
             self.__set_property(obj, prop, val, fq_prop)
 

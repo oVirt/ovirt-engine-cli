@@ -103,7 +103,7 @@ class UpdateCommand(OvirtCommand):
         args = self.arguments
         opts = self.options
 
-#        Trac issue #179: don't set fields that already exist
+#TODO: Trac issue #179: don't set fields that already exist
 
         if not (TypeHelper.isKnownType(args[0])):
             self.error('no such type: %s' % args[0])
