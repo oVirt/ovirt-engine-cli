@@ -59,21 +59,6 @@ class OvirtCommand(Command):
                     self.error('cannot find object %s' % val)
                 return base
 
-    def create_object(self, typ, options, scope=None):
-        """Create a new object of type `typ' based on the command-line
-        options in `options'."""
-
-        candidate = getattr(params, ParseHelper.getXmlWrapperType(typ))
-        if candidate is not None:
-            obj = candidate.factory()
-            fields = metadata.get_fields(candidate, 'C', scope)
-            for field in fields:
-                key = '--%s' % field.name
-                if key in options:
-                    field.set(obj, options[key], self.context)
-            return obj
-        return None
-
     def __do_set_data(self, obj, prop, fq_prop, val):
         """INTERNAL: set data in to object based on 'prop' map segmentation"""
         if prop.find('-') != -1:

@@ -131,11 +131,12 @@ class CreateCommand(OvirtCommand):
         if not (TypeHelper.isKnownType(args[0])):
             self.error('no such type: %s' % args[0])
 
-        result = getattr(base if base is not None else connection,
-                         args[0] + 's').add(self.create_object(args[0],
-                                                               opts))
-
-        self.context.formatter.format(self.context, result)
+        collection = getattr(base if base is not None else connection, args[0] + 's')
+        if collection:
+            result = self.execute_method(collection, 'add', opts)
+            self.context.formatter.format(self.context, result)
+        else:
+            self.error('cannot create type: %s because corresponding collection: %ss is not available.' % args[0])
 
     def show_help(self):
         """Show help for "create"."""
