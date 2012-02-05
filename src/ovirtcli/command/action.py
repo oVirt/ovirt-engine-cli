@@ -130,12 +130,8 @@ class ActionCommand(OvirtCommand):
         if resource is None:
             self.error('object does not exist: %s/%s', (args[0], args[1]))
         elif hasattr(resource, args[2]):
-            method = getattr(resource, args[2])
             try:
-#FIXME: support Action obj for actions once parameters supported by RSDL                       
-#                        action = self.create_object('Action', opts, scope=scope)
-#                        result = method(action)
-                result = method()
+                result = self.execute_method(resource, args[2], opts)
             except Exception, e:
                 self.error(str(e))
             if result.status.state != 'complete':

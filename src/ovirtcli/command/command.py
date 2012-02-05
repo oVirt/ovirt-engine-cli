@@ -75,7 +75,7 @@ class OvirtCommand(Command):
         return None
 
     def __do_set_data(self, obj, prop, fq_prop, val):
-        """INTERNAL: set data in to object based on 'prop' map segmentation""" 
+        """INTERNAL: set data in to object based on 'prop' map segmentation"""
         if prop.find('-') != -1:
             props = prop.split('-')
             props_len = len(props)
@@ -102,9 +102,11 @@ class OvirtCommand(Command):
             self.__set_property(obj, prop, val, fq_prop)
 
     def __set_property(self, obj, prop, val, fq_prop):
-        """INTERNAL: set data in to property""" 
+        """INTERNAL: set data in to property"""
         if hasattr(obj, prop):
             setattr(obj, prop, val)
+        elif hasattr(obj, prop + '_'):
+            setattr(obj, prop + '_', val)
         else:
             self.error('%s is not valid argument.' % fq_prop)
 
@@ -327,3 +329,29 @@ class OvirtCommand(Command):
                     if dct and len(dct) > 0 and dct.has_key(method):
                         self._get_method_params(brokers, decorator, '__init__', types)
         return types
+
+    def execute_method(self, resource, method_name, opts={}):
+        """executes given method with specified opts."""
+        typs = {}
+
+        if hasattr(resource, method_name):
+            method = getattr(resource, method_name)
+
+            self._get_method_params(brokers,
+                                    method.im_class.__name__,
+                                    method_name,
+                                    typs)
+            if typs:
+                if (len(typs) > 1): self.error('not supported invocation (too many arguments).')
+                param_type = ParseHelper.getXmlType(typs.keys()[0])
+                if param_type:
+                    param = self.update_object_data(param_type.factory(), opts)
+                    result = method(param)
+                else:
+                    self.error('failed locating type %s' % typs.keys()[0])
+            else:
+                result = method()
+            return result
+        else:
+            self.error('no such action "%s"' % method_name)
+

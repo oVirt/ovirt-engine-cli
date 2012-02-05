@@ -112,21 +112,7 @@ class DeleteCommand(OvirtCommand):
         if resource is None:
             self.error('object does not exist: %s/%s' % (args[0], args[1]))
         elif hasattr(resource, 'delete'):
-            typs = {}
-            self._get_method_params(brokers,
-                                    getattr(resource, 'delete').im_class.__name__,
-                                    'delete',
-                                    typs)
-            if typs:
-                if (len(typs) > 1): self.error('not supported invocation (too many arguments).')
-                param_type = ParseHelper.getXmlType(typs.keys()[0])
-                if param_type:
-                    param = self.update_object_data(param_type.factory(), opts)
-                    result = resource.delete(param)
-                else:
-                    self.error('failed locating type %s' % typs.keys()[0])
-            else:
-                result = resource.delete()
+            result = self.execute_method(resource, 'delete', opts)
         else:
             self.error('object : %s/%s is immutable' % (args[0], args[1]))
 
