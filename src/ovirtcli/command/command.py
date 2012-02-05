@@ -40,7 +40,7 @@ class OvirtCommand(Command):
         connection = self.check_connection()
 
         for opt, val in options.items():
-            if not opt.endswith('id'):
+            if opt.endswith('-id') or not opt.endswith('id'):
                 continue
             typename = opt[2:-2]
             coll = typename + 's'
@@ -303,10 +303,7 @@ class OvirtCommand(Command):
                         if param.find('.') != -1:
                             splitted_param = param.split('.')
                             new_param = '-'.join(splitted_param[1:])
-                            if new_param.find('id|name') != -1:
-                                param = new_param.replace('-id|name', '')
-                            else:
-                                param = new_param
+                            param = new_param
 
 #                        params_hash[param.replace(':', '')] = splitted_line[1].replace(':', '') \
 #                                                                              .replace('id|name', 'name')
