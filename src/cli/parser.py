@@ -29,7 +29,7 @@ class Parser(PLYParser):
     multi-line inputs.
     """
 
-    tokens = ('WORD', 'STRING', 'OPTION', 'LT', 'LTLT', 'GT', 'GTGT',
+    tokens = ('WORD', 'STRING', 'NUMBER', 'OPTION', 'LT', 'LTLT', 'GT', 'GTGT',
               'BANG', 'PIPE', 'NEWLINE', 'MARKER', 'HEREDOC', 'SHELL')
     literals = ('=', ';')
     states = [('heredoc1', 'inclusive'), ('heredoc2', 'exclusive'),
@@ -50,6 +50,11 @@ class Parser(PLYParser):
     def t_STRING(self, t):
         r'''(?s)("([^"\\]|\\.)*"|'[^']')'''
         t.value = t.value[1:-1].replace(r'\\', '\\').replace('\\\n', '')
+        return t
+
+    def t_NUMBER(self, t):
+        r'\d+'
+        t.value = int(t.value)
         return t
 
     def t_LTLT(self, t):
@@ -183,6 +188,7 @@ class Parser(PLYParser):
     def p_option_value(self, p):
         """option_value : WORD
                         | STRING
+                        | NUMBER
                         | empty
         """
         p[0] = p[1]
