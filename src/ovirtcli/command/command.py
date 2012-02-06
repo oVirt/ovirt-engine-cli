@@ -15,7 +15,6 @@
 #
 
 
-from ovirtcli import metadata
 from cli.command import Command
 from ovirtcli.utils.typehelper import TypeHelper
 
@@ -111,6 +110,7 @@ class OvirtCommand(Command):
         for key in options.keys():
             prop = key.replace('--', '')
             val = options[key]
+            if not prop.endswith('-id') and prop.endswith('id'): continue
             self.__do_set_data(obj=obj, prop=prop, fq_prop=key, val=val)
 
         return obj
@@ -130,19 +130,55 @@ class OvirtCommand(Command):
             self.error('could not parse input')
         return obj
 
-    def get_collection(self, typ, opts=[], base=None):
+
+    def _get_query_params(self, opts):
+        """INTERNAL: retrieves query and kwargs from attribute options"""
+        query = opts['--query'] if opts.has_key('--query') else None
+        kw = {}
+        if opts.has_key('--kwargs'):            
+            for item in opts['--kwargs'].split(';'):
+                k, v = item.split('=')
+                kw[k]=v
+        return query, kw
+    
+    
+    def get_collection(self, typ, opts={}, base=None):
         self.check_connection()
         connection = self.context.connection
-
+        query, kwargs = self._get_query_params(opts)
+        
         if base is None:
-            if hasattr(connection, typ):
-                return getattr(connection, typ).list(query=' '.join(opts) if len(opts) > 0
-                                                                          else None)
+            if hasattr(connection, typ):                
+                options = self.get_options(method='list', resource=self.to_singular(typ), as_params_collection=True)
+                
+                if query and 'query' not in options:
+                    self.error('"--query" argument is not available for this type of listing')
+                if kwargs and 'kwargs' not in options:
+                    self.error('"--kwargs" argument is not available for this type of listing')
+
+                if query and kwargs:
+                    return getattr(connection, typ).list(query=query, **kwargs)    
+                if query:
+                    return getattr(connection, typ).list(query=query)
+                if kwargs:
+                    return getattr(connection, typ).list(**kwargs)
+                return getattr(connection, typ).list()
         else:
             if hasattr(base, typ):
-                return getattr(base, typ).list(query=' '.join(opts) if len(opts) > 0
-                                                                    else None)
-        return None
+                options = self.get_options(method='list', resource=getattr(base, typ), as_params_collection=True)
+                
+                if query and 'query' not in options:
+                    self.error('"--query" argument is not available for this type of listing')
+                if kwargs and 'kwargs' not in options:
+                    self.error('"--kwargs" argument is not available for this type of listing')
+
+                if query and kwargs:
+                    return getattr(base, typ).list(query=query, **kwargs)    
+                if query:
+                    return getattr(base, typ).list(query=query)
+                if kwargs:
+                    return getattr(base, typ).list(**kwargs)
+                return getattr(base, typ).list()
 
     def get_object(self, typ, id, base=None):
         """Return an object by id or name."""
@@ -233,7 +269,7 @@ class OvirtCommand(Command):
             return string + 's'
         return string
 
-    def get_options(self, method, resource, sub_resource=None):
+    def get_options(self, method, resource, sub_resource=None, as_params_collection=False):
         """Return a list of options for typ/action."""
 
         PARAM_ANNOTATION = '@param'
@@ -302,7 +338,10 @@ class OvirtCommand(Command):
 
 #                        params_hash[param.replace(':', '')] = splitted_line[1].replace(':', '') \
 #                                                                              .replace('id|name', 'name')
-                        params_list.append(prefix + param + ' ' + typ)
+                        if as_params_collection:
+                            params_list.append(param.replace(':', ''))
+                        else:
+                            params_list.append(prefix + param + ' ' + typ)
         return params_list
 
     def is_supported_type(self, types, typ):
