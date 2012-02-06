@@ -131,18 +131,19 @@ class OvirtCommand(Command):
         return obj
 
 
-    def _get_query_params(self, opts):
+    def _get_query_params(self, opts, query_arg='--query', kwargs_arg='--kwargs'):
         """INTERNAL: retrieves query and kwargs from attribute options"""
-        query = opts['--query'] if opts.has_key('--query') else None
+        query = opts[query_arg] if opts.has_key(query_arg) else None
         kw = {}
-        if opts.has_key('--kwargs'):            
-            for item in opts['--kwargs'].split(';'):
+        if opts.has_key(kwargs_arg):            
+            for item in opts[kwargs_arg].split(';'):
                 k, v = item.split('=')
-                kw[k]=v
+                kw[k.replace('-', '.')]=v
         return query, kw
     
     
     def get_collection(self, typ, opts={}, base=None):
+        """retrieves collection members"""
         self.check_connection()
         connection = self.context.connection
         query, kwargs = self._get_query_params(opts)
@@ -150,7 +151,8 @@ class OvirtCommand(Command):
         if base is None:
             if hasattr(connection, typ):                
                 options = self.get_options(method='list', resource=self.to_singular(typ), as_params_collection=True)
-                
+
+                #TODO: support generic parameters processing                 
                 if query and 'query' not in options:
                     self.error('"--query" argument is not available for this type of listing')
                 if kwargs and 'kwargs' not in options:
@@ -180,23 +182,42 @@ class OvirtCommand(Command):
                     return getattr(base, typ).list(**kwargs)
                 return getattr(base, typ).list()
 
-    def get_object(self, typ, id, base=None):
+    def get_object(self, typ, id, base=None, opts={}):
         """Return an object by id or name."""
         self.check_connection()
         connection = self.context.connection
-
+        name, kwargs = self._get_query_params(opts, query_arg='--name')
+        
         candidate = typ if typ is not None and isinstance(typ, type('')) \
                         else type(typ).__name__.lower()
 
-        if base is None: base = connection
+        if base:
+            options = self.get_options(method='get', resource=base, as_params_collection=True)
+        else:            
+            options = self.get_options(method='get', resource=typ, as_params_collection=True)
+            base = connection
+
+        #TODO: support generic parameters processing        
+        if name and 'name' not in options:
+            self.error('"--name" argument is not available for this type of show')
+        if kwargs and 'kwargs' not in options:
+            self.error('"--kwargs" argument is not available for this type of show')
+                    
         if hasattr(base, candidate + 's'):
             coll = getattr(base, candidate + 's')
             if coll is not None:
-                uuid_cand = self._toUUID(id)
-                if uuid_cand != None:
-                    return coll.get(id=id)
+                if name and kwargs:
+                    return coll.get(name=name, **kwargs)
+                if name:
+                    return coll.get(name=name)
+                if kwargs:
+                    return coll.get(**kwargs)
                 else:
-                    return coll.get(name=id)
+                    uuid_cand = self._toUUID(id)
+                    if uuid_cand != None:
+                        return coll.get(id=id)
+                    else:
+                        return coll.get(name=id)
         else:
             self.error('no such type: %s' % candidate)
         return None
