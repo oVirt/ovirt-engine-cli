@@ -22,7 +22,7 @@ from ovirtcli.format.format import Formatter
 from ovirtsdk.xml import params
 from ovirtsdk.infrastructure.common import Base
 from ovirtsdk.infrastructure import brokers
-import gtk
+#import gtk
 
 
 class FormatMode():
