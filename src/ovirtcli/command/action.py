@@ -182,7 +182,7 @@ class ActionCommand(OvirtCommand):
             if obj is None:
                 self.error('no such "%s": "%s"' % (args[1], args[1]))
 
-            actions = self._get_actions(obj)
+            actions = self._get_action_methods(obj)
             subst['actions'] = self.format_list(actions)
         if len(args) == 3 and len(opts) == 2 and self.is_supported_type(types.keys(), args[1]):
             helptext = self.helptext1
@@ -196,7 +196,7 @@ class ActionCommand(OvirtCommand):
             if obj is None:
                 self.error('no such "%s": "%s"' % (args[0], args[1]))
 
-            actions = self._get_actions(obj)
+            actions = self._get_action_methods(obj)
             if args[0] not in actions:
                 self.error('no such action "%s"' % args[2])
 
@@ -213,7 +213,7 @@ class ActionCommand(OvirtCommand):
             obj = self.get_object(args[0], args[1], base)
             if obj is None:
                 self.error('no such %s: %s' % (args[0], args[1]))
-            actions = self._get_actions(obj)
+            actions = self._get_action_methods(obj)
             subst['actions'] = self.format_list(actions)
 
         elif len(args) == 3 and self.is_supported_type(types.keys(), args[0]):
@@ -228,7 +228,7 @@ class ActionCommand(OvirtCommand):
             if obj is None:
                 self.error('no such "%s": "%s"' % (args[0], args[1]))
 
-            actions = self._get_actions(obj)
+            actions = self._get_action_methods(obj)
             if args[2] not in actions:
                 self.error('no such action "%s"' % args[2])
 
@@ -247,30 +247,4 @@ class ActionCommand(OvirtCommand):
         subst['statuses'] = self.format_list(statuses)
         helptext = self.format_help(helptext, subst)
         stdout.write(helptext)
-
-    def _get_actions(self, obj):
-        """INTERNAL: return a list of type actions."""
-        actions = []
-        exceptions = ['delete', 'update']
-
-        dct = type(obj).__dict__
-        if dct and len(dct) > 0:
-            for method in dct:
-                if method not in exceptions and not method.startswith('_'):
-                    actions.append(method)
-        return actions
-
-    def _get_actionable_types(self):
-        """INTERNAL: return a list of actionable types."""
-        types = {}
-        exceptions = ['delete', 'update']
-
-        for decorator in TypeHelper.getKnownDecoratorsTypes():
-                if not decorator.endswith('s'):
-                    dct = getattr(brokers, decorator).__dict__
-                    if dct and len(dct) > 0:
-                        for method in dct:
-                            if method not in exceptions and not method.startswith('_'):
-                                self._get_method_params(brokers, decorator, '__init__', types)
-                                break
-        return types
+        

@@ -407,3 +407,29 @@ class OvirtCommand(Command):
         else:
             self.error('no such action "%s"' % method_name)
 
+    def _get_action_methods(self, obj):
+        """INTERNAL: return a list of type actions."""
+        actions = []
+        exceptions = ['delete', 'update']
+
+        dct = type(obj).__dict__
+        if dct and len(dct) > 0:
+            for method in dct:
+                if method not in exceptions and not method.startswith('_'):
+                    actions.append(method)
+        return actions
+
+    def _get_actionable_types(self):
+        """INTERNAL: return a list of actionable types."""
+        types = {}
+        exceptions = ['delete', 'update']
+
+        for decorator in TypeHelper.getKnownDecoratorsTypes():
+                if not decorator.endswith('s'):
+                    dct = getattr(brokers, decorator).__dict__
+                    if dct and len(dct) > 0:
+                        for method in dct:
+                            if method not in exceptions and not method.startswith('_'):
+                                self._get_method_params(brokers, decorator, '__init__', types)
+                                break
+        return types
