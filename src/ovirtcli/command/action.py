@@ -46,6 +46,28 @@ class ActionCommand(OvirtCommand):
         For more specific help on the available actions and options, use
         'help action <type> <id>'
 
+        == Supported Help formats ==
+
+        - This help will list all available attribute options for given resource
+          
+          * format      - help action type id
+          * example     - help action vm myvm
+
+        - This help will list all available attribute options for specific action on given resource
+        
+          * format      - help action type id action_name
+          * example     - help action vm myvm start
+        
+        - This help will list all available attribute options for specific subresource 
+        
+          * format      - help action resource resource_name --subresourceid mysubresource
+          * example     - help action nic bond0 --hostid myhost
+        
+        - This help will display all available attribute options for specific action on given subresource
+
+          * format      - help action action_name resource resource_name --subresourceid mysubresource
+          * example     - help action attach nic bond0 --hostid myhost
+
         == Available types ==
 
         The <type> parameter must be one of the following:
@@ -100,13 +122,13 @@ class ActionCommand(OvirtCommand):
 
         == Examples ==
 
-        This example migrates a vm named "vm0" to the host named "host1":
+        - This example starts a vm named "myvm" with few optional parameters:
 
-          $ action vm vm0 migrate --host-name host1
+          $ action vm iscsi_desktop start --vm-display-type vnc --vm-cpu-topology-sockets 2 --vm-cpu-topology-cores 2
 
-        This example detaches a host nic with id '12345' from host '0':
+        - This example detaches a host nic with id 'mynic' from host 'myhost':
 
-          $ action nic 12345 detach --hostid 0
+          $ action nic mynic detach --hostid myhost
     
         == Return values ==
 

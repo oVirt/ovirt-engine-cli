@@ -39,6 +39,18 @@ class UpdateCommand(OvirtCommand):
           * type        The type of object to delete.
           * id          The identifier of the object to delete
 
+        == Supported Help formats ==
+
+        - This help will list all available attribute options for given resource update
+          
+          * format      - help update type
+          * example     - help update vm
+
+        - This help will list all available attribute options for given subresource update
+          
+          * format      - help update type --parentid
+          * example     - help update disk --vmid myvm
+
         == Available Types ==
 
         The following object types are available:
@@ -63,9 +75,15 @@ class UpdateCommand(OvirtCommand):
 
         == Examples ==
 
-        This updates a virtual machine with name "myvm":
+        - This example updates a virtual machine with name "myvm", setting new 
+          description and amount of monitors.
 
-          $ update vm myvm --name newname --memory 1024
+          $ update vm myvm --display-monitors 1 --description test1
+
+        - This example updates a virtual machine disk with name "mydisk", setting 
+          "bootable" to true.
+
+          $ update disk "mydisk" --vmid "myvm" --bootable true
 
         == Return Values ==
 

@@ -35,6 +35,18 @@ class CreateCommand(OvirtCommand):
 
         Create a new object with type <type>.
 
+        == Supported Help formats ==
+
+        - This help will list all available attribute options for given resource creation
+          
+          * format      - help create resource_name
+          * example     - help create vm
+
+        - This help will list all available attribute options for given subresource creation
+          
+          * format      - help create subresource_name --resourceid xxx
+          * example     - help create disk --vmid myvm
+
         == Available Types ==
 
         The following types of objects can be created:
@@ -50,7 +62,7 @@ class CreateCommand(OvirtCommand):
 
         == Attribute Options ==
 
-        Attribute options specifiy values for attributes of the to be created
+        Attribute options specify values for attributes of the to be created
         object.
 
         Attributes for the new object can be specified in one of two ways.
@@ -63,14 +75,13 @@ class CreateCommand(OvirtCommand):
 
         Type 'help create <type>' to see an overview of which attributes are
         available for a given type.
-
+          
         == Examples ==
 
         - This example create a new virtual machine in the Default cluster based on the
           Blank template:
 
-          $ create vm --name myvm --memory 512 --type SERVER \\
-                      --cluster Default --template Blank
+          $ create vm --name myvm --template-name iscsi_desktop_tmpl --cluster-name Default_iscsi
                       
         - This example does the same but now using pre-formatted input:
 
@@ -86,14 +97,9 @@ class CreateCommand(OvirtCommand):
 
 
         - This example create vm nic:
-        
-          $ create nic --vmid myvm --name mynic --network engine --interface virtio 
-          
-        - For detail help:
-         
-          'help create sub-resource --resourceid xxx', i.e:
-          
-          help create nic --vmid myvm
+
+          $ create nic --vmid cli_vm3 --network-name engine --name test
+
 
         == Return Values ==
 

@@ -17,9 +17,9 @@
 
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
-from ovirtsdk.infrastructure import brokers
-from ovirtcli.utils.methodhelper import MethodHelper
-from ovirtsdk.utils.parsehelper import ParseHelper
+#from ovirtsdk.infrastructure import brokers
+#from ovirtcli.utils.methodhelper import MethodHelper
+#from ovirtsdk.utils.parsehelper import ParseHelper
 
 
 class DeleteCommand(OvirtCommand):
@@ -33,7 +33,7 @@ class DeleteCommand(OvirtCommand):
     helptext = """\
         == Usage ==
     
-        delete <type> <id> [object identifiers]
+        delete <type> <id> [object identifiers] [attribute options]
 
         == Description ==
 
@@ -43,6 +43,18 @@ class DeleteCommand(OvirtCommand):
           * id          The object identifier
 
         Objects can be identified by their name and by their unique id.
+
+        == Supported Help formats ==
+
+        - This help will list all available attribute options for given resource removal
+          
+          * format      - help delete type
+          * example     - help delete storagedomain mydomain
+
+        - This help will list all available attribute options for given subresource removal
+          
+          * format      - help delete subtype --resourceid
+          * example     - help delete disk --vmid iscsi_desktop
 
         == Available Types ==
 
@@ -63,14 +75,18 @@ class DeleteCommand(OvirtCommand):
 
         == Examples ==
 
-        Delete a virtual machine named "myvm"
+        - This example deletes a virtual machine named "myvm"
 
           $ delete vm myvm
 
-        Delete the disk "disk0" from the virtual machine named "myvm"
+        - This example deletes the disk "disk0" from the virtual machine named "myvm"
 
           $ delete disk disk0 --vmid myvm
+          
+        - This example deletes the storagedomain "mydomain" using host named "myhost"
 
+          $ delete storagedomain mydomain --host-id myhost
+          
         == Return values ==
 
         This command will exit with one of the following statuses. To see the

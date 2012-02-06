@@ -23,7 +23,7 @@ class ShowCommand(OvirtCommand):
 
     name = 'show'
     description = 'show one object'
-    args_check = 2
+    args_check = lambda self, x: len(x) > 0
     valid_options = [ ('*', str) ]
     SHOW_ALL_KEY = '--showall'
 
@@ -41,6 +41,14 @@ class ShowCommand(OvirtCommand):
           * id          The object identifier
 
         Objects can be identified by their name and by their unique id.
+
+        == Supported Help formats ==
+
+        - This help will show all available attribute options for showing 
+          resource
+          
+          * format      - help show type
+          * example     - help show vm
 
         == Available Types ==
 
@@ -61,11 +69,17 @@ class ShowCommand(OvirtCommand):
 
         == Examples ==
 
-        Show information about the virtual machine "myvm"
+        - This example shows information about the virtual machine "myvm"
 
           $ show vm myvm
 
-        Show information about the first nic of the virtual machine "myvm"
+        - This example shows all information about the virtual machine "myvm"
+          including empty properties
+
+          $ show vm myvm --showall
+
+        - This example shows information about the nic named 'nic1' of the 
+          virtual machine "myvm"
 
           $ show nic nic1 --vmid myvm
 
@@ -111,9 +125,10 @@ class ShowCommand(OvirtCommand):
         if not (TypeHelper.isKnownType(args[0])):
             self.error('no such type: %s' % args[0])
 
-        self.context.formatter.format(self.context, self.get_object(args[0],
-                                                                    args[1],
-                                                                    base=self.resolve_base(opts)),
+        self.context.formatter.format(self.context, self.get_object(typ=args[0],
+                                                                    id=args[1] if len(args) > 1 else None,
+                                                                    base=self.resolve_base(opts),
+                                                                    opts=opts),
                                       show_all=True if opts and opts.has_key(ShowCommand.SHOW_ALL_KEY) else False)
 
     def __get(self, collection, search_pattern):
