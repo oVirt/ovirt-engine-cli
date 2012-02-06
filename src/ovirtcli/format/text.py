@@ -175,7 +175,7 @@ class TextFormatter(Formatter):
                             continue
                         if not value and show_empty == True:
                             value = ''
-                        elif not value: continue
+                        elif value == None: continue
                         self.__write_context(format0, format1, width1, field, value, resource_context, reduced_mode_fields=reduced_mode_fields, mode=mode)
                 else:
                     if hasattr(params, type(value).__name__) or hasattr(brokers, type(value).__name__):
@@ -194,7 +194,7 @@ class TextFormatter(Formatter):
                         continue
                     if not value and show_empty == True:
                         value = ''
-                    elif not value: continue
+                    elif value == None: continue
                     self.__write_context(format0, format1, width1, field, value, resource_context, reduced_mode_fields=reduced_mode_fields, mode=mode)
 
         #stdout.write('\n')
