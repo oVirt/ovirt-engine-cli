@@ -23,6 +23,7 @@ from ovirtcli.options import OvirtCliOptionParser
 from ovirtcli.context import OvirtCliExecutionContext
 from ovirtcli.object import create
 import shlex
+from ovirtcli.command.connect import ConnectCommand
 
 class Shell(cmd.Cmd):
     """ovirt-engine-cli command processor."""
@@ -92,6 +93,8 @@ class Shell(cmd.Cmd):
         "Prints the input, replacing '$out' with the output of the last shell command"
         if self.last_output:
             print line.replace('$out', self.last_output)
+        elif line:
+            print line
         else: print self.prompt
     ############################ CONFIG #################################
     def copy_environment_vars(self, context):
@@ -161,9 +164,7 @@ class Shell(cmd.Cmd):
             self.__do_connect(args)
 
     def help_connect(self):
-        print '\n'.join([ 'connect url user password',
-                           'Connection details',
-                           ])
+        print ConnectCommand.helptext
 
     def complete_connect(self, text, line, begidx, endidx):
         if not text:

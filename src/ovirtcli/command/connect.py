@@ -41,9 +41,12 @@ class ConnectCommand(OvirtCommand):
         The arguments are:
 
          * url          - The URL to connect to.
-         * username     - The user to connect as. Important: this needs to be
-                          in the user@domain format.
+         * username     - The user to connect as. (format user@domain).
          * password     - The password to use.
+         * [key_file]   - The key file to use.
+         * [cert_file]  - The certificate file to use.
+         * [port]       - The port to use (if not specified in url).
+         * [timeout]    - The timeout on request.
         """
 
     def execute(self):
