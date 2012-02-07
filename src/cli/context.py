@@ -121,7 +121,7 @@ class ExecutionContext(object):
         try:
             parsed = self.parser.parse(command)
         except EOFError:
-            sys.stderr.write('error: incomplete command')
+            sys.stderr.write('error: incomplete command\n')
             return
         except ParseError, e:
             self.status = self.SYNTAX_ERROR
