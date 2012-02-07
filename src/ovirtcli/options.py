@@ -23,11 +23,11 @@ class OvirtCliOptionParser(OptionParser):
 
     usage = '%prog [options]\n       %prog [options] command...'
     description = textwrap.dedent("""\
-        This program is a command-line interface to Red Hat Enterprise
-        Virtualization.
+        This program is a command-line interface to oVirt Virtualization.
         """)
 
     def __init__(self):
+        
         OptionParser.__init__(self, usage=self.usage,
                               description=self.description)
         self.add_option('-d', '--debug', action='store_true',
@@ -40,6 +40,10 @@ class OvirtCliOptionParser(OptionParser):
                         help='specifies the API entry point URL')
         self.add_option('-u', '--username', help='connect as this user')
         self.add_option('-p', '--password', help='specify password')
+        self.add_option('--key_file', '--key_file', help='specify key_file')
+        self.add_option('--cert_file', '--cert_file', help='specify cert_file')
+        self.add_option('--port', '--port', help='specify port')
+        self.add_option('--timeout', '--timeout', help='specify timeout')        
         self.add_option('-r', '--read-input', action='store_true',
                         help='read pre-formatted input on stdin')
         self.add_option('-i', '--input-format', metavar='FORMAT',

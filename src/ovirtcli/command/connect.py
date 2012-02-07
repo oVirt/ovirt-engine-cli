@@ -15,10 +15,7 @@
 #
 
 
-import socket
-
 from ovirtcli.command.command import OvirtCommand
-
 from ovirtsdk.api import API
 
 
@@ -53,6 +50,12 @@ class ConnectCommand(OvirtCommand):
         args = self.arguments
         settings = self.context.settings
         stdout = self.context.terminal.stdout
+        
+        key_file = settings.get('ovirt-shell:key_file')
+        cert_file = settings.get('ovirt-shell:cert_file')
+        port = settings.get('ovirt-shell:port')
+        timeout = settings.get('ovirt-shell:timeout')
+            
         if self.context.connection is not None:
             stdout.write('already connected\n')
             return
@@ -68,6 +71,7 @@ class ConnectCommand(OvirtCommand):
             password = settings.get('ovirt-shell:password')
             if not password:
                 self.error('missing configuration variable: password')
+
 #        if settings['cli:verbosity']:
 #            level = 10
 #        else:
@@ -76,7 +80,11 @@ class ConnectCommand(OvirtCommand):
         try:
             self.context.connection = API(url=url,
                                           username=username,
-                                          password=password)
+                                          password=password,
+                                          key_file=key_file,
+                                          cert_file=cert_file,
+                                          port=port,
+                                          timeout=timeout)
             self.testConnectivity()
             stdout.write('connected to oVirt manager at %s\n' % url)
         except Exception, e:

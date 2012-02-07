@@ -23,7 +23,11 @@ class OvirtCliSettings(Settings):
     settings = Settings.settings + [
         ('ovirt-shell:url', str, ''),
         ('ovirt-shell:username', str, ''),
-        ('ovirt-shell:password', str, ''),
+        ('ovirt-shell:password', str, ''),        
+        ('ovirt-shell:key_file', str, None),
+        ('ovirt-shell:cert_file', str, None),
+        ('ovirt-shell:port', int, None),
+        ('ovirt-shell:timeout', int, None),
         ('ovirt-shell:input_format', enum('xml'), 'xml'),
         ('ovirt-shell:output_format', enum('xml', 'text'), 'text'),
         ('ovirt-shell:wide', boolean, False),

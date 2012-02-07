@@ -22,6 +22,7 @@ import sys
 from ovirtcli.options import OvirtCliOptionParser
 from ovirtcli.context import OvirtCliExecutionContext
 from ovirtcli.object import create
+import shlex
 
 class Shell(cmd.Cmd):
     """ovirt-engine-cli command processor."""
@@ -42,7 +43,7 @@ class Shell(cmd.Cmd):
 #    """ % PRODUCT
 
     doc_header = '%s shell commands:' % PRODUCT
-    #misc_header = 'misc_header'
+#    misc_header = 'misc_header'
     undoc_header = 'Misc commands:'
     last_output = ''
     ########################### SYSTEM #################################
@@ -62,7 +63,7 @@ class Shell(cmd.Cmd):
     def onecmd_loop(self, s):
         opts, args = self.parser.parse_args()
         if opts.connect or len(args) == 0:
-            #self.__do_verbose_connect(self, self.context, self.parser, opts)
+            self.__do_verbose_connect(self, self.context, self.parser, opts)
             self.cmdloop()
         else:
             self.cmdloop()
@@ -77,7 +78,7 @@ class Shell(cmd.Cmd):
     def do_prompt(self, line):
         "Change the interactive prompt"
         self.prompt = line
-
+    
     def do_EOF(self, line):
         return True
     ############################# SHELL #################################
@@ -130,6 +131,49 @@ class Shell(cmd.Cmd):
                 return False
         return True
 
+    ########################### CONNECT #################################
+    CONNECT_ARGS = [ 'url', 'user', 'password', 'key_file', 'cert_file', 'port', 'timeout']
+
+    def __do_verbose_connect(self, executer, context, parser, opts):
+        if not executer.copy_environment_vars(context):
+            sys.exit(1)
+        if not executer.copy_cmdline_options(opts, context, parser):
+            sys.exit(1)
+        executer.context.execute_string('connect\n')
+        
+        if executer.context.status == executer.context.OK:
+            executer.prompt = '[%s shell (connected)]# ' % executer.PRODUCT
+            
+    def __do_connect(self, args):
+        arg = 'connect ' + args.strip() + '\n'
+        self.context.execute_string(arg)
+
+        if self.context.status == self.context.OK:
+            self.prompt = '[%s shell (connected)]# ' % self.PRODUCT
+            
+    def do_connect(self, args):
+        arg = '--connect ' + args.strip() + '\n'
+        m_opts, m_args = self.parser.parse_args(args=shlex.split(arg))
+
+        if m_opts.connect and len(m_args) == 0:
+            self.__do_verbose_connect(self, self.context, self.parser, m_opts)
+        else:
+            self.__do_connect(args)
+
+    def help_connect(self):
+        print '\n'.join([ 'connect url user password',
+                           'Connection details',
+                           ])
+
+    def complete_connect(self, text, line, begidx, endidx):
+        if not text:
+            completions = self.CONNECT_ARGS[:]
+        else:
+            completions = [ f
+                            for f in self.CONNECT_ARGS
+                            if f.startswith(text)
+                            ]
+        return completions
     ############################## MAIN #################################
 def main():
     #TODO: support reading script from the file
