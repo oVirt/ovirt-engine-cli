@@ -182,7 +182,7 @@ class OvirtCommand(Command):
                     return getattr(base, typ).list(**kwargs)
                 return getattr(base, typ).list()
 
-    def get_object(self, typ, id, base=None, opts={}):
+    def get_object(self, typ, obj_id, base=None, opts={}):
         """Return an object by id or name."""
         self.check_connection()
         connection = self.context.connection
@@ -213,11 +213,11 @@ class OvirtCommand(Command):
                 if kwargs:
                     return coll.get(**kwargs)
                 else:
-                    uuid_cand = self._toUUID(id)
+                    uuid_cand = self._toUUID(obj_id)
                     if uuid_cand != None:
-                        return coll.get(id=id)
+                        return coll.get(id=obj_id)
                     else:
-                        return coll.get(name=id)
+                        return coll.get(name=obj_id)
         else:
             self.error('no such type: %s' % candidate)
         return None

@@ -126,7 +126,7 @@ class ShowCommand(OvirtCommand):
             self.error('no such type: %s' % args[0])
 
         self.context.formatter.format(self.context, self.get_object(typ=args[0],
-                                                                    id=args[1] if len(args) > 1 else None,
+                                                                    obj_id=args[1] if len(args) > 1 else None,
                                                                     base=self.resolve_base(opts),
                                                                     opts=opts),
                                       show_all=True if opts and opts.has_key(ShowCommand.SHOW_ALL_KEY) else False)
