@@ -43,7 +43,7 @@ class ConsoleCommand(OvirtCommand):
         connection = self.check_connection()
         stdout = self.context.terminal.stdout
         args = self.arguments
-        vm = self.get_object(params.VM, args[0])
+        vm = self.get_object('vm', args[0])
         if vm is None:
             self.error('no such vm: %s' % args[0])
         if vm.status.state not in ('powering_up', 'up', 'reboot_in_progress'):

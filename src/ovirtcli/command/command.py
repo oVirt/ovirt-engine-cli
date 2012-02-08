@@ -296,6 +296,7 @@ class OvirtCommand(Command):
         PARAM_ANNOTATION = '@param'
         method_ref = None
         connection = self.check_connection()
+        params_list = []
 
         if isinstance(resource, type('')):
             if not sub_resource:
@@ -333,8 +334,7 @@ class OvirtCommand(Command):
 
         if method_ref and method_ref.__doc__:
             doc = method_ref.__doc__
-            params_arr = doc.split('\n')
-            params_list = []
+            params_arr = doc.split('\n')            
 #            params_hash = {}
 
             for var in params_arr:
