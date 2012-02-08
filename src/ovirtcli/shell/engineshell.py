@@ -102,6 +102,19 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
     
     def do_EOF(self, line):
         return True
+    
+    def do_exit(self, args):
+        return True
+    
+    def do_help(self, args):
+        """Get help on commands
+           'help' or '?' with no arguments prints a list of commands for which help is available
+           'help <command>' or '? <command>' gives help on <command>
+        """
+        if not args:
+            cmd.Cmd.do_help(self, args)
+        else:
+            return self.context.execute_string('help ' + args + '\n')
     ############################# SHELL #################################
     def do_shell(self, line):
         "Runs a shell command ('!' can be used instead of 'shell' command)."
