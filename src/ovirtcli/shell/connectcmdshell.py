@@ -58,12 +58,12 @@ class ConnectCmdShell(CmdShell):
         print ConnectCommand.helptext
 
     def complete_connect(self, text, line, begidx, endidx):
-        ARGS = [ 'url', 'user', 'password', 'key_file', 'cert_file', 'port', 'timeout']
+        connect_args = [ 'url', 'user', 'password', 'key_file', 'cert_file', 'port', 'timeout']
         if not text:
-            completions = ARGS[:]
+            completions = connect_args[:]
         else:
-            completions = [ f
-                            for f in ARGS
+            completions = [ '--' + f + ' '
+                            for f in connect_args
                             if f.startswith(text)
                             ]
         return completions
