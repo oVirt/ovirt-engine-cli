@@ -26,10 +26,11 @@ from ovirtcli.shell.listcmdshell import ListCmdShell
 from ovirtcli.shell.updatecmdshell import UpdateCmdShell
 from ovirtcli.shell.deletecmdshell import DeleteCmdShell
 from ovirtcli.shell.createcmdshell import CreateCmdShell
+from ovirtcli.shell.disconnectcmdshell import DisconnectCmdShell
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
-                  DeleteCmdShell, CreateCmdShell):
+                  DeleteCmdShell, CreateCmdShell, DisconnectCmdShell):
     """ovirt-engine-cli command processor."""
     ############################# INIT #################################
     def __init__(self, context, parser, completekey='tab', stdin=None, stdout=None):
@@ -41,6 +42,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         UpdateCmdShell.__init__(self, context, parser)
         DeleteCmdShell.__init__(self, context, parser)
         CreateCmdShell.__init__(self, context, parser)
+        DisconnectCmdShell.__init__(self, context, parser)
     ############################# MISC #################################    
     prompt = '[%s shell]# ' % Config.PRODUCT
 #    intro = """
