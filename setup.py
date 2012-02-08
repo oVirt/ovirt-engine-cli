@@ -28,7 +28,7 @@ setup(
     package_dir={ '': 'src' },
     packages=[ 'ovirtcli', 'ovirtcli.command', 'ovirtcli.format',
                  'ovirtcli.platform', 'ovirtcli.platform.posix',
-                 'ovirtcli.platform.windows', 'ovirtcli.utils', 'cli',
+                 'ovirtcli.platform.windows','ovirtcli.shell', 'ovirtcli.utils', 'cli',
                  'cli.command', 'cli.platform', 'cli.platform.posix'],
     install_requires=[ 'ovirt-engine-sdk >= 0.1', 'pexpect <= 2.3' ],
     entry_points={ 'console_scripts': [ 'ovirt-shell = ovirtcli.main:main' ] },

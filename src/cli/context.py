@@ -190,9 +190,9 @@ class ExecutionContext(object):
 
     def _execute_command(self, parsed):
         """INTERNAL: execute a command."""
-        if parsed[0] == '!':
-            self._execute_shell_command(parsed[1])
-            return
+#        if parsed[0] == '!':
+#            self._execute_shell_command(parsed[1])
+#            return
         name, args, opts, redirections, pipeline = parsed
         if self.settings.get('cli:autopage'):
             pager = self.settings.get('cli:pager', platform.get_pager())
