@@ -22,7 +22,6 @@ class CmdShell(object):
         self.__context = context
         self.__parser = parser
         self.__owner = self
-        self.ARGS = []
 
     def get_owner(self):
         return self.__owner

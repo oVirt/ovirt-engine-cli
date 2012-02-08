@@ -32,11 +32,12 @@ class ActionCmdShell(CmdShell):
         print ShowCommand.helptext1
 
     def complete_action(self, text, line, begidx, endidx):
+        ARGS=[]
         if not text:
-            completions = self.ARGS[:]
+            completions = ARGS[:]
         else:
             completions = [ f
-                            for f in self.ARGS
+                            for f in ARGS
                             if f.startswith(text)
                             ]
         return completions

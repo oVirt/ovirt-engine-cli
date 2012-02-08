@@ -23,11 +23,10 @@ from ovirtcli.shell.cmdshell import CmdShell
 from ovirtcli.shell.config import Config
 
 class ConnectCmdShell(CmdShell):    
-    NAME = 'connect'
+    NAME = 'connect'    
 
     def __init__(self, context, parser):
         CmdShell.__init__(self, context, parser)
-        self.ARGS = [ 'url', 'user', 'password', 'key_file', 'cert_file', 'port', 'timeout']
 
     def __do_verbose_connect(self, context, parser, opts):
         if not self.copy_environment_vars(context):
@@ -59,11 +58,12 @@ class ConnectCmdShell(CmdShell):
         print ConnectCommand.helptext
 
     def complete_connect(self, text, line, begidx, endidx):
+        ARGS = [ 'url', 'user', 'password', 'key_file', 'cert_file', 'port', 'timeout']
         if not text:
-            completions = self.ARGS[:]
+            completions = ARGS[:]
         else:
             completions = [ f
-                            for f in self.ARGS
+                            for f in ARGS
                             if f.startswith(text)
                             ]
         return completions

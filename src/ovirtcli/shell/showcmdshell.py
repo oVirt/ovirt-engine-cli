@@ -31,12 +31,13 @@ class ShowCmdShell(CmdShell):
     def help_show(self):
         print ActionCommand.helptext0 + ActionCommand.helptext1 
 
-    def complete_show(self, text, line, begidx, endidx):        
+    def complete_show(self, text, line, begidx, endidx):
+        ARGS=[]        
         if not text:
-            completions = self.ARGS[:]
+            completions = ARGS[:]
         else:
             completions = [ f
-                            for f in self.ARGS
+                            for f in ARGS
                             if f.startswith(text)
                             ]
         return completions
