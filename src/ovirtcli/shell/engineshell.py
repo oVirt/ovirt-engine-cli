@@ -29,11 +29,12 @@ from ovirtcli.shell.createcmdshell import CreateCmdShell
 from ovirtcli.shell.disconnectcmdshell import DisconnectCmdShell
 from ovirtcli.shell.consolecmdshell import ConsoleCmdShell
 from ovirtcli.shell.pingcmdshell import PingCmdShell
+from ovirtcli.shell.statuscmdshell import StatusCmdShell
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
                   DeleteCmdShell, CreateCmdShell, DisconnectCmdShell, \
-                  ConsoleCmdShell, PingCmdShell):
+                  ConsoleCmdShell, PingCmdShell, StatusCmdShell):
     """ovirt-engine-cli command processor."""
     ############################# INIT #################################
     def __init__(self, context, parser, completekey='tab', stdin=None, stdout=None):
@@ -48,6 +49,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         DisconnectCmdShell.__init__(self, context, parser)
         ConsoleCmdShell.__init__(self, context, parser)
         PingCmdShell.__init__(self, context, parser)
+        StatusCmdShell.__init__(self, context, parser)
     ############################# MISC #################################    
     prompt = '[%s shell]# ' % Config.PRODUCT
 #    intro = """
