@@ -35,7 +35,6 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
                   DeleteCmdShell, CreateCmdShell, DisconnectCmdShell, \
                   ConsoleCmdShell, PingCmdShell, StatusCmdShell):
-    """ovirt-engine-cli command processor."""
     ############################# INIT #################################
     def __init__(self, context, parser, completekey='tab', stdin=None, stdout=None):
         cmd.Cmd.__init__(self, completekey=completekey, stdin=stdin, stdout=stdout)
@@ -68,9 +67,12 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
     def cmdloop(self, intro=None):
         try:
             return cmd.Cmd.cmdloop(self, intro)
+        except KeyboardInterrupt, e:            
+            return True
         except Exception, e:
             sys.stderr.write('error: %s\n' % str(e))
             return self.cmdloop(intro)
+
 
     def emptyline(self):
         print self.prompt
@@ -97,7 +99,6 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         return ret
 
     def do_prompt(self, line):
-        "Change the interactive prompt"
         self.prompt = line
     
     def do_EOF(self, line):
@@ -107,10 +108,6 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         return True
     
     def do_help(self, args):
-        """Get help on commands
-           'help' or '?' with no arguments prints a list of commands for which help is available
-           'help <command>' or '? <command>' gives help on <command>
-        """
         if not args:
             cmd.Cmd.do_help(self, args)
         else:
@@ -123,7 +120,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         self.last_output = output
 
     def do_echo(self, line):
-        "Prints the input, replacing '$out' with the output of the last shell command"
+        "Prints the input, replacing '$out' with the output of the last shell command output"
         if self.last_output:
             print line.replace('$out', self.last_output)
         elif line:
