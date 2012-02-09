@@ -16,7 +16,8 @@
 
 
 from ovirtcli.shell.cmdshell import CmdShell
-from ovirtcli.command.list import ListCommand
+from ovirtcli.utils.typehelper import TypeHelper
+from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
 
 
 class ListCmdShell(CmdShell):
@@ -27,17 +28,8 @@ class ListCmdShell(CmdShell):
 
     def do_list(self, args):
         return self.context.execute_string(ListCmdShell.NAME + ' ' + args + '\n')
-        
-    def help_list(self):
-        print ListCommand.helptext1
 
     def complete_list(self, text, line, begidx, endidx):
-        ARGS=[]        
-        if not text:
-            completions = ARGS[:]
-        else:
-            completions = [ f
-                            for f in ARGS
-                            if f.startswith(text)
-                            ]
-        return completions
+        args = TypeHelper.get_types_by_method(True, 'list')
+        #TODO: add support for custom options based on list() definition
+        return AutoCompletionHelper.complete(line, text, args, custom=['showall'])
