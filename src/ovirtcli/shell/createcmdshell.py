@@ -16,7 +16,8 @@
 
 
 from ovirtcli.shell.cmdshell import CmdShell
-from ovirtcli.command.create import CreateCommand
+from ovirtcli.utils.typehelper import TypeHelper
+from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
 
 
 class CreateCmdShell(CmdShell):
@@ -27,17 +28,8 @@ class CreateCmdShell(CmdShell):
 
     def do_create(self, args):
         return self.context.execute_string(CreateCmdShell.NAME + ' ' + args + '\n')
-        
-    def help_create(self):
-        print CreateCommand.helptext0 + CreateCommand.helptext1
 
     def complete_create(self, text, line, begidx, endidx):
-        ARGS=[]        
-        if not text:
-            completions = ARGS[:]
-        else:
-            completions = [ f
-                            for f in ARGS
-                            if f.startswith(text)
-                            ]
-        return completions
+        args = TypeHelper.get_types_by_method(False, 'add')
+        #TODO: add support for create options
+        return AutoCompletionHelper.complete(line, text, args)
