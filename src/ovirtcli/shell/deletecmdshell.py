@@ -16,7 +16,8 @@
 
 
 from ovirtcli.shell.cmdshell import CmdShell
-from ovirtcli.command.delete import DeleteCommand
+from ovirtcli.utils.typehelper import TypeHelper
+from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
 
 
 class DeleteCmdShell(CmdShell):
@@ -27,17 +28,9 @@ class DeleteCmdShell(CmdShell):
 
     def do_delete(self, args):
         return self.context.execute_string(DeleteCmdShell.NAME + ' ' + args + '\n')
-        
-    def help_delete(self):
-        print DeleteCommand.helptext1
 
     def complete_delete(self, text, line, begidx, endidx):
-        ARGS=[]        
-        if not text:
-            completions = ARGS[:]
-        else:
-            completions = [ f
-                            for f in ARGS
-                            if f.startswith(text)
-                            ]
-        return completions
+        #TODO: support exposing method options
+        args = TypeHelper.get_types_containing_method('delete')
+        return AutoCompletionHelper.complete(line, text, args)
+

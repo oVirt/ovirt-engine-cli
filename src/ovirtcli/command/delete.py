@@ -141,7 +141,7 @@ class DeleteCommand(OvirtCommand):
         opts = self.options
 
         subst = {}
-        types = self.get_types_by_method('delete')
+        types = TypeHelper.get_types_containing_method('delete')
 
         subst['types'] = self.format_map(types)
         statuses = self.get_statuses()
