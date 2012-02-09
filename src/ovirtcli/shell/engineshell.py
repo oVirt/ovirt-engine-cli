@@ -78,7 +78,8 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         print self.prompt
 
     def onecmd(self, s):
-        return cmd.Cmd.onecmd(self, s)
+        if not s.startswith('#'):
+            return cmd.Cmd.onecmd(self, s)
 
     def onecmd_loop(self, s):
         opts, args = self.parser.parse_args()
