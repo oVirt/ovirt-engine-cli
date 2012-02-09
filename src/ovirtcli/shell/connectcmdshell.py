@@ -22,8 +22,8 @@ from ovirtcli.command.connect import ConnectCommand
 from ovirtcli.shell.cmdshell import CmdShell
 from ovirtcli.shell.config import Config
 
-class ConnectCmdShell(CmdShell):    
-    NAME = 'connect'    
+class ConnectCmdShell(CmdShell):
+    NAME = 'connect'
 
     def __init__(self, context, parser):
         CmdShell.__init__(self, context, parser)
@@ -34,17 +34,17 @@ class ConnectCmdShell(CmdShell):
         if not self.copy_cmdline_options(opts, context, parser):
             sys.exit(1)
         self.context.execute_string('connect\n')
-        
+
         if self.context.status == self.context.OK:
-            self.owner.prompt = '[%s shell (connected)]# ' % Config.PRODUCT
-            
+            self.owner.prompt = Config.PROMPT_CONNECTED
+
     def __do_connect(self, args):
         arg = ConnectCmdShell.NAME + ' ' + args.strip() + '\n'
         self.context.execute_string(arg)
 
         if self.context.status == self.context.OK:
-            self.owner.prompt = '[%s shell (connected)]# ' % Config.PRODUCT
-            
+            self.owner.prompt = Config.PROMPT_CONNECTED
+
     def do_connect(self, args):
         arg = '--connect ' + args.strip() + '\n'
         m_opts, m_args = self.parser.parse_args(args=shlex.split(arg))

@@ -50,7 +50,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         PingCmdShell.__init__(self, context, parser)
         StatusCmdShell.__init__(self, context, parser)
     ############################# MISC #################################    
-    prompt = '[%s shell]# ' % Config.PRODUCT
+    prompt = Config.PROMPT_DISCONNECTED
 #    intro = """
 #    
 #    ##########################
