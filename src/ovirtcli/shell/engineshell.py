@@ -51,17 +51,9 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         StatusCmdShell.__init__(self, context, parser)
     ############################# MISC #################################    
     prompt = Config.PROMPT_DISCONNECTED
-#    intro = """
-#    
-#    ##########################
-#       Welcome to % s shell
-#    ##########################
-#    
-#    """ % PRODUCT
-
-    doc_header = '%s shell commands:' % Config.PRODUCT
-#    misc_header = 'misc_header'
-    undoc_header = 'Misc commands:'
+    doc_header = Config.ENGINE_COMMANDS_HEADER
+    undoc_header = Config.MISC_COMMANDS_HEADER
+    intro = Config.INTRO
     last_output = ''
     ########################### SYSTEM #################################
     def cmdloop(self, intro=None):
