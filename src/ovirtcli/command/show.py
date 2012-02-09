@@ -125,7 +125,7 @@ class ShowCommand(OvirtCommand):
         if not (TypeHelper.isKnownType(args[0])):
             self.error('no such type: %s' % args[0])
 
-        if len(args) < 2:
+        if len(args) < 2 and len(opts) == 0:
             self.error('%s identifier required.' % args[0])
 
         obj = self.get_object(typ=args[0],

@@ -286,8 +286,14 @@ class TextFormatter(Formatter):
         self.context = context
         if isinstance(result, params.BaseResource):
             if isinstance(result, Base):
+                context.terminal.stdout.write('\n')
                 self._format_resource(result.superclass, show_empty=show_all)
+                context.terminal.stdout.write('\n')
             else:
+                context.terminal.stdout.write('\n')
                 self._format_resource(resource=result, show_empty=show_all)
+                context.terminal.stdout.write('\n')
         elif isinstance(result, list):
+            context.terminal.stdout.write('\n')
             self._format_collection(collection=result, show_empty=show_all)
+#            context.terminal.stdout.write('\n')

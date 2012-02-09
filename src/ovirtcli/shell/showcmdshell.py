@@ -31,4 +31,5 @@ class ShowCmdShell(CmdShell):
 
     def complete_show(self, text, line, begidx, endidx):
         args = TypeHelper.get_types_by_method(False, 'get')
-        return AutoCompletionHelper.complete(line, text, args, custom=['showall'])
+        #TODO: add support for custom options
+        return AutoCompletionHelper.complete(line, text, args, custom=['showall', 'name', 'kwargs'])
