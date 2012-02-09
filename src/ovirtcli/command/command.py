@@ -135,22 +135,22 @@ class OvirtCommand(Command):
         """INTERNAL: retrieves query and kwargs from attribute options"""
         query = opts[query_arg] if opts.has_key(query_arg) else None
         kw = {}
-        if opts.has_key(kwargs_arg):            
+        if opts.has_key(kwargs_arg):
             for item in opts[kwargs_arg].split(';'):
                 k, v = item.split('=')
-                kw[k.replace('-', '.')]=v
+                kw[k.replace('-', '.')] = v
         return query, kw
-    
-    
+
+
     def get_collection(self, typ, opts={}, base=None):
         """retrieves collection members"""
         self.check_connection()
         connection = self.context.connection
         query, kwargs = self._get_query_params(opts)
-        
+
         if base is None:
-            if hasattr(connection, typ):                
-                options = self.get_options(method='list', resource=self.to_singular(typ), as_params_collection=True)
+            if hasattr(connection, typ):
+                options = self.get_options(method='list', resource=TypeHelper.to_singular(typ), as_params_collection=True)
 
                 #TODO: support generic parameters processing                 
                 if query and 'query' not in options:
@@ -159,7 +159,7 @@ class OvirtCommand(Command):
                     self.error('"--kwargs" argument is not available for this type of listing')
 
                 if query and kwargs:
-                    return getattr(connection, typ).list(query=query, **kwargs)    
+                    return getattr(connection, typ).list(query=query, **kwargs)
                 if query:
                     return getattr(connection, typ).list(query=query)
                 if kwargs:
@@ -168,14 +168,14 @@ class OvirtCommand(Command):
         else:
             if hasattr(base, typ):
                 options = self.get_options(method='list', resource=getattr(base, typ), as_params_collection=True)
-                
+
                 if query and 'query' not in options:
                     self.error('"--query" argument is not available for this type of listing')
                 if kwargs and 'kwargs' not in options:
                     self.error('"--kwargs" argument is not available for this type of listing')
 
                 if query and kwargs:
-                    return getattr(base, typ).list(query=query, **kwargs)    
+                    return getattr(base, typ).list(query=query, **kwargs)
                 if query:
                     return getattr(base, typ).list(query=query)
                 if kwargs:
@@ -187,13 +187,13 @@ class OvirtCommand(Command):
         self.check_connection()
         connection = self.context.connection
         name, kwargs = self._get_query_params(opts, query_arg='--name')
-        
+
         candidate = typ if typ is not None and isinstance(typ, type('')) \
                         else type(typ).__name__.lower()
 
         if base:
             options = self.get_options(method='get', resource=base, as_params_collection=True)
-        else:            
+        else:
             options = self.get_options(method='get', resource=typ, as_params_collection=True)
             base = connection
 
@@ -202,7 +202,7 @@ class OvirtCommand(Command):
             self.error('"--name" argument is not available for this type of show')
         if kwargs and 'kwargs' not in options:
             self.error('"--kwargs" argument is not available for this type of show')
-                    
+
         if hasattr(base, candidate + 's'):
             coll = getattr(base, candidate + 's')
             if coll is not None:
@@ -228,67 +228,13 @@ class OvirtCommand(Command):
         except:
             return None
 
-
-    def _get_method_params(self, module, clazz, method, holder={}):
-        args = MethodHelper.getMethodArgs(module, clazz, method)
-        if args:
-            if len(args) == 3:
-                if not holder.has_key(args[2]):
-                    holder[args[2]] = args[1]
-                else:
-                    if holder[args[2]] == None:
-                        if args[1] != None:
-                            holder[args[2]] = 'None, ' + args[1]
-                    else:
-                        holder[args[2]] = holder[args[2]] + ', ' + args[1]
-            elif len(args) == 2:
-                if not holder.has_key(args[1]):
-                    holder[args[1]] = None
-                else:
-                    if holder[args[1]] == None:
-                        if holder[args[1]] != None:
-                            holder[args[1]] = 'None' + ', ' + holder[args[1]]
-                    else:
-                        holder[args[1]] = holder[args[1]] + ', ' + 'None'
-        return holder
-
-    def _get_types(self, plural, method):
-        """INTERNAL: return a list of types that implement given method and context/s of this types."""
-        sing_types = {}
-
-        if method:
-            for decorator in TypeHelper.getKnownDecoratorsTypes():
-                dct = getattr(brokers, decorator).__dict__
-                if dct.has_key(method):
-                    if decorator.endswith('s'):
-                        cls_name = TypeHelper.getDecoratorType(decorator[:len(decorator) - 1])
-                        if cls_name:
-                            self._get_method_params(brokers, cls_name, '__init__', sing_types)
-
-            if plural:
-                sing_types_plural = {}
-                for k in sing_types.keys():
-                    sing_types_plural[self.to_plural(k)] = sing_types[k]
-                return sing_types_plural
-            return sing_types
-
     def get_singular_types(self, method=None):
         """Return a list of singular types."""
-        return self._get_types(False, method)
+        return TypeHelper.get_types_by_method(False, method)
 
     def get_plural_types(self, method=None):
         """Return a list of plural types."""
-        return self._get_types(True, method)
-
-    def to_singular(self, string):
-        if string.endswith('s'):
-            return string[:len(string) - 1]
-        return string
-
-    def to_plural(self, string):
-        if not string.endswith('s'):
-            return string + 's'
-        return string
+        return TypeHelper.get_types_by_method(True, method)
 
     def get_options(self, method, resource, sub_resource=None, as_params_collection=False):
         """Return a list of options for typ/action."""
@@ -312,13 +258,13 @@ class OvirtCommand(Command):
                                                  resource + 's'),
                                          method)
                 elif hasattr(sub_resource, resource + 's') and \
-                hasattr(brokers, self.to_singular(type(getattr(sub_resource,
+                hasattr(brokers, TypeHelper.to_singular(type(getattr(sub_resource,
                                                              resource + 's')).__name__)) and \
-                hasattr(getattr(brokers, self.to_singular(type(getattr(sub_resource,
+                hasattr(getattr(brokers, TypeHelper.to_singular(type(getattr(sub_resource,
                                                                      resource + 's')).__name__)),
                         method):
                     method_ref = getattr(getattr(brokers,
-                                                 self.to_singular(type(getattr(sub_resource,
+                                                 TypeHelper.to_singular(type(getattr(sub_resource,
                                                                              resource + 's')).__name__)),
                                          method)
 
@@ -334,7 +280,7 @@ class OvirtCommand(Command):
 
         if method_ref and method_ref.__doc__:
             doc = method_ref.__doc__
-            params_arr = doc.split('\n')            
+            params_arr = doc.split('\n')
 #            params_hash = {}
 
             for var in params_arr:
@@ -379,7 +325,7 @@ class OvirtCommand(Command):
                 if not decorator.endswith('s'):
                     dct = getattr(brokers, decorator).__dict__
                     if dct and len(dct) > 0 and dct.has_key(method):
-                        self._get_method_params(brokers, decorator, '__init__', types)
+                        MethodHelper.get_method_params(brokers, decorator, '__init__', types)
         return types
 
     def execute_method(self, resource, method_name, opts={}):
@@ -389,7 +335,7 @@ class OvirtCommand(Command):
         if hasattr(resource, method_name):
             method = getattr(resource, method_name)
 
-            self._get_method_params(brokers,
+            MethodHelper.get_method_params(brokers,
                                     method.im_class.__name__,
                                     method_name,
                                     typs)
@@ -418,18 +364,3 @@ class OvirtCommand(Command):
                 if method not in exceptions and not method.startswith('_'):
                     actions.append(method)
         return actions
-
-    def _get_actionable_types(self):
-        """INTERNAL: return a list of actionable types."""
-        types = {}
-        exceptions = ['delete', 'update']
-
-        for decorator in TypeHelper.getKnownDecoratorsTypes():
-                if not decorator.endswith('s'):
-                    dct = getattr(brokers, decorator).__dict__
-                    if dct and len(dct) > 0:
-                        for method in dct:
-                            if method not in exceptions and not method.startswith('_'):
-                                self._get_method_params(brokers, decorator, '__init__', types)
-                                break
-        return types

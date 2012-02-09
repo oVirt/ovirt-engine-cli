@@ -15,8 +15,9 @@
 #
 
 
-from ovirtcli.command.action import ActionCommand
 from ovirtcli.shell.cmdshell import CmdShell
+from ovirtcli.utils.typehelper import TypeHelper
+from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
 
 
 class ShowCmdShell(CmdShell):
@@ -27,17 +28,7 @@ class ShowCmdShell(CmdShell):
 
     def do_show(self, args):
         return self.context.execute_string(ShowCmdShell.NAME + ' ' + args + '\n')
-        
-    def help_show(self):
-        print ActionCommand.helptext0 + ActionCommand.helptext1 
 
     def complete_show(self, text, line, begidx, endidx):
-        ARGS=[]        
-        if not text:
-            completions = ARGS[:]
-        else:
-            completions = [ f
-                            for f in ARGS
-                            if f.startswith(text)
-                            ]
-        return completions
+        args = TypeHelper.get_types_by_method(False, 'get')
+        return AutoCompletionHelper.complete(line, text, args, custom=['showall'])

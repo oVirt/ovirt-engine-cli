@@ -19,6 +19,7 @@ import inspect
 
 from ovirtsdk.xml import params
 from ovirtsdk.infrastructure import brokers
+from ovirtcli.utils.methodhelper import MethodHelper
 
 class TypeHelper():
     __known_wrapper_types = None
@@ -75,3 +76,52 @@ class TypeHelper():
         if TypeHelper.__known_decorators_types.has_key(name.lower()):
             return TypeHelper.__known_decorators_types[name.lower()]
         return None
+
+    @staticmethod
+    def get_actionable_types():
+        """INTERNAL: return a list of actionable types."""
+        types = {}
+        exceptions = ['delete', 'update']
+
+        for decorator in TypeHelper.getKnownDecoratorsTypes():
+                if not decorator.endswith('s'):
+                    dct = getattr(brokers, decorator).__dict__
+                    if dct and len(dct) > 0:
+                        for method in dct:
+                            if method not in exceptions and not method.startswith('_'):
+                                MethodHelper.get_method_params(brokers, decorator, '__init__', types)
+                                break
+        return types
+
+    @staticmethod
+    def get_types_by_method(plural, method):
+        """INTERNAL: return a list of types that implement given method and context/s of this types."""
+        sing_types = {}
+
+        if method:
+            for decorator in TypeHelper.getKnownDecoratorsTypes():
+                dct = getattr(brokers, decorator).__dict__
+                if dct.has_key(method):
+                    if decorator.endswith('s'):
+                        cls_name = TypeHelper.getDecoratorType(decorator[:len(decorator) - 1])
+                        if cls_name:
+                            MethodHelper.get_method_params(brokers, cls_name, '__init__', sing_types)
+
+            if plural:
+                sing_types_plural = {}
+                for k in sing_types.keys():
+                    sing_types_plural[TypeHelper.to_plural(k)] = sing_types[k]
+                return sing_types_plural
+            return sing_types
+        
+    @staticmethod
+    def to_singular(string):
+        if string.endswith('s'):
+            return string[:len(string) - 1]
+        return string
+
+    @staticmethod
+    def to_plural(string):
+        if not string.endswith('s'):
+            return string + 's'
+        return string

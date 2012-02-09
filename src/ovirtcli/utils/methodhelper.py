@@ -31,3 +31,27 @@ class MethodHelper():
                     except:
                         pass
         return []
+
+    @staticmethod
+    def get_method_params(module, clazz, method, holder={}):
+        args = MethodHelper.getMethodArgs(module, clazz, method)
+        if args:
+            if len(args) == 3:
+                if not holder.has_key(args[2]):
+                    holder[args[2]] = args[1]
+                else:
+                    if holder[args[2]] == None:
+                        if args[1] != None:
+                            holder[args[2]] = 'None, ' + args[1]
+                    else:
+                        holder[args[2]] = holder[args[2]] + ', ' + args[1]
+            elif len(args) == 2:
+                if not holder.has_key(args[1]):
+                    holder[args[1]] = None
+                else:
+                    if holder[args[1]] == None:
+                        if holder[args[1]] != None:
+                            holder[args[1]] = 'None' + ', ' + holder[args[1]]
+                    else:
+                        holder[args[1]] = holder[args[1]] + ', ' + 'None'
+        return holder

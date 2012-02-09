@@ -166,7 +166,7 @@ class ActionCommand(OvirtCommand):
         args = self.arguments
         opts = self.options
         stdout = self.context.terminal.stdout
-        types = self._get_actionable_types()
+        types = TypeHelper.get_actionable_types()
         subst = {}
 
         if len(args) == 2 and len(opts) == 2 and self.is_supported_type(types.keys(), args[0]):

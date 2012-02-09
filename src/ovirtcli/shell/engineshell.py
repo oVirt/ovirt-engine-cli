@@ -67,7 +67,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
     def cmdloop(self, intro=None):
         try:
             return cmd.Cmd.cmdloop(self, intro)
-        except KeyboardInterrupt, e:            
+        except KeyboardInterrupt, e:
             return True
         except Exception, e:
             sys.stderr.write('error: %s\n' % str(e))
@@ -93,25 +93,29 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
     def postcmd(self, stop, line):
         return cmd.Cmd.postcmd(self, stop, line)
-    
+
     def parseline(self, line):
         ret = cmd.Cmd.parseline(self, line)
         return ret
 
     def do_prompt(self, line):
         self.prompt = line
-    
+
     def do_EOF(self, line):
         return True
-    
+
     def do_exit(self, args):
         return True
-    
+
     def do_help(self, args):
         if not args:
             cmd.Cmd.do_help(self, args)
         else:
             return self.context.execute_string('help ' + args + '\n')
+
+    def completenames(self, text, *ignored):
+        dotext = 'do_' + text
+        return [a[3:] + ' ' for a in self.get_names() if a.startswith(dotext)]
     ############################# SHELL #################################
     def do_shell(self, line):
         "Runs a shell command ('!' can be used instead of 'shell' command)."

@@ -125,17 +125,20 @@ class ShowCommand(OvirtCommand):
         if not (TypeHelper.isKnownType(args[0])):
             self.error('no such type: %s' % args[0])
 
-        self.context.formatter.format(self.context, self.get_object(typ=args[0],
-                                                                    obj_id=args[1] if len(args) > 1 else None,
-                                                                    base=self.resolve_base(opts),
-                                                                    opts=opts),
-                                      show_all=True if opts and opts.has_key(ShowCommand.SHOW_ALL_KEY) else False)
+        if len(args) < 2:
+            self.error('%s identifier required.' % args[0])
 
-    def __get(self, collection, search_pattern):
-        connection = self.check_connection()
-        if hasattr(connection, collection):
-            return getattr(connection, collection).get(name=search_pattern)
-        return None
+        obj = self.get_object(typ=args[0],
+                              obj_id=args[1] if len(args) > 1 else None,
+                              base=self.resolve_base(opts),
+                              opts=opts)
+
+        if not (obj):
+            self.error('no such %s %s' % (args[0], args[1]))
+
+        self.context.formatter.format(self.context,
+                                      obj,
+                                      show_all=True if opts and opts.has_key(ShowCommand.SHOW_ALL_KEY) else False)
 
     def show_help(self):
         """Show help for "show"."""
@@ -154,7 +157,7 @@ class ShowCommand(OvirtCommand):
         if len(args) == 1 and self.is_supported_type(types.keys(), args[0]):
             helptext = self.helptext1
             params_list = self.get_options(method='get',
-                                           resource=self.to_singular(args[0]),
+                                           resource=TypeHelper.to_singular(args[0]),
                                            sub_resource=self.resolve_base(opts))
             subst['options'] = self.format_list(params_list)
             subst['type'] = args[0]

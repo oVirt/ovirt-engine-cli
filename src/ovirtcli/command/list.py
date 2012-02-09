@@ -171,7 +171,7 @@ class ListCommand(OvirtCommand):
         if len(args) == 1 and self.is_supported_type(types.keys(), args[0]):
             helptext = self.helptext1
             params_list = self.get_options(method='list',
-                                           resource=self.to_singular(args[0]),
+                                           resource=TypeHelper.to_singular(args[0]),
                                            sub_resource=self.resolve_base(opts))
             subst['options'] = self.format_list(params_list)
             subst['type'] = args[0]
