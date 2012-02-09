@@ -18,8 +18,6 @@
 from ovirtcli.platform import vnc, spice
 from ovirtcli.command.command import OvirtCommand
 
-from ovirtsdk.xml import params
-
 
 class ConsoleCommand(OvirtCommand):
 

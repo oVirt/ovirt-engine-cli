@@ -16,7 +16,6 @@
 
 
 from ovirtcli.shell.cmdshell import CmdShell
-from ovirtcli.command.console import ConsoleCommand
 
 
 class ConsoleCmdShell(CmdShell):
@@ -27,17 +26,3 @@ class ConsoleCmdShell(CmdShell):
 
     def do_console(self, args):
         return self.context.execute_string(ConsoleCmdShell.NAME + ' ' + args + '\n')
-        
-    def help_console(self):
-        print ConsoleCommand.helptext
-
-    def complete_console(self, text, line, begidx, endidx):
-        ARGS=[]        
-        if not text:
-            completions = ARGS[:]
-        else:
-            completions = [ f
-                            for f in ARGS
-                            if f.startswith(text)
-                            ]
-        return completions

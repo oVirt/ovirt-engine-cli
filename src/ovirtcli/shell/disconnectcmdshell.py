@@ -16,7 +16,6 @@
 
 
 from ovirtcli.shell.cmdshell import CmdShell
-from ovirtcli.command.disconnect import DisconnectCommand
 
 
 class DisconnectCmdShell(CmdShell):
@@ -27,17 +26,3 @@ class DisconnectCmdShell(CmdShell):
 
     def do_disconnect(self, args):
         return self.context.execute_string(DisconnectCmdShell.NAME + ' ' + args + '\n')
-        
-    def help_disconnect(self):
-        print DisconnectCommand.helptext
-
-    def complete_disconnect(self, text, line, begidx, endidx):
-        ARGS=[]        
-        if not text:
-            completions = ARGS[:]
-        else:
-            completions = [ f
-                            for f in ARGS
-                            if f.startswith(text)
-                            ]
-        return completions

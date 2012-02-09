@@ -16,7 +16,6 @@
 
 
 from ovirtcli.shell.cmdshell import CmdShell
-from ovirtcli.command.ping import PingCommand
 
 
 class PingCmdShell(CmdShell):
@@ -27,17 +26,3 @@ class PingCmdShell(CmdShell):
 
     def do_ping(self, args):
         return self.context.execute_string(PingCmdShell.NAME + ' ' + args + '\n')
-        
-    def help_ping(self):
-        print PingCommand.helptext
-
-    def complete_ping(self, text, line, begidx, endidx):
-        ARGS=[]        
-        if not text:
-            completions = ARGS[:]
-        else:
-            completions = [ f
-                            for f in ARGS
-                            if f.startswith(text)
-                            ]
-        return completions

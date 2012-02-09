@@ -16,7 +16,6 @@
 
 
 from ovirtcli.shell.cmdshell import CmdShell
-from ovirtcli.command.status import StatusCommand
 
 
 class StatusCmdShell(CmdShell):
@@ -27,17 +26,3 @@ class StatusCmdShell(CmdShell):
 
     def do_status(self, args):
         return self.context.execute_string(StatusCmdShell.NAME + ' ' + args + '\n')
-        
-    def help_status(self):
-        print StatusCommand.helptext
-
-    def complete_status(self, text, line, begidx, endidx):
-        ARGS=[]        
-        if not text:
-            completions = ARGS[:]
-        else:
-            completions = [ f
-                            for f in ARGS
-                            if f.startswith(text)
-                            ]
-        return completions

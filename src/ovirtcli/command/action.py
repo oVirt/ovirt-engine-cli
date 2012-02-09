@@ -159,7 +159,7 @@ class ActionCommand(OvirtCommand):
                 self.error('action status: %s' % result.status.state)
         else:
             self.error('no such action: %s' % args[2])
-        self.context.formatter.format(self.context, result, scope=scope)
+        self.context.formatter.format(self.context, result)
 
     def show_help(self):
         """Show help for the action command."""
@@ -246,4 +246,3 @@ class ActionCommand(OvirtCommand):
         subst['statuses'] = self.format_list(statuses)
         helptext = self.format_help(helptext, subst)
         stdout.write(helptext)
-        
