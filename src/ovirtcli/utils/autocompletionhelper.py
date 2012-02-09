@@ -24,7 +24,7 @@ class AutoCompletionHelper(object):
         return mp
 
     @staticmethod
-    def __get_verb_replecations(container, text):
+    def _get_verb_replecations(container, text):
         times = 0
         for f in container.keys():
             if text and f.startswith(text):
@@ -53,7 +53,7 @@ class AutoCompletionHelper(object):
         if len(sp_line) < 2 or line.find(AutoCompletionHelper.__last_line) == -1 : AutoCompletionHelper.__completions = []
 
 
-        times = AutoCompletionHelper.__get_verb_replecations(mp, text)
+        times = AutoCompletionHelper._get_verb_replecations(mp, text)
         if (len(sp_line) >= 2 and times < 2 and last_arg in mp.keys()):# or self.inner:
             if len(sp_line) > 2:
                 i_completions = [ '--' + f + 'id'

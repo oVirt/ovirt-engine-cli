@@ -18,9 +18,9 @@
 import shlex
 import sys
 
-from ovirtcli.command.connect import ConnectCommand
 from ovirtcli.shell.cmdshell import CmdShell
 from ovirtcli.shell.config import Config
+from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
 
 class ConnectCmdShell(CmdShell):
     NAME = 'connect'
@@ -54,16 +54,15 @@ class ConnectCmdShell(CmdShell):
         else:
             self.__do_connect(args)
 
-    def help_connect(self):
-        print ConnectCommand.helptext
-
     def complete_connect(self, text, line, begidx, endidx):
         connect_args = [ 'url', 'user', 'password', 'key_file', 'cert_file', 'port', 'timeout']
         if not text:
             completions = connect_args[:]
         else:
-            completions = [ '--' + f + ' '
+            repl = AutoCompletionHelper._get_verb_replecations({}.fromkeys(connect_args), text)
+            completions = [ '--' + f + ' ' if text in connect_args or repl == 1 else f
                             for f in connect_args
-                            if f.startswith(text)
+                            if f.startswith(text.strip() if not text.strip().startswith('--')
+                                                         else text.strip()[2:])
                             ]
         return completions
