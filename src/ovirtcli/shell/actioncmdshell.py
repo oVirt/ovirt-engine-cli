@@ -16,7 +16,8 @@
 
 
 from ovirtcli.shell.cmdshell import CmdShell
-from ovirtcli.command.show import ShowCommand
+from ovirtcli.utils.typehelper import TypeHelper
+from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
 
 
 class ActionCmdShell(CmdShell):
@@ -27,17 +28,8 @@ class ActionCmdShell(CmdShell):
 
     def do_action(self, args):
         return self.context.execute_string(ActionCmdShell.NAME + ' ' + args + '\n')
-            
-    def help_action(self):
-        print ShowCommand.helptext1
 
     def complete_action(self, text, line, begidx, endidx):
-        ARGS=[]
-        if not text:
-            completions = ARGS[:]
-        else:
-            completions = [ f
-                            for f in ARGS
-                            if f.startswith(text)
-                            ]
-        return completions
+        args = TypeHelper.get_actionable_types()
+        #TODO: add support for action & action arguments
+        return AutoCompletionHelper.complete(line, text, args)
