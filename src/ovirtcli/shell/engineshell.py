@@ -60,11 +60,11 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         try:
             return cmd.Cmd.cmdloop(self, intro)
         except KeyboardInterrupt, e:
+            self.emptyline()
             return True
         except Exception, e:
             sys.stderr.write('error: %s\n' % str(e))
             return self.cmdloop(intro)
-
 
     def emptyline(self):
         print self.prompt
@@ -95,9 +95,11 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         self.prompt = line
 
     def do_EOF(self, line):
+        self.emptyline()
         return True
 
     def do_exit(self, args):
+        self.emptyline()
         return True
 
     def do_help(self, args):
