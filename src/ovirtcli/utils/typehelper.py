@@ -94,6 +94,18 @@ class TypeHelper():
         return types
 
     @staticmethod
+    def get_types_containing_method(method):
+        """return a list of types by method including context in which this method available."""
+        types = {}
+
+        for decorator in TypeHelper.getKnownDecoratorsTypes():
+                if not decorator.endswith('s'):
+                    dct = getattr(brokers, decorator).__dict__
+                    if dct and len(dct) > 0 and dct.has_key(method):
+                        MethodHelper.get_method_params(brokers, decorator, '__init__', types)
+        return types
+
+    @staticmethod
     def get_types_by_method(plural, method):
         """INTERNAL: return a list of types that implement given method and context/s of this types."""
         sing_types = {}
@@ -113,7 +125,7 @@ class TypeHelper():
                     sing_types_plural[TypeHelper.to_plural(k)] = sing_types[k]
                 return sing_types_plural
             return sing_types
-        
+
     @staticmethod
     def to_singular(string):
         if string.endswith('s'):

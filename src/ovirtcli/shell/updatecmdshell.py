@@ -16,7 +16,8 @@
 
 
 from ovirtcli.shell.cmdshell import CmdShell
-from ovirtcli.command.update import UpdateCommand
+from ovirtcli.utils.typehelper import TypeHelper
+from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
 
 
 class UpdateCmdShell(CmdShell):
@@ -27,17 +28,8 @@ class UpdateCmdShell(CmdShell):
 
     def do_update(self, args):
         return self.context.execute_string(UpdateCmdShell.NAME + ' ' + args + '\n')
-        
-    def help_update(self):
-        print UpdateCommand.helptext
 
     def complete_update(self, text, line, begidx, endidx):
-        ARGS=[]        
-        if not text:
-            completions = ARGS[:]
-        else:
-            completions = [ f
-                            for f in ARGS
-                            if f.startswith(text)
-                            ]
-        return completions
+        #TODO: support exposing resource options (when RSDL will expose them)
+        args = TypeHelper.get_types_containing_method('update')
+        return AutoCompletionHelper.complete(line, text, args)

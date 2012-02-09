@@ -317,17 +317,6 @@ class OvirtCommand(Command):
             return False
         return True
 
-    def get_types_by_method(self, method):
-        """return a list of types by method including context in which this method available."""
-        types = {}
-
-        for decorator in TypeHelper.getKnownDecoratorsTypes():
-                if not decorator.endswith('s'):
-                    dct = getattr(brokers, decorator).__dict__
-                    if dct and len(dct) > 0 and dct.has_key(method):
-                        MethodHelper.get_method_params(brokers, decorator, '__init__', types)
-        return types
-
     def execute_method(self, resource, method_name, opts={}):
         """executes given method with specified opts."""
         typs = {}
