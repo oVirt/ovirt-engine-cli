@@ -19,7 +19,6 @@ import shlex
 import sys
 
 from ovirtcli.shell.cmdshell import CmdShell
-from ovirtcli.shell.config import Config
 from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
 
 class ConnectCmdShell(CmdShell):
@@ -36,14 +35,14 @@ class ConnectCmdShell(CmdShell):
         self.context.execute_string('connect\n')
 
         if self.context.status == self.context.OK:
-            self.owner.prompt = Config.PROMPT_CONNECTED
+            self.owner.prompt = self.context.settings.get('ovirt-shell:ps2.connected')
 
     def __do_connect(self, args):
         arg = ConnectCmdShell.NAME + ' ' + args.strip() + '\n'
         self.context.execute_string(arg)
 
         if self.context.status == self.context.OK:
-            self.owner.prompt = Config.PROMPT_CONNECTED
+            self.owner.prompt = self.context.settings.get('ovirt-shell:ps2.connected')
 
     def do_connect(self, args):
         arg = '--connect ' + args.strip() + '\n'

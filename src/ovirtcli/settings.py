@@ -20,7 +20,21 @@ from cli.settings import Settings, enum, boolean
 
 class OvirtCliSettings(Settings):
 
+    PRODUCT = 'oVirt'
+
+    INTRO = \
+    """
+        
+ ++++++++++++++++++++++++++++
+ 
+    Welcome to %s shell   
+ 
+ ++++++++++++++++++++++++++++       
+        
+    """ % PRODUCT
+
     settings = Settings.settings + [
+        ('ovirt-shell:name', str, '%s-shell' % PRODUCT),
         ('ovirt-shell:url', str, ''),
         ('ovirt-shell:username', str, ''),
         ('ovirt-shell:password', str, ''),
@@ -34,6 +48,13 @@ class OvirtCliSettings(Settings):
         ('ovirt-shell:header', boolean, True),
         ('ovirt-shell:fields', str, None),
         ('ovirt-shell:fields.*', str, None),
-        ('ovirt-shell:ps1.connected', str, '(oVirt %(version)s) > '),
-        ('ovirt-shell:ps1.disconnected', str, '(disconnected) > ')
+        ('ovirt-shell:ps1.connected', str, '[' + PRODUCT + ' shell %(version)s (connected)]# '),
+        ('ovirt-shell:ps2.connected', str, '[' + PRODUCT + ' shell (connected)]# '),
+        ('ovirt-shell:ps1.disconnected', str, '[%s shell (disconnected)]# ' % PRODUCT),
+        ('ovirt-shell:commands', str, '%s shell commands:' % PRODUCT),
+        ('ovirt-shell:misc_commands', str, '%s shell commands:' % PRODUCT)
     ]
+
+
+
+

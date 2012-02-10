@@ -16,7 +16,6 @@
 
 
 from ovirtcli.shell.cmdshell import CmdShell
-from ovirtcli.shell.config import Config
 
 
 class DisconnectCmdShell(CmdShell):
@@ -27,6 +26,6 @@ class DisconnectCmdShell(CmdShell):
 
     def do_disconnect(self, args):
         res = self.context.execute_string(DisconnectCmdShell.NAME + ' ' + args + '\n')
-        self.owner.prompt = Config.PROMPT_DISCONNECTED
+        self.owner.prompt = self.context.settings.get('ovirt-shell:ps1.disconnected')
         return res
 

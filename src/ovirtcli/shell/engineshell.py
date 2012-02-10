@@ -20,7 +20,6 @@ import os
 import cmd
 from ovirtcli.shell.actioncmdshell import ActionCmdShell
 from ovirtcli.shell.connectcmdshell import ConnectCmdShell
-from ovirtcli.shell.config import Config
 from ovirtcli.shell.showcmdshell import ShowCmdShell
 from ovirtcli.shell.listcmdshell import ListCmdShell
 from ovirtcli.shell.updatecmdshell import UpdateCmdShell
@@ -30,6 +29,7 @@ from ovirtcli.shell.disconnectcmdshell import DisconnectCmdShell
 from ovirtcli.shell.consolecmdshell import ConsoleCmdShell
 from ovirtcli.shell.pingcmdshell import PingCmdShell
 from ovirtcli.shell.statuscmdshell import StatusCmdShell
+from ovirtcli.settings import OvirtCliSettings
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
@@ -49,12 +49,12 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         ConsoleCmdShell.__init__(self, context, parser)
         PingCmdShell.__init__(self, context, parser)
         StatusCmdShell.__init__(self, context, parser)
-    ############################# MISC #################################    
-    prompt = Config.PROMPT_DISCONNECTED
-    doc_header = Config.ENGINE_COMMANDS_HEADER
-    undoc_header = Config.MISC_COMMANDS_HEADER
-    intro = Config.INTRO
-    last_output = ''
+
+        cmd.Cmd.prompt = self.context.settings.get('ovirt-shell:ps1.disconnected')
+        cmd.Cmd.doc_header = self.context.settings.get('ovirt-shell:commands')
+        cmd.Cmd.undoc_header = self.context.settings.get('ovirt-shell:misc_commands')
+        cmd.Cmd.intro = OvirtCliSettings.INTRO
+        self.last_output = ''
     ########################### SYSTEM #################################
     def cmdloop(self, intro=None):
         try:
