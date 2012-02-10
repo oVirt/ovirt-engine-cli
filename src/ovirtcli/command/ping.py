@@ -16,6 +16,7 @@
 
 
 from ovirtcli.command.command import OvirtCommand
+from ovirtcli.settings import OvirtCliSettings
 
 
 class PingCommand(OvirtCommand):
@@ -30,9 +31,10 @@ class PingCommand(OvirtCommand):
         == Description ==
 
         Test the connection to the oVirt manager. This command will go out to
-        the oVirt manager and retrieve a remote resource. If it succeeds, you
-        know that the URL, username and password are working.
-        """
+        the %s manager and retrieve a remote resource. If it succeeds, you
+        know that the URL, username and password are OK (note: there are few 
+        optional parameters that might be needed for establishing connection).
+        """ % OvirtCliSettings.PRODUCT
 
     def execute(self):
         connection = self.check_connection()
@@ -40,7 +42,7 @@ class PingCommand(OvirtCommand):
         try:
             connection.test(throw_exception=True)
         except Exception, e:
-            stdout.write('error: could NOT reach oVirt manager,\n')
-            self.error(str(e))
+            stdout.write('\n' + str(e) + '\n')
+            self.error('could NOT reach oVirt manager\n')
         else:
-            stdout.write('success: oVirt manager could be reached OK\n')
+            stdout.write('\nsuccess: oVirt manager could be reached OK\n\n')
