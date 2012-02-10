@@ -83,19 +83,6 @@ class CreateCommand(OvirtCommand):
 
           $ create vm --name myvm --template-name iscsi_desktop_tmpl --cluster-name Default_iscsi
                       
-        - This example does the same but now using pre-formatted input:
-
-          $ create vm << EOM
-          > <vm>
-          >   <name>myvm</name>
-          >   <memory>512000000</memory>
-          >   <type>SERVER</type>
-          >   <cluster><name>Default</name></cluster>
-          >   <template><name>Blank</name></template>
-          > </vm>
-          > EOM
-
-
         - This example create vm nic:
 
           $ create nic --vmid cli_vm3 --network-name engine --name test
