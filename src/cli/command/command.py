@@ -18,6 +18,7 @@
 from fnmatch import fnmatch
 from cli.error import CommandError
 from string import Template
+from ovirtcli.format.help import Help
 
 
 class Command(object):
@@ -138,34 +139,8 @@ class Command(object):
         formatted = '\n'.join(formatted)
         return formatted
 
-    def _indent_level(self, s):
-        """INTERNAL: return the indentation level of a string."""
-        for i in range(len(s)):
-            if not s[i].isspace():
-                return i
-        return len(s)
-
     def format_help(self, text, subst):
-        """Format a command help text, and make '$' substitutions."""
-        lines = text.splitlines()
-        if not lines:
-            return ''
-        indent = self._indent_level(lines[0])
-        for ix in range(len(lines)):
-            line = lines[ix][indent:]
-            if line.startswith('==') and line.endswith('=='):
-                line = line[2:-2].strip().upper()
-            else:
-                line = '  ' + line
-            if '$' in line:
-                template = Template(line)
-                line = template.safe_substitute(subst)
-                if '\n' in line:
-                    lindent = self._indent_level(line)
-                    line = line.replace('\n', '\n' + ' ' * lindent)
-            lines[ix] = line
-        text = '\n' + '\n'.join(lines) + '\n'
-        return text
+        return Help.format(text, subst)
 
     def get_statuses(self):
         """Return a list of all exist statuses that are defined."""

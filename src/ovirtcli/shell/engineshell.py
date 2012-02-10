@@ -18,6 +18,8 @@
 import sys
 import os
 import cmd
+from string import Template
+
 from ovirtcli.shell.actioncmdshell import ActionCmdShell
 from ovirtcli.shell.connectcmdshell import ConnectCmdShell
 from ovirtcli.shell.showcmdshell import ShowCmdShell
@@ -30,6 +32,9 @@ from ovirtcli.shell.consolecmdshell import ConsoleCmdShell
 from ovirtcli.shell.pingcmdshell import PingCmdShell
 from ovirtcli.shell.statuscmdshell import StatusCmdShell
 from ovirtcli.settings import OvirtCliSettings
+from ovirtcli.command.help import HelpCommand
+from ovirtcli.format.help import Help
+import StringIO
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
@@ -95,22 +100,22 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         self.prompt = line
 
     def do_EOF(self, line):
+        '''Exists shell by ctrl+d, ctrl+c'''
         self.emptyline()
         return True
 
     def do_exit(self, args):
+        '''Exists shell'''
         self.emptyline()
         return True
 
     def do_help(self, args):
+        '''Prints help by command'''
         if not args:
-            cmd.Cmd.do_help(self, args)
+            #cmd.Cmd.do_help(self, args)
+            self.context.execute_string('help\n')
         else:
             return self.context.execute_string('help ' + args + '\n')
-
-    def completenames(self, text, *ignored):
-        dotext = 'do_' + text
-        return [a[3:] + ' ' for a in self.get_names() if a.startswith(dotext)]
     ############################# SHELL #################################
     def do_shell(self, line):
         "Runs a shell command ('!' can be used instead of 'shell' command)."

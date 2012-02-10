@@ -62,23 +62,14 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.formatter = create(Formatter, value)
 
     def _handle_exception(self, e):
-#FIXME: support old error formating
-#        if isinstance(e, rhev.Error):
-#            msg = 'error: rhev: %s\n' % str(e)
-#            if hasattr(e, 'detail'):
-#                msg += 'detail: %s\n' % e.detail
-#            sys.stderr.write(msg)
-#            self.status = self.REMOTE_ERROR
-#        else:
-#            super(RhevshExecutionContext, self)._handle_exception(e)
         super(OvirtCliExecutionContext, self)._handle_exception(e)
 
     def setup_commands(self):
-        self.add_command(SetCommand)
-        self.add_command(SaveCommand)
-        self.add_command(CdCommand)
-        self.add_command(PwdCommand)
-        self.add_command(ClearCommand)
+#        self.add_command(SetCommand)
+#        self.add_command(SaveCommand)
+#        self.add_command(CdCommand)
+#        self.add_command(PwdCommand)
+#        self.add_command(ClearCommand)
         self.add_command(ExitCommand)
         self.add_command(ActionCommand)
         self.add_command(CreateCommand)
@@ -87,7 +78,7 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.add_command(CreateCommand)
         self.add_command(DeleteCommand)
         self.add_command(DisconnectCommand)
-        self.add_command(GetKeyCommand)
+#        self.add_command(GetKeyCommand)
         self.add_command(HelpCommand)
         self.add_command(ListCommand)
         self.add_command(PingCommand)
