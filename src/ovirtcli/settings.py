@@ -25,13 +25,25 @@ class OvirtCliSettings(Settings):
     INTRO = \
     """
         
- ++++++++++++++++++++++++++++
+ ++++++++++++++++++++++++++++++++++++++++++
  
-    Welcome to %s shell   
+           Welcome to %s shell
  
- ++++++++++++++++++++++++++++       
+ ++++++++++++++++++++++++++++++++++++++++++
         
     """ % PRODUCT
+
+    DISCONNECTED_TEMPLATE = \
+"""
+  =======================================
+  >>> disconnected from %s manager <<<
+  =======================================
+ """ % PRODUCT
+
+    CONNECTED_TEMPLATE = \
+"\n ==========================================\n" + \
+" >>> connected to " + PRODUCT + " manager %s <<<\n" + \
+" ==========================================\n\n"
 
     settings = Settings.settings + [
         ('ovirt-shell:name', str, '%s-shell' % PRODUCT),
@@ -52,9 +64,7 @@ class OvirtCliSettings(Settings):
         ('ovirt-shell:ps2.connected', str, '[' + PRODUCT + ' shell (connected)]# '),
         ('ovirt-shell:ps1.disconnected', str, '[%s shell (disconnected)]# ' % PRODUCT),
         ('ovirt-shell:commands', str, '%s shell commands:' % PRODUCT),
-        ('ovirt-shell:misc_commands', str, '%s shell commands:' % PRODUCT)
+        ('ovirt-shell:misc_commands', str, '%s shell commands:' % PRODUCT),
+        ('ovirt-shell:version', str, ''),
+        ('ovirt-shell:prompt', str, '')
     ]
-
-
-
-

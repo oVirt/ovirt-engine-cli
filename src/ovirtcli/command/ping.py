@@ -38,8 +38,9 @@ class PingCommand(OvirtCommand):
         connection = self.check_connection()
         stdout = self.context.terminal.stdout
         try:
-            connection.test()
-        except Exception:
-            stdout.write('error: could NOT reach oVirt manager\n')
+            connection.test(throw_exception=True)
+        except Exception, e:
+            stdout.write('error: could NOT reach oVirt manager,\n')
+            self.error(str(e))
         else:
             stdout.write('success: oVirt manager could be reached OK\n')

@@ -18,12 +18,13 @@
 from ovirtcli.command.command import OvirtCommand
 
 from ovirtsdk.infrastructure import contextmanager
+from ovirtcli.settings import OvirtCliSettings
 
 
 class StatusCommand(OvirtCommand):
 
     name = 'status'
-    description = 'show status'
+    description = 'shows status and connection info'
     helptext = """\
         == Usage ==
 
@@ -31,8 +32,8 @@ class StatusCommand(OvirtCommand):
 
         == Description ==
 
-        Show the exist status of the last command and the staus of the
-        connection to oVirt manager.
+        Show the exist status of the last command and the status of the
+        connection to oVirt manager (including version).
         """
 
     def execute(self):
@@ -46,10 +47,11 @@ class StatusCommand(OvirtCommand):
                     sstatus += ' (%s)' % sym
         else:
             sstatus = 'N/A'
-        stdout.write('last command status: %s\n' % sstatus)
+        stdout.write('\nlast command status: %s\n' % sstatus)
         if context.connection:
 #FIXME: retrive url via API proxy rather than inner proxy to connections_pool 
-            sstatus = 'connected to %s' % contextmanager.get('proxy').get_url()
+            sstatus = 'connected to %s' % contextmanager.get('proxy').get_url() + \
+            "\n%s version: %s\n" % (OvirtCliSettings.PRODUCT, self.context.settings.get('ovirt-shell:version'))
         else:
             sstatus = 'not connected'
         stdout.write('connection: %s\n' % sstatus)

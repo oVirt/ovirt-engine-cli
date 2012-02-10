@@ -15,8 +15,6 @@
 #
 
 
-import textwrap
-
 from cli.command import *
 from cli.context import ExecutionContext
 
@@ -24,6 +22,7 @@ from cli.context import ExecutionContext
 from ovirtcli.settings import OvirtCliSettings
 from ovirtcli.command import *
 from ovirtcli.format import *
+
 from ovirtcli.object import create
 
 
@@ -31,13 +30,7 @@ class OvirtCliExecutionContext(ExecutionContext):
 
     Settings = OvirtCliSettings
 
-    name = 'ovirt-shell'
-    welcome = textwrap.dedent("""\
-        Welcome to Red Hat Enterprise Virtualization.
-
-        Type:  'help' for help with commands
-               'exit' to leave this interactive shell
-        """)
+    name = '%s-shell' % OvirtCliSettings.PRODUCT.lower()
 
     REMOTE_ERROR = 10
     NOT_FOUND = 11
@@ -48,6 +41,7 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.formatter = create(Formatter, self.settings['ovirt-shell:output_format'])
         self.settings.add_callback('cli:verbosity', self._set_verbosity)
         self.settings.add_callback('ovirt-shell:output_format', self._set_formatter)
+        self.product_info = None
 
     def _set_verbosity(self, key, value):
         if self.connection is None:
@@ -90,9 +84,12 @@ class OvirtCliExecutionContext(ExecutionContext):
         """Return a dict with prompt variables."""
         subst = {}
         if self.connection:
-            api = self.connection.api()
-            version = api.product_info.version
-            subst['version'] = '%s.%s' % (version.major, version.minor)
+            self.product_info = self.connection.get_product_info()
+            if self.product_info:
+                version = self.product_info.version
+                ver = '%s.%s.%s.%s' % (version.major, version.minor, version.revision, version.build_)
+                subst['version'] = ver
+                self.settings['ovirt-shell:version'] = ver
         else:
             subst['version'] = ''
         return subst
@@ -102,10 +99,10 @@ class OvirtCliExecutionContext(ExecutionContext):
         if self.connection is None:
             prompt = self.settings['ovirt-shell:ps1.disconnected']
         else:
-#            subst = self._get_prompt_variables()
-#            prompt = self.settings['ovirt-shell:ps1.connected'] % subst
-            prompt = '[oVirt-shell:connected]# '
-        self.settings['cli:ps1'] = prompt
+            subst = self._get_prompt_variables()
+            prompt = self.settings['ovirt-shell:ps1.connected'] % subst
+
+        self.settings['ovirt-shell:prompt'] = prompt
 
     def _read_command(self):
         self._set_prompt()

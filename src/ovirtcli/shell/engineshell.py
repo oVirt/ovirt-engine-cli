@@ -18,7 +18,6 @@
 import sys
 import os
 import cmd
-from string import Template
 
 from ovirtcli.shell.actioncmdshell import ActionCmdShell
 from ovirtcli.shell.connectcmdshell import ConnectCmdShell
@@ -32,9 +31,6 @@ from ovirtcli.shell.consolecmdshell import ConsoleCmdShell
 from ovirtcli.shell.pingcmdshell import PingCmdShell
 from ovirtcli.shell.statuscmdshell import StatusCmdShell
 from ovirtcli.settings import OvirtCliSettings
-from ovirtcli.command.help import HelpCommand
-from ovirtcli.format.help import Help
-import StringIO
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \

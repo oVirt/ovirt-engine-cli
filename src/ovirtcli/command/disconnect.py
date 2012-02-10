@@ -17,6 +17,7 @@
 
 from ovirtcli.command.command import OvirtCommand
 from cli.context import ExecutionContext
+from ovirtcli.settings import OvirtCliSettings
 
 
 class DisconnectCommand(OvirtCommand):
@@ -46,5 +47,5 @@ class DisconnectCommand(OvirtCommand):
             self.context.status = ExecutionContext.OK
         except Exception:
             self.context.status = ExecutionContext.COMMAND_ERROR
-        stdout.write('disconnected from oVirt manager\n')
+        stdout.write(OvirtCliSettings.DISCONNECTED_TEMPLATE)
         self.context.connection = None

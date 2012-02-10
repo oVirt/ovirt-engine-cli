@@ -17,6 +17,7 @@
 
 from ovirtcli.command.command import OvirtCommand
 from ovirtsdk.api import API
+from ovirtcli.settings import OvirtCliSettings
 
 
 class ConnectCommand(OvirtCommand):
@@ -89,13 +90,16 @@ class ConnectCommand(OvirtCommand):
                                           port=port,
                                           timeout=timeout)
             self.testConnectivity()
-            stdout.write('connected to oVirt manager at %s\n' % url)
+            self.context._set_prompt()
+            stdout.write(OvirtCliSettings.CONNECTED_TEMPLATE % \
+            self.context.settings.get('ovirt-shell:version'))
+
         except Exception, e:
             self.__cleanContext()
             self.error(str(e))
 
     def testConnectivity(self):
-        self.context.connection.test()
+        self.context.connection.test(throw_exception=True)
 
     def __cleanContext(self):
         if self.context.connection is not None:
