@@ -55,13 +55,6 @@ class ConnectCmdShell(CmdShell):
 
     def complete_connect(self, text, line, begidx, endidx):
         connect_args = [ 'url', 'user', 'password', 'key-file', 'cert-file', 'port', 'timeout']
-        if not text:
-            completions = connect_args[:]
-        else:
-            repl = AutoCompletionHelper._get_verb_replecations({}.fromkeys(connect_args), text)
-            completions = [ '--' + f + ' ' if text in connect_args or repl == 1 else f
-                            for f in connect_args
-                            if f.startswith(text.strip() if not text.strip().startswith('--')
-                                                         else text.strip()[2:])
-                            ]
-        return completions
+        return AutoCompletionHelper.complete(line=line, text=text,
+                                             args={}.fromkeys(connect_args),
+                                             all_options=True)
