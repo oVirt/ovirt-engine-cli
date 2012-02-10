@@ -18,6 +18,7 @@
 from ovirtcli.command.command import OvirtCommand
 from ovirtsdk.api import API
 from ovirtcli.settings import OvirtCliSettings
+from ovirtsdk.infrastructure.errors import RequestError
 
 
 class ConnectCommand(OvirtCommand):
@@ -87,13 +88,17 @@ class ConnectCommand(OvirtCommand):
                                           password=password,
                                           key_file=key_file,
                                           cert_file=cert_file,
-                                          port=port,
-                                          timeout=timeout)
+                                          port=port if port != -1 else None,
+                                          timeout=timeout if timeout != -1 else None)
             self.testConnectivity()
             self.context._set_prompt()
             stdout.write(OvirtCliSettings.CONNECTED_TEMPLATE % \
             self.context.settings.get('ovirt-shell:version'))
 
+        except RequestError, e:
+            self.__cleanContext()
+            stdout.write('\n')
+            self.error(str(e.reason + ", [Errno: " + str(e.status) + ']\n'))
         except Exception, e:
             self.__cleanContext()
             self.error(str(e))

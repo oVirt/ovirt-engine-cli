@@ -114,6 +114,6 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.settings['ovirt-shell:password'] = ''
         self.settings['ovirt-shell:key_file'] = None
         self.settings['ovirt-shell:cert_file'] = None
-        self.settings['ovirt-shell:port'] = None
-        self.settings['ovirt-shell:timeout'] = None
+        self.settings['ovirt-shell:port'] = -1
+        self.settings['ovirt-shell:timeout'] = -1
 
