@@ -55,7 +55,7 @@ class ConnectCmdShell(CmdShell):
             self.__do_connect(args)
 
     def complete_connect(self, text, line, begidx, endidx):
-        connect_args = [ 'url', 'user', 'password', 'key_file', 'cert_file', 'port', 'timeout']
+        connect_args = [ 'url', 'user', 'password', 'key-file', 'cert-file', 'port', 'timeout']
         if not text:
             completions = connect_args[:]
         else:

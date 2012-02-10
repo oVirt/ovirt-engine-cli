@@ -43,8 +43,8 @@ class ConnectCommand(OvirtCommand):
          * url          - The URL to connect to.
          * username     - The user to connect as. (format user@domain).
          * password     - The password to use.
-         * [key_file]   - The key file to use.
-         * [cert_file]  - The certificate file to use.
+         * [key-file]   - The key file to use.
+         * [cert-file]  - The certificate file to use.
          * [port]       - The port to use (if not specified in url).
          * [timeout]    - The timeout on request.
         """
@@ -53,12 +53,12 @@ class ConnectCommand(OvirtCommand):
         args = self.arguments
         settings = self.context.settings
         stdout = self.context.terminal.stdout
-        
+
         key_file = settings.get('ovirt-shell:key_file')
         cert_file = settings.get('ovirt-shell:cert_file')
         port = settings.get('ovirt-shell:port')
         timeout = settings.get('ovirt-shell:timeout')
-            
+
         if self.context.connection is not None:
             stdout.write('already connected\n')
             return

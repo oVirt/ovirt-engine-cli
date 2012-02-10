@@ -23,7 +23,7 @@ class OvirtCliSettings(Settings):
     settings = Settings.settings + [
         ('ovirt-shell:url', str, ''),
         ('ovirt-shell:username', str, ''),
-        ('ovirt-shell:password', str, ''),        
+        ('ovirt-shell:password', str, ''),
         ('ovirt-shell:key_file', str, None),
         ('ovirt-shell:cert_file', str, None),
         ('ovirt-shell:port', int, None),

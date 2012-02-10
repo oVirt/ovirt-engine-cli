@@ -27,7 +27,7 @@ class OvirtCliOptionParser(OptionParser):
         """)
 
     def __init__(self):
-        
+
         OptionParser.__init__(self, usage=self.usage,
                               description=self.description)
         self.add_option('-d', '--debug', action='store_true',
@@ -36,14 +36,14 @@ class OvirtCliOptionParser(OptionParser):
                         const=10, dest='verbosity', help='be more verbose')
         self.add_option('-H', '--help-commands', action='store_true',
                         help='show help on commands')
-        self.add_option('-U', '--url',
+        self.add_option('-l', '--url',
                         help='specifies the API entry point URL')
         self.add_option('-u', '--username', help='connect as this user')
         self.add_option('-p', '--password', help='specify password')
-        self.add_option('--key_file', '--key_file', help='specify key_file')
-        self.add_option('--cert_file', '--cert_file', help='specify cert_file')
-        self.add_option('--port', '--port', help='specify port')
-        self.add_option('--timeout', '--timeout', help='specify timeout')        
+        self.add_option('-K', '--key-file', help='specify key-file')
+        self.add_option('-C', '--cert-file', help='specify cert-file')
+        self.add_option('-P', '--port', help='specify port')
+        self.add_option('-T', '--timeout', help='specify timeout')
         self.add_option('-r', '--read-input', action='store_true',
                         help='read pre-formatted input on stdin')
         self.add_option('-i', '--input-format', metavar='FORMAT',
