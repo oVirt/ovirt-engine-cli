@@ -43,6 +43,7 @@ class DisconnectCommand(OvirtCommand):
             stdout.write('not connected\n')
             return
         try:
+            self.context._clean_settings()
             connection.disconnect()
             self.context.status = ExecutionContext.OK
         except Exception:

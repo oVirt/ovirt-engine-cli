@@ -103,6 +103,7 @@ class ConnectCommand(OvirtCommand):
 
     def __cleanContext(self):
         if self.context.connection is not None:
+            self.context._clean_settings()
             try:
                 self.context.connection.disconnect()
             except Exception, e:

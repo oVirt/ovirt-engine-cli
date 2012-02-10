@@ -107,3 +107,13 @@ class OvirtCliExecutionContext(ExecutionContext):
     def _read_command(self):
         self._set_prompt()
         return super(OvirtCliExecutionContext, self)._read_command()
+
+    def _clean_settings(self):
+        self.settings['ovirt-shell:url'] = ''
+        self.settings['ovirt-shell:username'] = ''
+        self.settings['ovirt-shell:password'] = ''
+        self.settings['ovirt-shell:key_file'] = None
+        self.settings['ovirt-shell:cert_file'] = None
+        self.settings['ovirt-shell:port'] = None
+        self.settings['ovirt-shell:timeout'] = None
+
