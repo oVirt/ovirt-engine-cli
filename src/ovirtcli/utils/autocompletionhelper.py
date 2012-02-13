@@ -26,75 +26,57 @@ class AutoCompletionHelper(object):
     @staticmethod
     def _get_verb_replecations(container, text):
         times = 0
-        for f in container.keys():
+        for f in container:
             if text and f.startswith(text):
                 times += 1
                 if times > 2: break
         return times
 
     @staticmethod
-    def complete(line, text, args, custom={}, all_options=False):
+    def complete(line, text, args, custom_options=[], all_options=False):
         '''
         Provides  auto-completion capabilities
         
         @param line: entered line
         @param text: appended text to complete
-        @param args: verb args
-        @param custom: custom options to append for complete suggestions (NOT IMPLEMENTED)
+        @param args: dictionary of verbs and their's options
+        @param custom_options: custom options to append for complete suggestions (NOT IMPLEMENTED)
         '''
 
-        i_completions = []
-
+        mp = AutoCompletionHelper.__map_options(args)
         if not all_options:
-            mp = AutoCompletionHelper.__map_options(args)
-            sp_line = line.strip().split(' ')
-            last = sp_line[len(sp_line) - 1] if len(sp_line) == 2 else sp_line[len(sp_line) - 2]
-            last_arg = last if not last.startswith('--') else last[2:]
-            if len(sp_line) < 2 or line.find(AutoCompletionHelper.__last_line) == -1 : AutoCompletionHelper.__completions = []
-
-
-            times = AutoCompletionHelper._get_verb_replecations(mp, text)
-            if (len(sp_line) >= 2 and times < 2 and last_arg in mp.keys() and line.endswith(' ')):
-                if len(sp_line) > 2:
-                    i_completions = [ '--' + f + 'id'
-                                    for f in mp[last_arg]
-                                    if text and f.strip() != 'None' and f.startswith(text)
-                                    ]
-                else:
-                    i_completions = [ '--' + f + 'id ' \
-                                     if not f.startswith('--') and (len(mp[last_arg]) == 1
-                                                                    or
-                                                                   (len(mp[last_arg]) == 2
-                                                                    and
-                                                                    'None' in mp[last_arg]))
-                                     else f + 'id'
-                                     for f in mp[last_arg]
-                                     if f.strip() != 'None'
-                                    ]
-
-
-                AutoCompletionHelper.__completions = i_completions
-                AutoCompletionHelper.__last_line = line
-            else:
-                if len(AutoCompletionHelper.__completions) == 0:
-                    i_completions = [ f + ' '
+            spl = line.split(' ')
+            if len(spl) >= 2:
+                s_text = text.strip()
+                if len(spl) == 2 and text != ' ':
+                    repl = AutoCompletionHelper._get_verb_replecations(mp.keys(), s_text)
+                    i_completions = [ f + ' ' if text in mp.keys() or repl == 1 else f
                                     for f in mp.keys()
-                                    if f and f.startswith(text)
+                                    if f.startswith(s_text)
                                     ]
                 else:
-                    i_completions = [ ('--' + f + ' ') if text else (f + ' ')
-                                    for f in AutoCompletionHelper.__completions
-                                    if f.startswith(text)
+                    obj = spl[1].strip()
+                    repl = AutoCompletionHelper._get_verb_replecations(mp[obj], s_text)
+                    i_completions = ['--' + f + 'id ' if text in mp[obj] or repl == 1 or len(mp[obj]) == 1
+                                                      or (len(mp[obj]) == 2 and 'None' in mp[obj]) == 1 else f
+                                    for f in mp[obj]
+                                    if f != 'None' and f.startswith(s_text)
                                     ]
+
+                return i_completions
+            else:
+                return mp.keys()[:]
         else:
             if not text:
                 i_completions = args.keys()[:]
             else:
-                repl = AutoCompletionHelper._get_verb_replecations(args, text)
-                i_completions = [ '--' + f + ' ' if text in args.keys() or repl == 1 else f
+                s_text = text.strip()
+                repl = AutoCompletionHelper._get_verb_replecations(args.keys(), text)
+                i_completions = [ '--' + f + ' ' if repl == 1 or text in args.keys() else f
                                 for f in args.keys()
-                                if f.startswith(text.strip() if not text.strip().startswith('--')
-                                                             else text.strip()[2:])
+                                if f.startswith(s_text if not s_text.startswith('--')
+                                                       else text.strip()[2:])
                                 ]
 
         return i_completions
+
