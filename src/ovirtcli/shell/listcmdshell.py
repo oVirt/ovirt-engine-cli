@@ -32,4 +32,4 @@ class ListCmdShell(CmdShell):
     def complete_list(self, text, line, begidx, endidx):
         args = TypeHelper.get_types_by_method(True, 'list')
         #TODO: add support for custom options based on list() definition
-        return AutoCompletionHelper.complete(line, text, args, custom_options=['showall'])
+        return AutoCompletionHelper.complete(line, text, args, common_options=['showall'])
