@@ -134,7 +134,10 @@ class ShowCommand(OvirtCommand):
                               opts=opts)
 
         if not (obj):
-            self.error('no such %s %s' % (args[0], args[1]))
+            self.error('no such %s %s' % (args[0], args[1] if len(args) > 1
+                                                           else opts.values()
+                                                           if opts
+                                                           else ''))
 
         self.context.formatter.format(self.context,
                                       obj,
