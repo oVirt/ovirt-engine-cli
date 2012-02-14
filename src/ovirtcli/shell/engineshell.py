@@ -31,6 +31,7 @@ from ovirtcli.shell.consolecmdshell import ConsoleCmdShell
 from ovirtcli.shell.pingcmdshell import PingCmdShell
 from ovirtcli.shell.statuscmdshell import StatusCmdShell
 from ovirtcli.settings import OvirtCliSettings
+import readline
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
@@ -56,6 +57,8 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         cmd.Cmd.undoc_header = self.context.settings.get('ovirt-shell:misc_commands')
         cmd.Cmd.intro = OvirtCliSettings.INTRO
         self.last_output = ''
+
+        readline.set_completer_delims(' ')
     ########################### SYSTEM #################################
     def cmdloop(self, intro=None):
         try:

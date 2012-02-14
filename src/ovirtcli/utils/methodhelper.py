@@ -65,3 +65,74 @@ class MethodHelper():
                     else:
                         holder[args[1]] = holder[args[1]] + ', ' + 'None'
         return holder
+
+    @staticmethod
+    def get_documented_arguments(method_ref, as_params_collection=False, spilt_or=False):
+        """Return a list of arguments documented for specific method."""
+
+        PARAM_ANNOTATION = '@param'
+        params_list = []
+        PERIOD_SYMBOL = '-'
+
+        if method_ref and method_ref.__doc__:
+            doc = method_ref.__doc__
+            params_arr = doc.split('\n')
+
+            for var in params_arr:
+                if '' != var and var.find(PARAM_ANNOTATION) != -1:
+                    splitted_line = var.strip().split(' ')
+                    if len(splitted_line) >= 2:
+                        prefix = splitted_line[0].replace((PARAM_ANNOTATION + ' '),
+                                                          '--').replace(PARAM_ANNOTATION, '--')
+                        param = splitted_line[1].replace('**', '')
+
+                        if len(splitted_line) > 3 and splitted_line[3].startswith('('):
+                            typ = ''.join(splitted_line[2:3])
+                            if prefix.startswith('['):
+                                typ = typ + ']'
+                        else:
+                            typ = ''.join(splitted_line[2:])
+
+                        if param.find('.') != -1:
+                            splitted_param = param.split('.')
+                            new_param = PERIOD_SYMBOL.join(splitted_param[1:])
+                            param = new_param
+
+#                        params_hash[param.replace(':', '')] = splitted_line[1].replace(':', '') \
+#                                                                              .replace('id|name', 'name')
+                        if as_params_collection:
+                            if spilt_or and param.find('|') != -1:
+                                spl = param.replace(':', '').split('|')
+                                if len(spl) == 2:
+                                    p1 = spl[0]
+                                    if spl[0].find(PERIOD_SYMBOL) != -1 :
+                                        spl_ = spl[0].split('-')
+                                        p2 = '-'.join(spl_[:len(spl_) - 1]) + '-' + spl[1]
+                                    else:
+                                        p2 = spl[1]
+
+                                    params_list.append(p1)
+                                    params_list.append(p2)
+                                else:
+                                    params_list.append(param.replace(':', ''))
+                            else:
+                                params_list.append(param.replace(':', ''))
+                        else:
+                            if spilt_or and param.find('|') != -1:
+                                spl = param.split('|')
+                                if len(spl) == 2:
+                                    p1 = spl[0]
+                                    if spl[0].find(PERIOD_SYMBOL) != -1 :
+                                        spl_ = spl[0].split('-')
+                                        p2 = '-'.join(spl_[:len(spl_) - 1]) + '-' + spl[1]
+                                    else:
+                                        p2 = spl[1]
+
+                                    params_list.append(prefix + p1 + ' ' + typ)
+                                    params_list.append(prefix + p2 + ' ' + typ)
+                                else:
+                                    params_list.append(prefix + param + ' ' + typ)
+                            else:
+                                params_list.append(prefix + param + ' ' + typ)
+
+        return params_list

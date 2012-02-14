@@ -45,33 +45,9 @@ class ListCmdShell(CmdShell):
                 if method_args:
                     specific_options[obj if key == None else key] = method_args
 
-    def __generate_resource_specific_options__(self, args, line):
-        specific_options = {}
-        is_inner_type = False
-
-        if line:
-            spl = line.rstrip().split(' ')
-            if len(spl) > 2:
-                obj = spl[1].strip()
-                for arg in spl[1:]:
-                    if arg.startswith('--') and arg.endswith('id'):
-                        parent_candidate = arg[2:len(arg) - 2]
-                        collection_canidate = TypeHelper.getDecoratorType(parent_candidate + obj)
-                        if collection_canidate and hasattr(brokers, collection_canidate):
-                            self.__add_resource_specific_options(collection_canidate,
-                                                                 specific_options,
-                                                                 key=obj)
-                            is_inner_type = True
-                            break
-                if not is_inner_type:
-                    self.__add_resource_specific_options(obj, specific_options)
-            elif len(spl) == 2 and spl[1] != '' and spl[1].strip() in args.keys():
-                self.__add_resource_specific_options(spl[1].strip(), specific_options)
-
-            return specific_options
-
     def complete_list(self, text, line, begidx, endidx):
         args = TypeHelper.get_types_by_method(True, 'list')
+        self.__add_resource_specific_options__ = self.__add_resource_specific_options
         specific_options = self.get_resource_specific_options(args, line)
         common_options = ['showall']
 

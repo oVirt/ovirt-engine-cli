@@ -15,6 +15,8 @@
 #
 import sys
 import os
+from ovirtcli.utils.typehelper import TypeHelper
+from ovirtsdk.infrastructure import brokers
 
 
 class CmdShell(object):
@@ -76,7 +78,32 @@ class CmdShell(object):
         return True
     #####################################################################
     def __generate_resource_specific_options__(self, args, line):
-        return {}
+        specific_options = {}
+        is_inner_type = False
+
+        if line:
+            spl = line.rstrip().split(' ')
+            if len(spl) > 2:
+                obj = spl[1].strip()
+                for arg in spl[1:]:
+                    if arg.startswith('--') and arg.endswith('id'):
+                        parent_candidate = arg[2:len(arg) - 2]
+                        canidate = TypeHelper.getDecoratorType(parent_candidate + obj)
+                        if canidate and hasattr(brokers, canidate):
+                            self.__add_resource_specific_options__(canidate,
+                                                                specific_options,
+                                                                key=obj)
+                            is_inner_type = True
+                            break
+                if not is_inner_type:
+                    self.__add_resource_specific_options__(obj, specific_options)
+            elif len(spl) == 2 and spl[1] != '' and spl[1].strip() in args.keys():
+                self.__add_resource_specific_options__(spl[1].strip(), specific_options)
+
+            return specific_options
+
+    def __add_resource_specific_options__(self, obj, specific_options, key=None):
+        pass
 
     def get_resource_specific_options(self, args, line):
         return self.__generate_resource_specific_options__(args, line)

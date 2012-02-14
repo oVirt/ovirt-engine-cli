@@ -71,10 +71,11 @@ class TypeHelper():
 
     @staticmethod
     def getDecoratorType(name):
-        if TypeHelper.__known_decorators_types == None:
-            TypeHelper.__known_decorators_types = TypeHelper._getKnownDecoratorsTypes()
-        if TypeHelper.__known_decorators_types.has_key(name.lower()):
-            return TypeHelper.__known_decorators_types[name.lower()]
+        if name and name != '':
+            if TypeHelper.__known_decorators_types == None:
+                TypeHelper.__known_decorators_types = TypeHelper._getKnownDecoratorsTypes()
+            if TypeHelper.__known_decorators_types.has_key(name.lower()):
+                return TypeHelper.__known_decorators_types[name.lower()]
         return None
 
     @staticmethod

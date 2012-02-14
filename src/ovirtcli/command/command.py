@@ -239,10 +239,8 @@ class OvirtCommand(Command):
     def get_options(self, method, resource, sub_resource=None, as_params_collection=False):
         """Return a list of options for typ/action."""
 
-        PARAM_ANNOTATION = '@param'
         method_ref = None
         connection = self.check_connection()
-        params_list = []
 
         if isinstance(resource, type('')):
             if not sub_resource:
@@ -278,38 +276,7 @@ class OvirtCommand(Command):
             hasattr(getattr(brokers, type(resource).__name__ + 's'), method):
                 method_ref = getattr(getattr(brokers, type(resource).__name__ + 's'), method)
 
-        if method_ref and method_ref.__doc__:
-            doc = method_ref.__doc__
-            params_arr = doc.split('\n')
-#            params_hash = {}
-
-            for var in params_arr:
-                if '' != var and var.find(PARAM_ANNOTATION) != -1:
-                    splitted_line = var.strip().split(' ')
-                    if len(splitted_line) >= 2:
-                        prefix = splitted_line[0].replace((PARAM_ANNOTATION + ' '),
-                                                          '--').replace(PARAM_ANNOTATION, '--')
-                        param = splitted_line[1].replace('**', '')
-
-                        if len(splitted_line) > 3 and splitted_line[3].startswith('('):
-                            typ = ''.join(splitted_line[2:3])
-                            if prefix.startswith('['):
-                                typ = typ + ']'
-                        else:
-                            typ = ''.join(splitted_line[2:])
-
-                        if param.find('.') != -1:
-                            splitted_param = param.split('.')
-                            new_param = '-'.join(splitted_param[1:])
-                            param = new_param
-
-#                        params_hash[param.replace(':', '')] = splitted_line[1].replace(':', '') \
-#                                                                              .replace('id|name', 'name')
-                        if as_params_collection:
-                            params_list.append(param.replace(':', ''))
-                        else:
-                            params_list.append(prefix + param + ' ' + typ)
-        return params_list
+        return MethodHelper.get_documented_arguments(method_ref, as_params_collection)
 
     def is_supported_type(self, types, typ):
         if typ not in types:
@@ -325,9 +292,9 @@ class OvirtCommand(Command):
             method = getattr(resource, method_name)
 
             MethodHelper.get_method_params(brokers,
-                                    method.im_class.__name__,
-                                    method_name,
-                                    typs)
+                                           method.im_class.__name__,
+                                           method_name,
+                                           typs)
             if typs:
                 if (len(typs) > 1): self.error('not supported invocation (too many arguments).')
                 param_type = ParseHelper.getXmlType(typs.keys()[0])

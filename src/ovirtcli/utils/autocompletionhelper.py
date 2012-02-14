@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import readline
 
 class AutoCompletionHelper(object):
 
@@ -37,6 +38,9 @@ class AutoCompletionHelper(object):
                     mp[key] = common_options
                 else:
                     mp[key] = []
+
+                if specific_options.has_key(key):
+                    mp[key].extend(specific_options[key])
 
         return mp
 
@@ -67,7 +71,6 @@ class AutoCompletionHelper(object):
         @param common_options: common options to append for complete suggestions        
         @param specific_options: type specific options to append for complete suggestions
         '''
-
         mp = AutoCompletionHelper.__map_options(args, common_options, specific_options)
         if not all_options:
             spl = line.split(' ')
