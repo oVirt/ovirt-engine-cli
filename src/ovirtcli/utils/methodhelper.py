@@ -19,7 +19,7 @@ import inspect
 
 class MethodHelper():
     @staticmethod
-    def getMethodArgs(module, cls, method):
+    def getMethodArgs(module, cls, method, get_varargs=False, get_keywords=False, drop_self=False):
         '''Returns list of method's arguments'''
         if hasattr(module, cls):
             cls_ref = getattr(module, cls)
@@ -27,7 +27,17 @@ class MethodHelper():
                 method_ref = getattr(cls_ref, method)
                 if method_ref:
                     try:
-                        return getattr(inspect.getargspec(method_ref), 'args')
+                        res = getattr(inspect.getargspec(method_ref), 'args')
+                        if not res: res = []
+                        if drop_self and res.__contains__('self'):
+                            res.remove('self')
+                        if get_varargs:
+                            varargs_res = getattr(inspect.getargspec(method_ref), 'varargs')
+                            if varargs_res: res.append(varargs_res)
+                        if get_keywords:
+                            keywords_res = getattr(inspect.getargspec(method_ref), 'keywords')
+                            if keywords_res: res.append(keywords_res)
+                        return res
                     except:
                         pass
         return []

@@ -36,7 +36,7 @@ class CmdShell(object):
     context = property(get_context, None, None, None)
     parser = property(get_parser, None, None, None)
     owner = property(get_owner, None, None, None)
-    
+
     ############################ CONFIG #################################
     def copy_environment_vars(self, context):
         """Copy environment variables into configuration variables in the
@@ -73,5 +73,11 @@ class CmdShell(object):
             except ValueError, e:
                 sys.stderr.write('error: %s\n' % str(e))
                 return False
-        return True    
+        return True
     #####################################################################
+    def __generate_resource_specific_options__(self, args, line):
+        return {}
+
+    def get_resource_specific_options(self, args, line):
+        return self.__generate_resource_specific_options__(args, line)
+
