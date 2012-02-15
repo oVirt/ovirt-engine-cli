@@ -11,7 +11,7 @@ BuildRequires: python2-devel
 BuildRequires: python-setuptools-devel
 
 Requires: python
-Requires: ovirt-engine-sdk >= 1.4
+Requires: ovirt-engine-sdk >= 1.5
 Requires: pexpect
 Requires: python-setuptools
 Requires: python-ply
@@ -40,6 +40,24 @@ The command line interface for oVirt-Engine.
 %doc LICENSE
 
 %changelog
+
+* Wed Feb 15 2012 Michael Pasternak <mpastern@redhat.com> - 2.0-1
+- New application core
+- Added support for commands history stack
+- Added support for context aware auto-competition
+- Dynamic ovirt-engine-sdk meatdata discovering
+- Removed restriction for specific version of ovirt-engine-sdk
+  from 1.5 and further ovirt-engine-cli can work with any
+  version of sdk (unless sdk introduced cli incompatible change)
+- same naming convention in ovirt-engine-cli and ovirt-engine-sdk
+- reformatted output to support reduced and expended modes in
+  list in show commands by --show-all argument 
+- object fields formatting
+- added support for linux shell commands redirection
+- shell output redirection support
+- added SSL arguments to connect command
+- added ovirt-engine-api version discovering mechanism
+
 * Thu Jan 19 2012 Michael Pasternak <mpastern@redhat.com> - 1.2-1
 - unable to add host #782734
   https://bugzilla.redhat.com/show_bug.cgi?id=782734
