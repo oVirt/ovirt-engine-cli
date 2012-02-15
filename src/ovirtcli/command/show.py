@@ -25,7 +25,7 @@ class ShowCommand(OvirtCommand):
     description = 'show one object'
     args_check = lambda self, x: len(x) > 0
     valid_options = [ ('*', str) ]
-    SHOW_ALL_KEY = '--showall'
+    SHOW_ALL_KEY = '--show-all'
 
     helptext = """\
         == Usage ==
@@ -76,7 +76,7 @@ class ShowCommand(OvirtCommand):
         - This example shows all information about the virtual machine "myvm"
           including empty properties
 
-          $ show vm myvm --showall
+          $ show vm myvm --show-all
 
         - This example shows information about the nic named 'nic1' of the 
           virtual machine "myvm"

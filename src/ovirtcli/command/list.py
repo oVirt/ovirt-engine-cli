@@ -80,10 +80,10 @@ class ListCommand(OvirtCommand):
 
         - This example lists all virtual machines with all (not empty) properties,
           (by default only id/name/description properties displayed, using
-          --showall option, all not empty properties will be displayed,
+          --show-all option, all not empty properties will be displayed,
           to see entire resource - use 'show' command)
 
-          $ list vms --showall
+          $ list vms --show-all
 
         - This example lists only virtual machines that have a name that starts 
           with "myvm":

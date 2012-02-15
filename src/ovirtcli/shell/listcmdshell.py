@@ -53,5 +53,5 @@ class ListCmdShell(CmdShell):
         return AutoCompletionHelper.complete(line,
                                              text,
                                              args=args,
-                                             common_options=['showall'],
+                                             common_options=['show-all'],
                                              specific_options=specific_options)

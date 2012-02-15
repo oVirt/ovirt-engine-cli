@@ -33,4 +33,4 @@ class ShowCmdShell(CmdShell):
         return AutoCompletionHelper.complete(line=line,
                                              text=text,
                                              args=TypeHelper.get_types_by_method(False, 'get'),
-                                             common_options=['showall', 'name', 'kwargs'])
+                                             common_options=['show-all', 'name', 'kwargs'])
