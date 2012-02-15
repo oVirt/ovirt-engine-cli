@@ -31,7 +31,7 @@ class ListCmdShell(CmdShell):
     def do_list(self, args):
         return self.context.execute_string(ListCmdShell.NAME + ' ' + args + '\n')
 
-    def __add_resource_specific_options(self, obj, specific_options, key=None):
+    def __add_resource_specific_options(self, obj, specific_options, line, key=None):
         typ = TypeHelper.getDecoratorType(obj)
         if typ:
             plur_obj = TypeHelper.to_plural(typ)
@@ -47,8 +47,11 @@ class ListCmdShell(CmdShell):
 
     def complete_list(self, text, line, begidx, endidx):
         args = TypeHelper.get_types_by_method(True, 'list')
-        self.__add_resource_specific_options__ = self.__add_resource_specific_options
-        specific_options = self.get_resource_specific_options(args, line)
-        common_options = ['showall']
-
-        return AutoCompletionHelper.complete(line, text, args, common_options=common_options, specific_options=specific_options)
+        specific_options = self.get_resource_specific_options(args,
+                                                              line,
+                                                              callback=self.__add_resource_specific_options)
+        return AutoCompletionHelper.complete(line,
+                                             text,
+                                             args=args,
+                                             common_options=['showall'],
+                                             specific_options=specific_options)

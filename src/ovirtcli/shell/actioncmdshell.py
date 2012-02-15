@@ -18,6 +18,8 @@
 from ovirtcli.shell.cmdshell import CmdShell
 from ovirtcli.utils.typehelper import TypeHelper
 from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
+from ovirtsdk.infrastructure import brokers
+from ovirtcli.utils.methodhelper import MethodHelper
 
 
 class ActionCmdShell(CmdShell):
@@ -29,7 +31,54 @@ class ActionCmdShell(CmdShell):
     def do_action(self, args):
         return self.context.execute_string(ActionCmdShell.NAME + ' ' + args + '\n')
 
+    def __add_resource_specific_options(self, obj, specific_options, line, key=None):
+        obj_type = TypeHelper.getDecoratorType(TypeHelper.to_singular(obj))
+        if obj_type and hasattr(brokers, obj_type):
+
+            args = TypeHelper.get_actionable_types()
+            specific_arguments = self.get_resource_specific_options(args,
+                                                                    line,
+                                                                    callback=self.__add_resource_specific_arguments)
+
+            action = None
+            memeber = key if key is not None else obj
+            for arg in line.split():
+                if specific_arguments.has_key(memeber) and arg in specific_arguments[memeber]:
+                    action = arg
+                    break
+
+            if action:
+                obj_typ_ref = getattr(brokers, obj_type)
+                if obj_typ_ref and hasattr(obj_typ_ref, action):
+                    method_args = MethodHelper.get_documented_arguments(method_ref=getattr(obj_typ_ref, action),
+                                                                        as_params_collection=True,
+                                                                        spilt_or=True)
+                    if method_args:
+                        specific_options[memeber] = method_args
+
+    def __add_resource_specific_arguments(self, obj, specific_options, line, key=None):
+        obj_type = TypeHelper.getDecoratorType(TypeHelper.to_singular(obj))
+        if obj_type and hasattr(brokers, obj_type):
+            method_args = MethodHelper.get_object_methods(getattr(brokers, obj_type),
+                                                          exceptions=['delete', 'update'])
+            if method_args:
+                specific_options[obj if key == None else key] = method_args
+
     def complete_action(self, text, line, begidx, endidx):
         args = TypeHelper.get_actionable_types()
-        #TODO: add support for action & action arguments
-        return AutoCompletionHelper.complete(line, text, args)
+        specific_arguments = {}
+
+        specific_options = self.get_resource_specific_options(args,
+                                                              line,
+                                                              callback=self.__add_resource_specific_options)
+
+        if not specific_options:
+            specific_arguments = self.get_resource_specific_options(args,
+                                                                    line,
+                                                                    callback=self.__add_resource_specific_arguments)
+
+        return AutoCompletionHelper.complete(line,
+                                             text,
+                                             args,
+                                             specific_options=specific_options,
+                                             specific_arguments=specific_arguments)

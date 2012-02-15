@@ -100,8 +100,9 @@ class ConnectCommand(OvirtCommand):
             stdout.write('\n')
             self.error(str(e.reason + ", [Errno: " + str(e.status) + ']\n'))
         except Exception, e:
+            stdout.write('\n')
             self.__cleanContext()
-            self.error(str(e))
+            self.error(str(e).replace(', ', ',\n'))
 
     def testConnectivity(self):
         self.context.connection.test(throw_exception=True)

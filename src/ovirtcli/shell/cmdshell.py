@@ -77,7 +77,7 @@ class CmdShell(object):
                 return False
         return True
     #####################################################################
-    def __generate_resource_specific_options__(self, args, line):
+    def __generate_resource_specific_options__(self, args, line, callback):
         specific_options = {}
         is_inner_type = False
 
@@ -90,21 +90,23 @@ class CmdShell(object):
                         parent_candidate = arg[2:len(arg) - 2]
                         canidate = TypeHelper.getDecoratorType(parent_candidate + obj)
                         if canidate and hasattr(brokers, canidate):
-                            self.__add_resource_specific_options__(canidate,
-                                                                specific_options,
-                                                                key=obj)
+                            callback(canidate, specific_options, line=line, key=obj)
                             is_inner_type = True
                             break
                 if not is_inner_type:
-                    self.__add_resource_specific_options__(obj, specific_options)
+                    callback(obj, specific_options, line=line)
             elif len(spl) == 2 and spl[1] != '' and spl[1].strip() in args.keys():
-                self.__add_resource_specific_options__(spl[1].strip(), specific_options)
+                callback(spl[1].strip(), specific_options, line=line)
 
             return specific_options
 
-    def __add_resource_specific_options__(self, obj, specific_options, key=None):
-        pass
-
-    def get_resource_specific_options(self, args, line):
-        return self.__generate_resource_specific_options__(args, line)
-
+    def get_resource_specific_options(self, args, line, callback):
+        """
+         Generates resource specific options. 
+         
+         @param args: args to process 
+         @param line: line to process
+         @param callback: callback to call when done
+         
+        """
+        return self.__generate_resource_specific_options__(args, line, callback)

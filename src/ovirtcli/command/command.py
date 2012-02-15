@@ -311,12 +311,5 @@ class OvirtCommand(Command):
 
     def _get_action_methods(self, obj):
         """INTERNAL: return a list of type actions."""
-        actions = []
-        exceptions = ['delete', 'update']
 
-        dct = type(obj).__dict__
-        if dct and len(dct) > 0:
-            for method in dct:
-                if method not in exceptions and not method.startswith('_'):
-                    actions.append(method)
-        return actions
+        return MethodHelper.get_object_methods(obj, exceptions=['delete', 'update'])

@@ -18,7 +18,7 @@ import readline
 class AutoCompletionHelper(object):
 
     @staticmethod
-    def __map_options(args, common_options=[], specific_options={}):
+    def __map_options(args, common_options=[], specific_options={}, specific_arguments={}):
         mp = {}
         for key in args.keys():
             if args[key] != None:
@@ -33,6 +33,9 @@ class AutoCompletionHelper(object):
 
                 if specific_options.has_key(key):
                     mp[key].extend(specific_options[key])
+
+                if specific_arguments.has_key(key):
+                    mp[key].extend(specific_arguments[key])
             else:
                 if common_options:
                     mp[key] = common_options
@@ -42,6 +45,8 @@ class AutoCompletionHelper(object):
                 if specific_options.has_key(key):
                     mp[key].extend(specific_options[key])
 
+                if specific_arguments.has_key(key):
+                    mp[key].extend(specific_arguments[key])
         return mp
 
     @staticmethod
@@ -61,7 +66,7 @@ class AutoCompletionHelper(object):
         return False
 
     @staticmethod
-    def complete(line, text, args, common_options=[], specific_options={}, all_options=False):
+    def complete(line, text, args, common_options=[], specific_options={}, specific_arguments={}, all_options=False):
         '''
         Provides  auto-completion capabilities
         
@@ -70,8 +75,10 @@ class AutoCompletionHelper(object):
         @param args: dictionary of verbs and their's options
         @param common_options: common options to append for complete suggestions        
         @param specific_options: type specific options to append for complete suggestions
+        @param specific_arguments: type specific arguments to append for complete suggestions
         '''
-        mp = AutoCompletionHelper.__map_options(args, common_options, specific_options)
+
+        mp = AutoCompletionHelper.__map_options(args, common_options, specific_options, specific_arguments)
         if not all_options:
             spl = line.split(' ')
             if len(spl) >= 2:
@@ -85,9 +92,11 @@ class AutoCompletionHelper(object):
                 else:
                     obj = spl[1].strip()
                     repl = AutoCompletionHelper._get_verb_replecations(mp[obj], s_text)
-                    i_completions = ['--' + f + ('id ' if f not in common_options \
-                                                          and (not AutoCompletionHelper._is_verb_in_dict_values(specific_options, f))
-                                                       else ' ')
+                    i_completions = [('--' if (not AutoCompletionHelper._is_verb_in_dict_values(specific_arguments, f)) else '')
+                                     + f + ('id ' if f not in common_options \
+                                                       and (not AutoCompletionHelper._is_verb_in_dict_values(specific_options, f))
+                                                       and (not AutoCompletionHelper._is_verb_in_dict_values(specific_arguments, f))
+                                                  else ' ')
                                      if text in mp[obj] or repl == 1 or len(mp[obj]) == 1
                                                                      or (len(mp[obj]) == 2 and 'None' in mp[obj]) == 1
                                      else f

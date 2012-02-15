@@ -31,7 +31,7 @@ class CreateCmdShell(CmdShell):
     def do_create(self, args):
         return self.context.execute_string(CreateCmdShell.NAME + ' ' + args + '\n')
 
-    def __add_resource_specific_options(self, obj, specific_options, key=None):
+    def __add_resource_specific_options(self, obj, specific_options, line, key=None):
         obj_coll_type = TypeHelper.getDecoratorType(TypeHelper.to_plural(obj))
         if obj_coll_type:
             if hasattr(brokers, obj_coll_type):
@@ -45,7 +45,7 @@ class CreateCmdShell(CmdShell):
 
     def complete_create(self, text, line, begidx, endidx):
         args = TypeHelper.get_types_by_method(False, 'add')
-        self.__add_resource_specific_options__ = self.__add_resource_specific_options
-        specific_options = self.get_resource_specific_options(args, line)
+        specific_options = self.get_resource_specific_options(args, line,
+                                                              callback=self.__add_resource_specific_options)
 
         return AutoCompletionHelper.complete(line, text, args, specific_options=specific_options)

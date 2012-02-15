@@ -136,3 +136,15 @@ class MethodHelper():
                                 params_list.append(prefix + param + ' ' + typ)
 
         return params_list
+
+    @staticmethod
+    def get_object_methods(obj, exceptions=[]):
+        """Return a list of type actions."""
+        actions = []
+
+        dct = (obj if type(obj) == type else type(obj)).__dict__
+        if dct and len(dct) > 0:
+            for method in dct:
+                if method not in exceptions and not method.startswith('_'):
+                    actions.append(method)
+        return actions
