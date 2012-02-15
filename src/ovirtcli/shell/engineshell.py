@@ -95,9 +95,6 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         ret = cmd.Cmd.parseline(self, line)
         return ret
 
-    def do_prompt(self, line):
-        self.prompt = line
-
     def do_EOF(self, line):
         '''Exists shell by ctrl+d, ctrl+c'''
         self.emptyline()
