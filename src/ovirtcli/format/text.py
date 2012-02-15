@@ -83,7 +83,7 @@ class TextFormatter(Formatter):
                                                                                 show_empty=show_empty,
                                                                                 resource_context=field))
                             continue
-                        if not value and show_empty == False:
+                        if (value == None or value == '') and show_empty == False:
                             continue
                         new_field = field if resource_context is None else resource_context.lower() + '.' + field
                         width0 = max(width0, len(new_field))
@@ -102,7 +102,7 @@ class TextFormatter(Formatter):
                                                                             show_empty=show_empty,
                                                                             resource_context=field))
                         continue
-                    if not value and show_empty == False:
+                    if (value == None or value == '') and show_empty == False:
                         continue
                     new_field = field if resource_context is None else resource_context.lower() + '.' + field
                     width0 = max(width0, len(new_field))
@@ -182,7 +182,7 @@ class TextFormatter(Formatter):
                                                       resource_context=field,
                                                       mode=mode)
                             continue
-                        if not value and show_empty == True:
+                        if value == None and show_empty == True:
                             value = ''
                         elif value == None: continue
                         self.__write_context(format0, format1, width1, field, value, resource_context, reduced_mode_fields=reduced_mode_fields, mode=mode)
@@ -201,12 +201,10 @@ class TextFormatter(Formatter):
                                                   resource_context=field,
                                                   mode=mode)
                         continue
-                    if not value and show_empty == True:
+                    if value == None and show_empty == True:
                         value = ''
                     elif value == None: continue
                     self.__write_context(format0, format1, width1, field, value, resource_context, reduced_mode_fields=reduced_mode_fields, mode=mode)
-
-        #stdout.write('\n')
 
     def _format_collection(self, collection, show_empty=False):
         context = self.context
