@@ -52,8 +52,8 @@ class ListCommand(OvirtCommand):
         - This help will list all available attribute options for listing 
           subcollection of given types
           
-          * format      - help list subtypes --parentid
-          * example     - help list disks --vmid myvm
+          * format      - help list subtypes --parent-identifier
+          * example     - help list disks --vm-identifier myvm
 
         == Available Types ==
 
@@ -92,7 +92,7 @@ class ListCommand(OvirtCommand):
 
         - This example list all disks by vm_id in virtual machine 'myvm':
 
-          $ list disks --vmid myvm
+          $ list disks --vm-identifier myvm
           
         - This example list all vms having memory size of 1073741824 using client 
           side filtering (this kind of filtering is useful on non queryable collections
@@ -104,7 +104,7 @@ class ListCommand(OvirtCommand):
         - This example retrieves vm disk with name 'Disk 3' using client side filtering 
           as oVirt dialect is not available on vm disks collection.          
           
-          $ list disks --vmid myvm --kwargs "name=Disk 3"
+          $ list disks --vm-identifier myvm --kwargs "name=Disk 3"
           
         == Return values ==
 

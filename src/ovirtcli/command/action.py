@@ -59,13 +59,13 @@ class ActionCommand(OvirtCommand):
         
         - This help will list all available attribute options for specific subresource 
         
-          * format      - help action resource resource_name --subresourceid mysubresource
-          * example     - help action nic bond0 --hostid myhost
+          * format      - help action resource resource_name --subresource-identifier mysubresource
+          * example     - help action nic bond0 --host-identifier myhost
         
         - This help will display all available attribute options for specific action on given subresource
 
-          * format      - help action action_name resource resource_name --subresourceid mysubresource
-          * example     - help action attach nic bond0 --hostid myhost
+          * format      - help action action_name resource resource_name --subresource-identifier mysubresource
+          * example     - help action attach nic bond0 --host-identifier myhost
 
         == Available types ==
 
@@ -127,7 +127,7 @@ class ActionCommand(OvirtCommand):
 
         - This example detaches a host nic with id 'mynic' from host 'myhost':
 
-          $ action nic mynic detach --hostid myhost
+          $ action nic mynic detach --host-identifier myhost
     
         == Return values ==
 

@@ -49,7 +49,7 @@ class UpdateCommand(OvirtCommand):
         - This help will list all available attribute options for given subresource update
           
           * format      - help update type --parentid
-          * example     - help update disk --vmid myvm
+          * example     - help update disk --vm-identifier myvm
 
         == Available Types ==
 
@@ -83,7 +83,7 @@ class UpdateCommand(OvirtCommand):
         - This example updates a virtual machine disk with name "mydisk", setting 
           "bootable" to true.
 
-          $ update disk "mydisk" --vmid "myvm" --bootable true
+          $ update disk "mydisk" --vm-identifier "myvm" --bootable true
 
         == Return Values ==
 

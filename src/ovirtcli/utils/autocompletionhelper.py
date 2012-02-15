@@ -93,7 +93,7 @@ class AutoCompletionHelper(object):
                     obj = spl[1].strip()
                     repl = AutoCompletionHelper._get_verb_replecations(mp[obj], s_text)
                     i_completions = [('--' if (not AutoCompletionHelper._is_verb_in_dict_values(specific_arguments, f)) else '')
-                                     + f + ('id ' if f not in common_options \
+                                     + f + ('-identifier ' if f not in common_options \
                                                        and (not AutoCompletionHelper._is_verb_in_dict_values(specific_options, f))
                                                        and (not AutoCompletionHelper._is_verb_in_dict_values(specific_arguments, f))
                                                   else ' ')

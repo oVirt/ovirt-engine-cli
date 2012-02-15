@@ -44,8 +44,8 @@ class CreateCommand(OvirtCommand):
 
         - This help will list all available attribute options for given subresource creation
           
-          * format      - help create subresource_name --resourceid xxx
-          * example     - help create disk --vmid myvm
+          * format      - help create subresource_name --resource-identifier xxx
+          * example     - help create disk --vm-identifier myvm
 
         == Available Types ==
 
@@ -85,7 +85,7 @@ class CreateCommand(OvirtCommand):
                       
         - This example create vm nic:
 
-          $ create nic --vmid cli_vm3 --network-name engine --name test
+          $ create nic --vm-identifier cli_vm3 --network-name engine --name test
 
 
         == Return Values ==

@@ -39,9 +39,9 @@ class OvirtCommand(Command):
         connection = self.check_connection()
 
         for opt, val in options.items():
-            if opt.endswith('-id') or not opt.endswith('id'):
+            if opt.endswith('-id') or not opt.endswith('-identifier'):
                 continue
-            typename = opt[2:-2]
+            typename = opt[2:-11]
             coll = typename + 's'
             if not (TypeHelper.isKnownType(typename) or  TypeHelper.isKnownType(coll)):
                 self.error('no such type: %s' % typename)
@@ -110,7 +110,7 @@ class OvirtCommand(Command):
         for key in options.keys():
             prop = key.replace('--', '')
             val = options[key]
-            if not prop.endswith('-id') and prop.endswith('id'): continue
+            if not prop.endswith('-id') and prop.endswith('-identifier'): continue
             self.__do_set_data(obj=obj, prop=prop, fq_prop=key, val=val)
 
         return obj

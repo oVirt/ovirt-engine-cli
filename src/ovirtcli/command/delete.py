@@ -53,8 +53,8 @@ class DeleteCommand(OvirtCommand):
 
         - This help will list all available attribute options for given subresource removal
           
-          * format      - help delete subtype --resourceid
-          * example     - help delete disk --vmid iscsi_desktop
+          * format      - help delete subtype --resource-identifier
+          * example     - help delete disk --vm-identifier iscsi_desktop
 
         == Available Types ==
 
@@ -81,7 +81,7 @@ class DeleteCommand(OvirtCommand):
 
         - This example deletes the disk "disk0" from the virtual machine named "myvm"
 
-          $ delete disk disk0 --vmid myvm
+          $ delete disk disk0 --vm-identifier myvm
           
         - This example deletes the storagedomain "mydomain" using host named "myhost"
 

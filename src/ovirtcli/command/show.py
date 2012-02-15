@@ -81,7 +81,7 @@ class ShowCommand(OvirtCommand):
         - This example shows information about the nic named 'nic1' of the 
           virtual machine "myvm"
 
-          $ show nic nic1 --vmid myvm
+          $ show nic nic1 --vm-identifier myvm
 
         == Return values ==
 
