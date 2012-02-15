@@ -49,6 +49,15 @@ class TextFormatter(Formatter):
         assert typ is not None
         return typ.__dict__.keys()
 
+    def sort_fields(self, lst, strategy=[]):
+        out = sorted(lst)
+        for i in range(len(strategy)):
+            if strategy[i] in out:
+                out.remove(strategy[i])
+                out.insert(i, strategy[i])
+
+        return out
+
     def __get_max_field_width(self, resource, fields_exceptions, width= -1, show_empty=False, resource_context=None, mode=FormatMode.FULL):
         new_field = None
         width0 = width
@@ -123,14 +132,14 @@ class TextFormatter(Formatter):
                 stdout.write('\n')
                 val = val[width1:]
 
-    def _format_resource(self, resource, width= -1, show_empty=False, resource_context=None, mode=FormatMode.FULL):
+    def _format_resource(self, resource, width= -1, show_empty=False, resource_context=None, mode=FormatMode.FULL, sort_strategy=['id', 'name', 'description']):
         context = self.context
         settings = context.settings
         stdout = context.terminal.stdout
         fields_exceptions = ['link', 'href']
         reduced_mode_fields = ['id', 'name', 'description']
 
-        fields = self._get_fields(resource)
+        fields = self.sort_fields(self._get_fields(resource), sort_strategy)
         width0 = width
 
         if width0 == -1:
