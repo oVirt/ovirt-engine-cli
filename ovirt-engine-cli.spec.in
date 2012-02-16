@@ -12,7 +12,7 @@ BuildRequires: python-setuptools-devel
 BuildArch: noarch
 
 Requires: python
-Requires: ovirt-engine-sdk >= 1.5
+Requires: ovirt-engine-sdk >= 1.5-2
 Requires: pexpect
 Requires: python-setuptools
 Requires: python-ply
