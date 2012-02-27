@@ -64,8 +64,9 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
         readline.set_completer_delims(' ')
     ########################### SYSTEM #################################
-    def cmdloop(self, intro=None):
+    def cmdloop(self, intro=None, clear=True):
         try:
+            if clear: self.do_clear('')
             return cmd.Cmd.cmdloop(self, intro)
         except KeyboardInterrupt, e:
             self.emptyline()
@@ -84,8 +85,9 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
     def onecmd_loop(self, s):
         opts, args = self.parser.parse_args()
         if opts.connect or len(args) == 0:
+            self.do_clear('')
             self.do_connect(s)
-            self.cmdloop()
+            self.cmdloop(clear=False)
         else:
             self.cmdloop()
 
