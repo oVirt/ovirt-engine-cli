@@ -17,7 +17,6 @@
 
 from fnmatch import fnmatch
 from cli.error import CommandError
-from string import Template
 from ovirtcli.format.help import Help
 
 

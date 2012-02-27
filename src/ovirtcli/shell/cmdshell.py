@@ -86,8 +86,8 @@ class CmdShell(object):
             if len(spl) > 2:
                 obj = spl[1].strip()
                 for arg in spl[1:]:
-                    if arg.startswith('--') and arg.endswith('id'):
-                        parent_candidate = arg[2:len(arg) - 2]
+                    if arg.startswith('--') and arg.endswith('-identifier'):
+                        parent_candidate = arg[2:len(arg) - 11]
                         canidate = TypeHelper.getDecoratorType(parent_candidate + obj)
                         if canidate and hasattr(brokers, canidate):
                             callback(canidate, specific_options, line=line, key=obj)
