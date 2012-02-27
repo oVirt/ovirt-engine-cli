@@ -63,7 +63,7 @@ class OvirtCliExecutionContext(ExecutionContext):
 #        self.add_command(SaveCommand)
 #        self.add_command(CdCommand)
 #        self.add_command(PwdCommand)
-#        self.add_command(ClearCommand)
+        self.add_command(ClearCommand)
         self.add_command(ExitCommand)
         self.add_command(ActionCommand)
         self.add_command(CreateCommand)

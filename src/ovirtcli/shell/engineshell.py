@@ -31,12 +31,15 @@ from ovirtcli.shell.consolecmdshell import ConsoleCmdShell
 from ovirtcli.shell.pingcmdshell import PingCmdShell
 from ovirtcli.shell.statuscmdshell import StatusCmdShell
 from ovirtcli.settings import OvirtCliSettings
+from ovirtcli.shell.clearcmdshell import ClearCmdShell
+
 import readline
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
                   DeleteCmdShell, CreateCmdShell, DisconnectCmdShell, \
-                  ConsoleCmdShell, PingCmdShell, StatusCmdShell):
+                  ConsoleCmdShell, PingCmdShell, StatusCmdShell, \
+                  ClearCmdShell):
     ############################# INIT #################################
     def __init__(self, context, parser, completekey='tab', stdin=None, stdout=None):
         cmd.Cmd.__init__(self, completekey=completekey, stdin=stdin, stdout=stdout)
@@ -51,6 +54,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         ConsoleCmdShell.__init__(self, context, parser)
         PingCmdShell.__init__(self, context, parser)
         StatusCmdShell.__init__(self, context, parser)
+        ClearCmdShell.__init__(self, context, parser)
 
         cmd.Cmd.prompt = self.context.settings.get('ovirt-shell:ps1.disconnected')
         cmd.Cmd.doc_header = self.context.settings.get('ovirt-shell:commands')
