@@ -111,7 +111,7 @@ class Command(object):
             raise TypeError, 'Expecting a CommandError subclass'
         raise cls(message, **kwargs)
 
-    def format_list(self, lst, bullet='*', indent=0):
+    def format_list(self, lst, bullet='*', indent=0, sort=True):
         """Format a list of items, to be used with format_help()."""
         formatted = []
         for elem in lst:
@@ -120,10 +120,11 @@ class Command(object):
                 line += bullet + ' '
             line += elem
             formatted.append(line)
+        if sort: formatted = sorted(formatted)
         formatted = '\n'.join(formatted)
         return formatted
 
-    def format_map(self, mp, bullet='*', indent=0):
+    def format_map(self, mp, bullet='*', indent=0, sort=True):
         """Format a list of items, to be used with format_help()."""
         formatted = []
         for elem in mp.keys():
@@ -135,6 +136,7 @@ class Command(object):
             else:
                 line += elem
             formatted.append(line)
+        if sort: formatted = sorted(formatted)
         formatted = '\n'.join(formatted)
         return formatted
 
