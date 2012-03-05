@@ -74,8 +74,11 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             sys.stderr.write('error: %s\n' % str(e))
             return self.cmdloop(intro)
 
-    def emptyline(self):
-        print self.prompt
+    def emptyline(self, no_prompt=False):
+        if no_prompt:
+            print ''
+        else:
+            print self.prompt
 
     def onecmd(self, s):
         if not s.startswith('#'):
@@ -101,13 +104,13 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         return ret
 
     def do_EOF(self, line):
-        '''Exists shell by ctrl+d, ctrl+c'''
-        self.emptyline()
+        '''Exists shell by ctrl+d'''
+        self.emptyline(no_prompt=True)
         return True
 
     def do_exit(self, args):
-        '''Exists shell'''
-        self.emptyline()
+        '''Exists shell by /exit/ command'''
+        self.emptyline(no_prompt=True)
         return True
 
     def do_help(self, args):
