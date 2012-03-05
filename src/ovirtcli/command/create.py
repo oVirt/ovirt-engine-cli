@@ -147,7 +147,7 @@ class CreateCommand(OvirtCommand):
                 params_list = self.get_options(method='add',
                                                resource=args[0],
                                                sub_resource=self.resolve_base(opts))
-                subst['options'] = self.format_list(params_list)
+                subst['options'] = self.format_list(params_list, sort=False)
                 subst['type'] = args[0]
         statuses = self.get_statuses()
         subst['statuses'] = self.format_list(statuses)

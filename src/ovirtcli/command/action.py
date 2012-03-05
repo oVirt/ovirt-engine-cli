@@ -202,7 +202,7 @@ class ActionCommand(OvirtCommand):
             options = self.get_options(method=args[0],
                                        resource=obj)
             subst['actions'] = self.format_list(actions)
-            subst['options'] = self.format_list(options, bullet='')
+            subst['options'] = self.format_list(options, bullet='', sort=False)
         elif len(args) == 2 and self.is_supported_type(types.keys(), args[0]):
             helptext = self.helptext1
 
@@ -235,7 +235,7 @@ class ActionCommand(OvirtCommand):
                                        resource=obj,
                                        sub_resource=base)
             subst['actions'] = self.format_list(actions)
-            subst['options'] = self.format_list(options, bullet='')
+            subst['options'] = self.format_list(options, bullet='', sort=False)
         else:
             helptext = self.helptext0
             subst['types'] = self.format_map(types)
