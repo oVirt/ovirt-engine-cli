@@ -18,6 +18,7 @@
 import sys
 import os
 import cmd
+import signal
 
 from ovirtcli.shell.actioncmdshell import ActionCmdShell
 from ovirtcli.shell.connectcmdshell import ConnectCmdShell
@@ -63,14 +64,12 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         self.last_output = ''
 
         readline.set_completer_delims(' ')
+        signal.signal(signal.SIGINT, handler)
     ########################### SYSTEM #################################
     def cmdloop(self, intro=None, clear=True):
         try:
             if clear: self.do_clear('')
             return cmd.Cmd.cmdloop(self, intro)
-        except KeyboardInterrupt, e:
-            self.emptyline()
-            return True
         except Exception, e:
             sys.stderr.write('error: %s\n' % str(e))
             return self.cmdloop(intro)
@@ -132,4 +131,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         elif line:
             print line
         else: print self.prompt
+    ############################## COMMON ################################
+def handler(signum, frame):
+    pass
     #####################################################################
