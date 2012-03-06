@@ -149,7 +149,7 @@ class ActionCommand(OvirtCommand):
 
         resource = self.get_object(args[0], args[1], self.resolve_base(opts))
         if resource is None:
-            self.error('object does not exist: %s/%s', (args[0], args[1]))
+            self.error('object does not exist: %s/%s' % (args[0], args[1]))
         elif hasattr(resource, args[2]):
             try:
                 result = self.execute_method(resource, args[2], opts)

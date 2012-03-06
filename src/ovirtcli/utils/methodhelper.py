@@ -16,6 +16,7 @@
 
 
 import inspect
+from papyon.util.odict import odict
 
 class MethodHelper():
     @staticmethod
@@ -43,7 +44,7 @@ class MethodHelper():
         return []
 
     @staticmethod
-    def get_method_params(module, clazz, method, holder={}):
+    def get_method_params(module, clazz, method, holder=odict()):
         args = MethodHelper.getMethodArgs(module, clazz, method)
         if args:
             if len(args) == 3:

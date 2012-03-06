@@ -23,6 +23,7 @@ from ovirtsdk.utils.parsehelper import ParseHelper
 import uuid
 from ovirtcli.utils.methodhelper import MethodHelper
 from ovirtsdk.infrastructure import brokers
+from papyon.util.odict import odict
 
 
 class OvirtCommand(Command):
@@ -102,7 +103,8 @@ class OvirtCommand(Command):
         elif hasattr(obj, prop + '_'):
             setattr(obj, prop + '_', val)
         else:
-            self.error('%s is not valid argument.' % fq_prop)
+            pass
+#            self.error('%s is not valid argument.' % fq_prop)
 
     def update_object_data(self, obj, options, scope=None):
         """Updates object properties with values from `options'."""
@@ -286,23 +288,27 @@ class OvirtCommand(Command):
 
     def execute_method(self, resource, method_name, opts={}):
         """executes given method with specified opts."""
-        typs = {}
 
         if hasattr(resource, method_name):
             method = getattr(resource, method_name)
 
-            MethodHelper.get_method_params(brokers,
-                                           method.im_class.__name__,
-                                           method_name,
-                                           typs)
-            if typs:
-                if (len(typs) > 1): self.error('not supported invocation (too many arguments).')
-                param_type = ParseHelper.getXmlType(typs.keys()[0])
-                if param_type:
-                    param = self.update_object_data(param_type.factory(), opts)
-                    result = method(param)
-                else:
-                    self.error('failed locating type %s' % typs.keys()[0])
+            method_args = odict().fromkeys(MethodHelper.getMethodArgs(brokers,
+                                                                      method.im_class.__name__,
+                                                                      method_name,
+                                                                      drop_self=True))
+
+            if method_args:
+                for arg in method_args.keys():
+                    param_type = ParseHelper.getXmlType(arg)
+                    if param_type:
+                        method_args[arg] = self.update_object_data(param_type.factory(), opts)
+                    elif opts.has_key('--' + arg):
+                        method_args[arg] = opts['--' + arg]
+                    else:
+                        #TODO: throw error if param is mandatory
+                        pass
+
+                result = method(**method_args)
             else:
                 result = method()
             return result
