@@ -69,7 +69,18 @@ class OvirtCommand(Command):
                 if i == (props_len - 1):
                     self.__set_property(obj, props[i], val, fq_prop)
                     return
-                if hasattr(obj, props[i]):
+                if type(obj) == list:
+                    if len(obj) == 0:
+                        cand = ParseHelper.getXmlType(props[i])
+                        if cand:
+                            obj_cand = cand.factory()
+                            self.__do_set_data(obj_cand, '-'.join(props[i + 1:]), fq_prop, val)
+                            obj.append(obj_cand)
+                            return
+                    else:
+                        self.__do_set_data(obj[-1], '-'.join(props[i + 1:]), fq_prop, val)
+                        return
+                elif hasattr(obj, props[i]):
                     content = getattr(obj, props[i])
                     if content is None:
                         cand1 = ParseHelper.getXmlType(props[i])
