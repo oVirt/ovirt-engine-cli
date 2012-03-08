@@ -17,8 +17,12 @@
 
 import inspect
 from papyon.util.odict import odict
+from codegen.doc.documentation import Documentation
 
 class MethodHelper():
+
+    NON_ARG_TEMPLATE = ':not-arg'
+
     @staticmethod
     def getMethodArgs(module, cls, method, get_varargs=False, get_keywords=False, drop_self=False):
         '''Returns list of method's arguments'''
@@ -69,7 +73,13 @@ class MethodHelper():
 
     @staticmethod
     def get_documented_arguments(method_ref, as_params_collection=False, spilt_or=False):
-        """Return a list of arguments documented for specific method."""
+        """Return a list of documented arguments for specific method, ignoring metadata."""
+        return MethodHelper.get_arguments_documentation(method_ref, as_params_collection, spilt_or, ignore_non_args=True)
+
+
+    @staticmethod
+    def get_arguments_documentation(method_ref, as_params_collection=False, spilt_or=False, ignore_non_args=False):
+        """Return a list of documented arguments with arguments metadata for specific method."""
 
         PARAM_ANNOTATION = '@param'
         params_list = []
@@ -80,7 +90,10 @@ class MethodHelper():
             params_arr = doc.split('\n')
 
             for var in params_arr:
-                if '' != var and var.find(PARAM_ANNOTATION) != -1:
+                if not ignore_non_args and var.find(Documentation.OVERLOAD_TEMPLATE) != -1:
+                    params_list.append('\n' + var.strip() + MethodHelper.NON_ARG_TEMPLATE + '\n')
+                    #TODO: fix this ^ - should be separate collection peer overload
+                elif '' != var and var.find(PARAM_ANNOTATION) != -1:
                     splitted_line = var.strip().split(' ')
                     if len(splitted_line) >= 2:
                         prefix = splitted_line[0].replace((PARAM_ANNOTATION + ' '),

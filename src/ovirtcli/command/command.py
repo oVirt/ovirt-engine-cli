@@ -289,7 +289,7 @@ class OvirtCommand(Command):
             hasattr(getattr(brokers, type(resource).__name__ + 's'), method):
                 method_ref = getattr(getattr(brokers, type(resource).__name__ + 's'), method)
 
-        return MethodHelper.get_documented_arguments(method_ref, as_params_collection)
+        return MethodHelper.get_arguments_documentation(method_ref, as_params_collection)
 
     def is_supported_type(self, types, typ):
         if typ not in types:

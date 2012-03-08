@@ -18,6 +18,8 @@
 from fnmatch import fnmatch
 from cli.error import CommandError
 from ovirtcli.format.help import Help
+from codegen.doc.documentation import Documentation
+from ovirtcli.utils.methodhelper import MethodHelper
 
 
 class Command(object):
@@ -116,9 +118,9 @@ class Command(object):
         formatted = []
         for elem in lst:
             line = ' ' * indent
-            if bullet:
+            if bullet and elem.find(MethodHelper.NON_ARG_TEMPLATE) == -1:
                 line += bullet + ' '
-            line += elem
+            line += elem.replace(MethodHelper.NON_ARG_TEMPLATE, '')
             formatted.append(line)
         if sort: formatted = sorted(formatted)
         formatted = '\n'.join(formatted)
