@@ -101,6 +101,8 @@ class ActionCommand(OvirtCommand):
 
           $actions
 
+          Note: collection based arguments syntax is: "{x=a1;y=b1;z=c1;...},{x=a2;y=b2;z=c2;...},..."
+
         == Object Identifiers ==
 
         Some objects can only exist inside other objects. For example, a disk

@@ -109,6 +109,8 @@ class CreateCommand(OvirtCommand):
 
           $options
 
+          Note: collection based arguments syntax is: "{x=a1;y=b1;z=c1;...},{x=a2;y=b2;z=c2;...},..."
+
         == Return Values ==
 
           $statuses

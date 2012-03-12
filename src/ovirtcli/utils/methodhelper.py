@@ -82,7 +82,9 @@ class MethodHelper():
         """Return a list of documented arguments with arguments metadata for specific method."""
 
         PARAM_ANNOTATION = '@param'
+        IVAR_ANNOTATION = '@ivar'
         params_list = []
+        ivars_list = []
         PERIOD_SYMBOL = '-'
 
         if method_ref and method_ref.__doc__:
@@ -92,7 +94,6 @@ class MethodHelper():
             for var in params_arr:
                 if not ignore_non_args and var.find(Documentation.OVERLOAD_TEMPLATE) != -1:
                     params_list.append('\n' + var.strip() + MethodHelper.NON_ARG_TEMPLATE + '\n')
-                    #TODO: fix this ^ - should be separate collection peer overload
                 elif '' != var and var.find(PARAM_ANNOTATION) != -1:
                     splitted_line = var.strip().split(' ')
                     if len(splitted_line) >= 2:
@@ -148,6 +149,13 @@ class MethodHelper():
                                     params_list.append(prefix + param + ' ' + typ)
                             else:
                                 params_list.append(prefix + param + ' ' + typ)
+                if params_list and params_list[-1].find('collection') != -1:
+                    params_list[-1] = params_list[-1].replace('collection', 'collection*')
+                    params_list.append('  {' + MethodHelper.NON_ARG_TEMPLATE)
+                elif not ignore_non_args and '' != var and var.find(IVAR_ANNOTATION) != -1:
+                    params_list.append('    ' + var.lstrip().replace(IVAR_ANNOTATION + ' ', '') + MethodHelper.NON_ARG_TEMPLATE)
+                elif not ignore_non_args and '' != var and var.find('}') != -1:
+                    params_list.append('  }' + MethodHelper.NON_ARG_TEMPLATE)
 
         return params_list
 
