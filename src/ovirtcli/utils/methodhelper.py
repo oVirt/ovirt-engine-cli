@@ -150,7 +150,6 @@ class MethodHelper():
                             else:
                                 params_list.append(prefix + param + ' ' + typ)
                 if params_list and params_list[-1].find('collection') != -1:
-                    params_list[-1] = params_list[-1].replace('collection', 'collection*')
                     params_list.append('  {' + MethodHelper.NON_ARG_TEMPLATE)
                 elif not ignore_non_args and '' != var and var.find(IVAR_ANNOTATION) != -1:
                     params_list.append('    ' + var.lstrip().replace(IVAR_ANNOTATION + ' ', '') + MethodHelper.NON_ARG_TEMPLATE)

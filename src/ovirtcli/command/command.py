@@ -59,6 +59,17 @@ class OvirtCommand(Command):
                     self.error('cannot find object %s' % val)
                 return base
 
+
+    def __try_parse(self, param):
+        """INTERNAL: try parsing data to int"""
+        try:
+            if param and param[0] in ('-', '+') and param[1:].isdigit():
+                return int(param)
+            elif param and param.isdigit():
+                return int(param)
+        except:
+            return param
+
     def __do_set_data(self, obj, prop, fq_prop, val):
         """INTERNAL: set data in to object based on 'prop' map segmentation"""
         if prop.find('-') != -1:
@@ -66,20 +77,24 @@ class OvirtCommand(Command):
             props_len = len(props)
 
             for i in range(props_len):
-                if i == (props_len - 1):
+                if i == (props_len - 1) and hasattr(obj, props[i]) and type(getattr(obj, props[i])) != list:
                     self.__set_property(obj, props[i], val, fq_prop)
                     return
-                if type(obj) == list:
-                    if len(obj) == 0:
-                        cand = ParseHelper.getXmlType(props[i])
-                        if cand:
-                            obj_cand = cand.factory()
-                            self.__do_set_data(obj_cand, '-'.join(props[i + 1:]), fq_prop, val)
-                            obj.append(obj_cand)
-                            return
-                    else:
-                        self.__do_set_data(obj[-1], '-'.join(props[i + 1:]), fq_prop, val)
-                        return
+                if hasattr(obj, props[i]) and type(getattr(obj, props[i])) == list:
+                    for params_set in val.split(','):
+                        params_set_cand = ParseHelper.getXmlType(props[i])
+                        if params_set_cand:
+                            obj_params_set_cand = params_set_cand.factory()
+                        else:
+                            self.error('cannot find type "%s".') % props[i]
+                        for param in params_set.replace('{', '').replace('}', '').split(';'):
+                            param_data = param.replace(props[i] + '.', '').split('=')
+                            if len(param_data) == 2:
+                                if hasattr(obj_params_set_cand, param_data[0]):
+                                    setattr(obj_params_set_cand, param_data[0], self.__try_parse(param_data[1].strip()))
+                            else:
+                                self.error('syntax error "%s", see help on collection based arguments for more details.') % param
+                        getattr(obj, props[i]).append(obj_params_set_cand)
                 elif hasattr(obj, props[i]):
                     content = getattr(obj, props[i])
                     if content is None:
