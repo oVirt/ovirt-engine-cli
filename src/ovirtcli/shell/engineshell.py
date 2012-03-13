@@ -66,7 +66,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         self.last_output = ''
 
         readline.set_completer_delims(' ')
-        signal.signal(signal.SIGINT, handler)
+        signal.signal(signal.SIGINT, self.handler)
     ########################### SYSTEM #################################
     def cmdloop(self, intro=None, clear=True):
         try:
@@ -190,6 +190,6 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             print line
         else: print self.prompt
     ############################## COMMON ################################
-def handler(signum, frame):
-    pass
-    #####################################################################
+    def handler(self, signum, frame):
+        self.emptyline(no_prompt=True)
+        sys.exit()
