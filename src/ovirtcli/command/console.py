@@ -39,23 +39,20 @@ class ConsoleCommand(OvirtCommand):
 
     def execute(self):
         connection = self.check_connection()
-        stdout = self.context.terminal.stdout
         args = self.arguments
         vm = self.get_object('vm', args[0])
         if vm is None:
             self.error('no such vm: %s' % args[0])
         if vm.status.state not in ('powering_up', 'up', 'reboot_in_progress'):
             self.error('vm is not up')
-        proto = vm.display.type
+        proto = vm.display.type_
         host = vm.display.address
         port = vm.display.port
         secport = vm.display.secure_port
-#FIXME: the method should be lower-case in SDK
-        action = vm.Ticket()
-#        action = connection.action(vm, 'ticket')
+        action = vm.ticket()
         if action.status.state != 'complete':
             self.error('could not set a ticket for the vm')
-        ticket = action.ticket.value_
+        ticket = action.ticket.value
         debug = self.context.settings['cli:debug']
         if proto == 'vnc':
             vnc.launch_vnc_viewer(host, port, ticket, debug)

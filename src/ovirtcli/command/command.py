@@ -77,6 +77,7 @@ class OvirtCommand(Command):
             props_len = len(props)
 
             for i in range(props_len):
+                if props[i] == 'type': props[i] = 'type_'
                 if i == (props_len - 1) and hasattr(obj, props[i]) and type(getattr(obj, props[i])) != list:
                     self.__set_property(obj, props[i], val, fq_prop)
                     return

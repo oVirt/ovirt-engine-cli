@@ -18,7 +18,6 @@
 from fnmatch import fnmatch
 from cli.error import CommandError
 from ovirtcli.format.help import Help
-from codegen.doc.documentation import Documentation
 from ovirtcli.utils.methodhelper import MethodHelper
 
 
