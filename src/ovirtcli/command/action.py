@@ -19,6 +19,7 @@ from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
 
 from ovirtsdk.utils.parsehelper import ParseHelper
+import types
 
 class ActionCommand(OvirtCommand):
 
@@ -152,7 +153,7 @@ class ActionCommand(OvirtCommand):
         resource = self.get_object(args[0], args[1], self.resolve_base(opts))
         if resource is None:
             self.error('object does not exist: %s/%s' % (args[0], args[1]))
-        elif hasattr(resource, args[2]):
+        elif hasattr(resource, args[2]) and type(getattr(resource, args[2])) == types.MethodType:
             try:
                 result = self.execute_method(resource, args[2], opts)
             except Exception, e:
