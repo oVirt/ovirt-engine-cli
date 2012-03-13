@@ -17,6 +17,7 @@
 
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.settings import OvirtCliSettings
+from ovirtcli.shell.engineshell import EngineShell
 
 
 class HelpCommand(OvirtCommand):
@@ -103,7 +104,15 @@ class HelpCommand(OvirtCommand):
         stdout = self.context.terminal.stdout
         if len(args) == 0:
             subst = {}
-            commands = self.get_commands()
+            if self.context.connection is not None:
+                commands = self.get_commands()
+            else:
+                off_line_content = \
+                          [ f
+                            for f in self.get_commands()
+                            if f.split(' ')[0] in  EngineShell.OFF_LINE_CONTENT
+                          ]
+                commands = off_line_content
             subst['commands'] = self.format_list(commands)
             subst['product'] = OvirtCliSettings.PRODUCT
             helptext = self.format_help(self.helptext1, subst)

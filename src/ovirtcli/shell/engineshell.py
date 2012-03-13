@@ -35,12 +35,14 @@ from ovirtcli.settings import OvirtCliSettings
 from ovirtcli.shell.clearcmdshell import ClearCmdShell
 
 import readline
+from cli.command.help import HelpCommand
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
                   DeleteCmdShell, CreateCmdShell, DisconnectCmdShell, \
                   ConsoleCmdShell, PingCmdShell, StatusCmdShell, \
                   ClearCmdShell):
+    OFF_LINE_CONTENT = [ConnectCmdShell.NAME, HelpCommand.name, 'exit', "EOF"]
     ############################# INIT #################################
     def __init__(self, context, parser, completekey='tab', stdin=None, stdout=None):
         cmd.Cmd.__init__(self, completekey=completekey, stdin=stdin, stdout=stdout)
@@ -82,7 +84,11 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
     def onecmd(self, s):
         if not s.startswith('#'):
-            return cmd.Cmd.onecmd(self, s)
+            command = s.split(' ')[0]
+            if self.context.connection == None and command not in EngineShell.OFF_LINE_CONTENT:
+                print 'error: command "%s" not valid or not available while not connected.' % command
+            else:
+                return cmd.Cmd.onecmd(self, s)
 
     def onecmd_loop(self, s):
         opts, args = self.parser.parse_args()
@@ -103,6 +109,52 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         ret = cmd.Cmd.parseline(self, line)
         return ret
 
+    def complete(self, text, state):
+        content = []
+        if self.context.connection == None:
+            if not text:
+                content = EngineShell.OFF_LINE_CONTENT
+            else:
+                content = [ f
+                            for f in EngineShell.OFF_LINE_CONTENT
+                            if f.startswith(text)
+                          ]
+                if len(content) == 0: content = None
+
+        return self.__do_complete(text, state, content=content)
+
+    def __do_complete(self, text, state, content=[]):
+        """Return the next possible completion for 'text'"""
+        if state == 0:
+            import readline
+            origline = readline.get_line_buffer()
+            line = origline.lstrip()
+            stripped = len(origline) - len(line)
+            begidx = readline.get_begidx() - stripped
+            endidx = readline.get_endidx() - stripped
+            if begidx > 0:
+                cmd, args, foo = self.parseline(line)
+                if cmd == '':
+                    compfunc = self.completedefault
+                else:
+                    try:
+                        compfunc = getattr(self, 'complete_' + cmd)
+                    except AttributeError:
+                        compfunc = self.completedefault
+            else:
+                compfunc = self.completenames
+            if content and len(content) > 0:
+                self.completion_matches = content
+            elif content == None:
+                self.completion_matches = []
+            else:
+                self.completion_matches = compfunc(text, line, begidx, endidx)
+        try:
+            return self.completion_matches[state]
+        except IndexError:
+            return None
+
+
     def do_EOF(self, line):
         '''Exists shell by ctrl+d'''
         self.emptyline(no_prompt=True)
@@ -116,10 +168,13 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
     def do_help(self, args):
         '''Prints help by command'''
         if not args:
-            #cmd.Cmd.do_help(self, args)
             self.context.execute_string('help\n')
         else:
-            return self.context.execute_string('help ' + args + '\n')
+            cmd = args.split(' ')[0]
+            if self.context.connection == None and cmd not in EngineShell.OFF_LINE_CONTENT:
+                print 'error: command "%s" not valid or not available while not connected.' % cmd
+            else:
+                return self.context.execute_string('help ' + args + '\n')
     ############################# SHELL #################################
     def do_shell(self, line):
         "Runs a shell command ('!' can be used instead of 'shell' command)."
