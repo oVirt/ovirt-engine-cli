@@ -85,7 +85,9 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
     def onecmd(self, s):
         if not s.startswith('#'):
             command = s.split(' ')[0]
-            if self.context.connection == None and command not in EngineShell.OFF_LINE_CONTENT:
+            if command == '':
+                pass
+            elif self.context.connection == None and command not in EngineShell.OFF_LINE_CONTENT:
                 print 'error: command "%s" not valid or not available while not connected.' % command
             else:
                 return cmd.Cmd.onecmd(self, s)
