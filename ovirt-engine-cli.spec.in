@@ -12,7 +12,7 @@ BuildRequires: python-setuptools-devel
 BuildArch: noarch
 
 Requires: python
-Requires: ovirt-engine-sdk >= 1.5-2
+Requires: ovirt-engine-sdk >= 1.6.1
 Requires: pexpect
 Requires: python-setuptools
 Requires: python-ply
@@ -41,6 +41,16 @@ The command line interface for oVirt-Engine.
 %doc LICENSE
 
 %changelog
+
+* Tue Mar 13 2012 Michael Pasternak <mpastern@redhat.com> - 2.1.1-1
+- do not expose commands other than /connect,help,exit/ when disconnected
+- a user can use Status option as action while it doesnt exist #800047
+- cli: console command not function #800052
+- support auto-completion on /update/ command
+- implement collection based parameters support
+- support parameters_set overloads in help
+- implement support for multi-argument methods in sdk
+- call sys.exit() on Ctrl+C signal
 
 * Wed Feb 15 2012 Michael Pasternak <mpastern@redhat.com> - 2.0-1
 - New application core
