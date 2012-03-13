@@ -8,7 +8,7 @@ from setuptools import setup, Command
 
 version_info = {
     'name': 'ovirt-shell',
-    'version': '2.1.1-SNAPSHOT',
+    'version': '2.1.2-SNAPSHOT',
     'description': 'A command-line interface to oVirt Virtualization',
     'author': 'www.ovirt.org',
     'author_email': 'engine-devel@ovirt.org',
