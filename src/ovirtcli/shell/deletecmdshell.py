@@ -35,8 +35,8 @@ class DeleteCmdShell(CmdShell):
         obj_type = TypeHelper.getDecoratorType(TypeHelper.to_singular(obj))
         if obj_type and hasattr(brokers, obj_type):
             obj_typ_ref = getattr(brokers, obj_type)
-            if obj_typ_ref and hasattr(obj_typ_ref, 'delete'):
-                method_args = MethodHelper.get_documented_arguments(method_ref=getattr(obj_typ_ref, 'delete'),
+            if obj_typ_ref and hasattr(obj_typ_ref, DeleteCmdShell.NAME):
+                method_args = MethodHelper.get_documented_arguments(method_ref=getattr(obj_typ_ref, DeleteCmdShell.NAME),
                                                                     as_params_collection=True,
                                                                     spilt_or=True)
 
@@ -44,7 +44,7 @@ class DeleteCmdShell(CmdShell):
                     specific_options[key if key is not None else obj] = method_args
 
     def complete_delete(self, text, line, begidx, endidx):
-        args = TypeHelper.get_types_containing_method('delete')
+        args = TypeHelper.get_types_containing_method(DeleteCmdShell.NAME)
         specific_options = self.get_resource_specific_options(args,
                                                               line,
                                                               callback=self.__add_resource_specific_options)

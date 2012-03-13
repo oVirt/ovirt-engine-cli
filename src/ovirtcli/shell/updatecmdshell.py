@@ -18,6 +18,8 @@
 from ovirtcli.shell.cmdshell import CmdShell
 from ovirtcli.utils.typehelper import TypeHelper
 from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
+from ovirtsdk.infrastructure import brokers
+from ovirtcli.utils.methodhelper import MethodHelper
 
 
 class UpdateCmdShell(CmdShell):
@@ -29,7 +31,22 @@ class UpdateCmdShell(CmdShell):
     def do_update(self, args):
         return self.context.execute_string(UpdateCmdShell.NAME + ' ' + args + '\n')
 
+    def __add_resource_specific_options(self, obj, specific_options, line, key=None):
+        obj_type = TypeHelper.getDecoratorType(TypeHelper.to_singular(obj))
+        if obj_type and hasattr(brokers, obj_type):
+            obj_typ_ref = getattr(brokers, obj_type)
+            if obj_typ_ref and hasattr(obj_typ_ref, UpdateCmdShell.NAME):
+                method_args = MethodHelper.get_documented_arguments(method_ref=getattr(obj_typ_ref, UpdateCmdShell.NAME),
+                                                                    as_params_collection=True,
+                                                                    spilt_or=True)
+
+                if method_args:
+                    specific_options[key if key is not None else obj] = method_args
+
     def complete_update(self, text, line, begidx, endidx):
-        #TODO: support exposing resource options (when RSDL will expose them)
-        args = TypeHelper.get_types_containing_method('update')
-        return AutoCompletionHelper.complete(line, text, args)
+        args = TypeHelper.get_types_containing_method(UpdateCmdShell.NAME)
+        specific_options = self.get_resource_specific_options(args,
+                                                              line,
+                                                              callback=self.__add_resource_specific_options)
+
+        return AutoCompletionHelper.complete(line, text, args, specific_options=specific_options)
