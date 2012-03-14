@@ -17,7 +17,6 @@
 
 import inspect
 from papyon.util.odict import odict
-from codegen.doc.documentation import Documentation
 
 class MethodHelper():
 
@@ -92,7 +91,7 @@ class MethodHelper():
             params_arr = doc.split('\n')
 
             for var in params_arr:
-                if not ignore_non_args and var.find(Documentation.OVERLOAD_TEMPLATE) != -1:
+                if not ignore_non_args and var.find('Overload') != -1:
                     params_list.append('\n' + var.strip() + MethodHelper.NON_ARG_TEMPLATE + '\n')
                 elif '' != var and var.find(PARAM_ANNOTATION) != -1:
                     splitted_line = var.strip().split(' ')
