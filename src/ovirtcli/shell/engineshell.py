@@ -19,6 +19,7 @@ import sys
 import os
 import cmd
 import signal
+import readline
 
 from ovirtcli.shell.actioncmdshell import ActionCmdShell
 from ovirtcli.shell.connectcmdshell import ConnectCmdShell
@@ -34,7 +35,6 @@ from ovirtcli.shell.statuscmdshell import StatusCmdShell
 from ovirtcli.settings import OvirtCliSettings
 from ovirtcli.shell.clearcmdshell import ClearCmdShell
 
-import readline
 from cli.command.help import HelpCommand
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
@@ -102,7 +102,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             self.cmdloop()
 
     def precmd(self, line):
-        return cmd.Cmd.precmd(self, line)
+        return cmd.Cmd.precmd(self, line.lstrip())
 
     def postcmd(self, stop, line):
         return cmd.Cmd.postcmd(self, stop, line)
@@ -113,10 +113,13 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
     def complete(self, text, state):
         content = []
+        line = readline.get_line_buffer().lstrip()
+
         if self.context.connection == None:
-            if not text:
+            if not line or len(line) == 0:
                 content = EngineShell.OFF_LINE_CONTENT
-            else:
+            elif not line.split(' ')[0] in EngineShell.OFF_LINE_CONTENT or \
+                 (len(line.split(' ')) > 1 and line.split(' ')[0] == HelpCommand.name):
                 content = [ f
                             for f in EngineShell.OFF_LINE_CONTENT
                             if f.startswith(text)
@@ -128,7 +131,6 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
     def __do_complete(self, text, state, content=[]):
         """Return the next possible completion for 'text'"""
         if state == 0:
-            import readline
             origline = readline.get_line_buffer()
             line = origline.lstrip()
             stripped = len(origline) - len(line)
