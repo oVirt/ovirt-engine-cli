@@ -32,7 +32,7 @@ def launch_spice_client(host, port, secport, ticket, certurl, title,
     if cmd is None:
         cmd = util.which('/usr/libexec/spicec')
     if cmd is None:
-        raise Error, 'spicec: command not found'
+        raise Error, 'Spice viewer was not found, please install Spice first.'
     certdir = os.path.join(util.get_home_dir(), '.spicec')
     try:
         os.stat(certdir)

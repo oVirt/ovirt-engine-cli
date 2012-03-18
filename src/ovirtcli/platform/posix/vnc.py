@@ -27,7 +27,7 @@ def launch_vnc_viewer(host, port, ticket, debug=False):
         raise Error, 'not running in a GUI, cannot start a VNC viewer'
     cmd = util.which('vncviewer')
     if cmd is None:
-        raise Error, 'vncviewer: command not found'
+        raise Error, 'VNC viewer was not found, please install VNC first.'
     args = ['vncviewer', '%s::%s' % (host, port), '-passwdInput' ]
     pid, pstdin = util.spawn(cmd, args, debug)
     os.write(pstdin, ticket)

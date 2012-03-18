@@ -17,6 +17,7 @@
 
 from ovirtcli.platform import vnc, spice
 from ovirtcli.command.command import OvirtCommand
+from ovirtsdk.infrastructure import contextmanager
 
 
 class ConsoleCommand(OvirtCommand):
@@ -38,7 +39,7 @@ class ConsoleCommand(OvirtCommand):
         """
 
     def execute(self):
-        connection = self.check_connection()
+        self.check_connection()
         args = self.arguments
         vm = self.get_object('vm', args[0])
         if vm is None:
@@ -57,8 +58,7 @@ class ConsoleCommand(OvirtCommand):
         if proto == 'vnc':
             vnc.launch_vnc_viewer(host, port, ticket, debug)
         elif proto == 'spice':
-            certurl = 'https://%s:%s/ca.crt' % (connection.host, connection.port)
-            spice.launch_spice_client(host, port, secport, ticket, certurl,
-                                      vm.name, debug)
+            certurl = '%s/ca.crt' % (contextmanager.get('proxy').get_url().replace('/api', ''))
+            spice.launch_spice_client(host, port, secport, ticket, certurl, vm.name, debug)
         else:
             self.error('unsupported display protocol: %s' % proto)
