@@ -23,7 +23,7 @@ from ovirtsdk.utils.parsehelper import ParseHelper
 import uuid
 from ovirtcli.utils.methodhelper import MethodHelper
 from ovirtsdk.infrastructure import brokers
-from papyon.util.odict import odict
+from ovirtsdk.utils.ordereddict import OrderedDict
 
 
 class OvirtCommand(Command):
@@ -319,10 +319,10 @@ class OvirtCommand(Command):
         if hasattr(resource, method_name):
             method = getattr(resource, method_name)
 
-            method_args = odict().fromkeys(MethodHelper.getMethodArgs(brokers,
-                                                                      method.im_class.__name__,
-                                                                      method_name,
-                                                                      drop_self=True))
+            method_args = OrderedDict().fromkeys(MethodHelper.getMethodArgs(brokers,
+                                                                            method.im_class.__name__,
+                                                                            method_name,
+                                                                            drop_self=True))
 
             if method_args:
                 for arg in method_args.keys():

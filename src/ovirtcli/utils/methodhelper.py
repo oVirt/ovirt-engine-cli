@@ -16,7 +16,7 @@
 
 
 import inspect
-from papyon.util.odict import odict
+from ovirtsdk.utils.ordereddict import OrderedDict
 
 class MethodHelper():
 
@@ -47,7 +47,7 @@ class MethodHelper():
         return []
 
     @staticmethod
-    def get_method_params(module, clazz, method, holder=odict()):
+    def get_method_params(module, clazz, method, holder=OrderedDict()):
         args = MethodHelper.getMethodArgs(module, clazz, method)
         if args:
             if len(args) == 3:
