@@ -12,7 +12,7 @@ BuildRequires: python-setuptools-devel
 BuildArch: noarch
 
 Requires: python
-Requires: ovirt-engine-sdk >= 1.6.3
+Requires: ovirt-engine-sdk >= 1.6.4
 Requires: pexpect
 Requires: python-setuptools
 Requires: python-ply
@@ -41,6 +41,10 @@ The command line interface for oVirt-Engine.
 %doc LICENSE
 
 %changelog
+
+* Wed Mar 28 2012 Michael Pasternak <mpastern@redhat.com> - 2.1.5-1
+- use OrderedDict instead of papyon odict
+- get rid of papyon dep.
 
 * Wed Mar 21 2012 Michael Pasternak <mpastern@redhat.com> - 2.1.4-1
 - no auto completion for connect command #803312
