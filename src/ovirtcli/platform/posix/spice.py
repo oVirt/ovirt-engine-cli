@@ -45,10 +45,20 @@ def launch_spice_client(host, port, secport, ticket, certurl, title,
         certtmp = '%s.%d-tmp' % (certfile, os.getpid())
         urllib.urlretrieve(certurl, certtmp)
         os.rename(certtmp, certfile)
+    args = ['spicec']
     if cmd.startswith('/usr/libexec'):
-        args = [ 'spicec', host, str(port), str(secport), '--ssl-channels',
-                 'smain,sinputs', '--ca-file', certfile, '-p', ticket ]
+        args.extend([host])
+        args.extend([str(port)])
+        if secport:
+            args.extend([str(secport)])
+            args.extend(['--ssl-channels', 'smain,sinputs'])
+            args.extend(['--ca-file', certfile])
+        args.extend(['-p', ticket])
     else:
-        args = [ 'spicec', '-h', host, '-p', str(port), '-s', str(secport),
-                 '-w', ticket, '-t', title ]
+        args.extend(['-h', host])
+        args.extend(['-p', str(port)])
+        if secport:
+            args.extend([ '-s', str(secport) ])
+        args.extend(['-w', ticket])
+        args.extend(['-t', title])
     pid, pstdin = util.spawn(cmd, args, debug)
