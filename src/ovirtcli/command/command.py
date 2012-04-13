@@ -40,9 +40,12 @@ class OvirtCommand(Command):
         connection = self.check_connection()
 
         for opt, val in options.items():
-            if opt.endswith('-id') or not opt.endswith('-identifier'):
+            if opt.endswith('-id'):
+                typename = opt[2:-3]
+            elif opt.endswith('-identifier'):
+                typename = opt[2:-11]
+            else:
                 continue
-            typename = opt[2:-11]
             coll = typename + 's'
             if not (TypeHelper.isKnownType(typename) or  TypeHelper.isKnownType(coll)):
                 self.error('no such type: %s' % typename)
