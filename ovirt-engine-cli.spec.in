@@ -9,6 +9,8 @@ Source0:        http://ovirt.org/releases/stable/src/%{name}-%{version}.tar.gz
 
 BuildRequires: python2-devel
 BuildRequires: python-setuptools-devel
+BuildRequires: python-ply
+
 BuildArch: noarch
 
 Requires: python
@@ -25,7 +27,15 @@ The command line interface for oVirt-Engine.
 %setup -q -n %{name}
 
 %build
+
+# Call the method that generates the parsing tables, so that they
+# are generated and included in the package:
+pushd src
+  %{__python} -c 'import cli.parser; parser = cli.parser.Parser(); parser._write_tables()'
+popd
+
 %{__python} -c 'import setuptools; execfile("setup.py")' build
+
 
 %install
 %{__python} -c 'import setuptools; execfile("setup.py")' install -O1 --skip-build --root %{buildroot}
