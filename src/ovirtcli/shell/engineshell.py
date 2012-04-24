@@ -36,6 +36,7 @@ from ovirtcli.settings import OvirtCliSettings
 from ovirtcli.shell.clearcmdshell import ClearCmdShell
 
 from cli.command.help import HelpCommand
+from ovirtcli.prompt import PromptMode
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
@@ -59,11 +60,14 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         StatusCmdShell.__init__(self, context, parser)
         ClearCmdShell.__init__(self, context, parser)
 
-        cmd.Cmd.prompt = self.context.settings.get('ovirt-shell:ps1.disconnected')
+        self._set_prompt(mode=PromptMode.Disconnected)
         cmd.Cmd.doc_header = self.context.settings.get('ovirt-shell:commands')
         cmd.Cmd.undoc_header = self.context.settings.get('ovirt-shell:misc_commands')
         cmd.Cmd.intro = OvirtCliSettings.INTRO
+
         self.last_output = ''
+        self.__input_buffer = ''
+        self.__org_prompt = ''
 
         readline.set_completer_delims(' ')
         signal.signal(signal.SIGINT, self.handler)
@@ -85,12 +89,39 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
     def onecmd(self, s):
         if not s.startswith('#'):
             command = s.split(' ')[0]
-            if command == '':
+            if command == '' and not self.__input_buffer:
                 pass
             elif self.context.connection == None and command not in EngineShell.OFF_LINE_CONTENT:
                 print 'error: command "%s" not valid or not available while not connected.' % command
             else:
+                if s.endswith('\\') and s != 'EOF':
+                    self._set_prompt(mode=PromptMode.Multiline)
+                    self.__input_buffer += ' ' + s.replace('\\', '') \
+                    if not s.startswith(' ') and self.__input_buffer != ''\
+                    else s.replace('\\', '')
+                    return
+                elif self.__input_buffer != '' and s != 'EOF':
+                    self.__input_buffer += ' ' + s \
+                    if not s.startswith(' ') else s
+                    s = self.__input_buffer
+                    self.__input_buffer = ''
+                    self._set_prompt(mode=PromptMode.Original)
+
                 return cmd.Cmd.onecmd(self, s)
+
+    def _set_prompt(self, mode=PromptMode.Default):
+        if mode == PromptMode.Multiline:
+            if not self.__org_prompt:
+                self.__org_prompt = self.prompt
+            self.prompt = '> '
+        elif mode == PromptMode.Original:
+            if self.__org_prompt:
+                self.prompt = self.__org_prompt
+                self.__org_prompt = ''
+        elif mode == PromptMode.Disconnected or mode == PromptMode.Default:
+            self.prompt = self.context.settings.get('ovirt-shell:ps1.disconnected')
+        elif mode == PromptMode.Connected:
+            self.prompt = self.context.settings.get('ovirt-shell:ps2.connected')
 
     def onecmd_loop(self, s):
         opts, args = self.parser.parse_args()
@@ -128,14 +159,39 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
         return self.__do_complete(text, state, content=content)
 
+    def __get_begidx(self, text):
+        indx = 0
+        i = 0
+        for char in text:
+            i += 1
+            if char == ' ' and i != (indx + 1):
+                indx = i
+        return indx
+
+    def __get_endidx(self, text):
+        return len(text)
+
     def __do_complete(self, text, state, content=[]):
         """Return the next possible completion for 'text'"""
         if state == 0:
-            origline = readline.get_line_buffer()
-            line = origline.lstrip()
-            stripped = len(origline) - len(line)
-            begidx = readline.get_begidx() - stripped
-            endidx = readline.get_endidx() - stripped
+            if self.__input_buffer != '':
+                if not self.__input_buffer.endswith(readline.get_line_buffer()):
+                    origline = self.__input_buffer + (' ' + readline.get_line_buffer()) \
+                    if not self.__input_buffer.endswith(' ') \
+                    else self.__input_buffer + readline.get_line_buffer() + ' '
+                else:
+                    origline = self.__input_buffer + ' '
+                line = origline.lstrip()
+                stripped = len(origline) - len(line)
+                begidx = self.__get_begidx(origline) - stripped
+                endidx = self.__get_endidx(origline) - stripped
+            else:
+                origline = readline.get_line_buffer()
+                line = origline.lstrip()
+                stripped = len(origline) - len(line)
+                begidx = readline.get_begidx() - stripped
+                endidx = readline.get_endidx() - stripped
+
             if begidx > 0:
                 cmd, args, foo = self.parseline(line)
                 if cmd == '':
