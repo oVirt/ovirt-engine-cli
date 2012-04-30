@@ -48,8 +48,12 @@ class Parser(PLYParser):
     t_shell_ignore = ' \t'
 
     def t_STRING(self, t):
-        r'''(?s)("([^"\\]|\\.)*"|'[^']')'''
-        t.value = t.value[1:-1].replace(r'\\', '\\').replace('\\\n', '')
+        r'''(?s)("([^"\\]|\\.)*"|'[^']*')'''
+        if t.value[0] == '"':
+            t.value = t.value[1:-1].replace(r'\\', '\\')
+        else:
+            t.value = t.value[1:-1]
+        t.value = t.value.replace('\\\n', '')
         return t
 
     def t_NUMBER(self, t):
