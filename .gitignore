@@ -24,3 +24,7 @@ target
 ###########################
 *.pyc
 
+# PLY generated files
+###########################
+parser_lex.py
+parser_tab.py
