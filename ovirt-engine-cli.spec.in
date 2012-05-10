@@ -52,6 +52,11 @@ popd
 
 %changelog
 
+* Thu May 10 2012 Michael Pasternak <mpastern@redhat.com> - 2.1.6-1
+- Remove pregenerated parsing tables
+- Allow quoting of strings with single or double quotes
+- Don't add -s option to spicec when SSL is disabled (#812299)
+
 * Wed Mar 28 2012 Michael Pasternak <mpastern@redhat.com> - 2.1.5-1
 - use OrderedDict instead of papyon odict
 - get rid of papyon dep.
