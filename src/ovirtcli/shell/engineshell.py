@@ -37,12 +37,13 @@ from ovirtcli.shell.clearcmdshell import ClearCmdShell
 
 from cli.command.help import HelpCommand
 from ovirtcli.prompt import PromptMode
+from ovirtcli.shell.filecmdshell import FileCmdShell
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
                   DeleteCmdShell, CreateCmdShell, DisconnectCmdShell, \
                   ConsoleCmdShell, PingCmdShell, StatusCmdShell, \
-                  ClearCmdShell):
+                  ClearCmdShell, FileCmdShell):
     OFF_LINE_CONTENT = [ConnectCmdShell.NAME, HelpCommand.name, 'exit', "EOF"]
     ############################# INIT #################################
     def __init__(self, context, parser, completekey='tab', stdin=None, stdout=None):
@@ -59,6 +60,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         PingCmdShell.__init__(self, context, parser)
         StatusCmdShell.__init__(self, context, parser)
         ClearCmdShell.__init__(self, context, parser)
+        FileCmdShell.__init__(self, context, parser)
 
         self._set_prompt(mode=PromptMode.Disconnected)
         cmd.Cmd.doc_header = self.context.settings.get('ovirt-shell:commands')
@@ -79,6 +81,9 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         except Exception, e:
             sys.stderr.write('error: %s\n' % str(e))
             return self.cmdloop(intro)
+
+    def print_line(self, line):
+        print self.prompt + line
 
     def emptyline(self, no_prompt=False):
         if no_prompt:
@@ -128,15 +133,15 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         if opts.connect or len(args) == 0:
             self.do_clear('')
             self.do_connect(s)
+            if opts.file:
+                cmd.Cmd.intro = None
+                self.do_file(opts.file)
             self.cmdloop(clear=False)
         else:
             self.cmdloop()
 
     def precmd(self, line):
         return cmd.Cmd.precmd(self, line.lstrip())
-
-    def postcmd(self, stop, line):
-        return cmd.Cmd.postcmd(self, stop, line)
 
     def parseline(self, line):
         ret = cmd.Cmd.parseline(self, line)
@@ -216,34 +221,110 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
 
     def do_EOF(self, line):
-        '''Exists shell by ctrl+d'''
+        """\
+        == Usage ==
+
+        Ctrl+D
+
+        == Description ==
+
+        Exists shell by /Ctrl+D/ sequence.
+
+        == Examples ==
+
+        Ctrl+D
+        """
         self.emptyline(no_prompt=True)
         return True
 
     def do_exit(self, args):
-        '''Exists shell by /exit/ command'''
+        """\
+        == Usage ==
+
+        exit
+
+        == Description ==
+
+        Exists shell by /exit/ command.
+
+        == Examples ==
+
+        exit
+        """
+
         self.emptyline(no_prompt=True)
         return True
 
     def do_help(self, args):
-        '''Prints help by command'''
+        """\
+        == Usage ==
+
+        help ...
+
+        == Description ==
+
+        Prints help by command.
+
+        == Examples ==
+
+        help show
+        """
+
         if not args:
             self.context.execute_string('help\n')
         else:
             cmd = args.split(' ')[0]
             if self.context.connection == None and cmd not in EngineShell.OFF_LINE_CONTENT:
-                print 'error: command "%s" not valid or not available while not connected.' % cmd
+                self.context.terminal.stdout.error(\
+                   'error: command "%s" not valid or not available while not connected.' % cmd)
             else:
-                return self.context.execute_string('help ' + args + '\n')
+                if hasattr(self, 'do_' + cmd) and getattr(self, 'do_' + cmd).__doc__:
+                    self.context.terminal.stdout.write('\n' + getattr(self, 'do_' + cmd).__doc__ + '\n')
+                else:
+                    return self.context.execute_string('help ' + args + '\n')
     ############################# SHELL #################################
     def do_shell(self, line):
-        "Runs a shell command ('!' can be used instead of 'shell' command)."
+        """\
+        == Usage ==
+
+        shell ...
+
+        == Description ==
+
+        Runs a shell command ('!' can be used instead of 'shell' command).
+
+        == Examples ==
+
+        shell ls -la
+
+        or
+
+        ! ls -la
+        """
+
         output = os.popen(line).read()
         print output
         self.last_output = output
 
     def do_echo(self, line):
-        "Prints the input, replacing '$out' with the output of the last shell command output"
+        """\
+        == Usage ==
+
+        echo
+
+        == Description ==
+
+        Prints the input, replacing '$out' with the output of the last shell command output
+
+        == Examples ==
+
+        echo $out
+
+        or
+
+        echo str
+        """
+
         if self.last_output:
             print line.replace('$out', self.last_output)
         elif line:

@@ -59,4 +59,6 @@ class OvirtCliOptionParser(OptionParser):
 #        self.add_option('-n', '--no-header', action='store_false',
 #                        dest='header', help='suppress output header')
 #        self.add_option('-F', '--fields', help='fields to display')
+        self.add_option('-f', '--file', metavar='FILE',
+                        help='read commands from FILE instead of stdin')
         self.disable_interspersed_args()
