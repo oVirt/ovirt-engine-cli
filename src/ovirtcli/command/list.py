@@ -36,7 +36,7 @@ class ListCommand(OvirtCommand):
 
         == Description ==
 
-        List or search for objects of a cetain type. There are two forms. If
+        List or search for objects of a certain type. There are two forms. If
         only <type> is provided, all objects of the specified type are
         returned. If a search query is given, it must be a valid oVirt search
         query. In that case objects matching the query are returned.
