@@ -38,12 +38,14 @@ from ovirtcli.shell.clearcmdshell import ClearCmdShell
 from cli.command.help import HelpCommand
 from ovirtcli.prompt import PromptMode
 from ovirtcli.shell.filecmdshell import FileCmdShell
+from ovirtcli.historymanager import HistoryManager
+from ovirtcli.shell.historycmdshell import HistoryCmdShell
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
                   DeleteCmdShell, CreateCmdShell, DisconnectCmdShell, \
                   ConsoleCmdShell, PingCmdShell, StatusCmdShell, \
-                  ClearCmdShell, FileCmdShell):
+                  ClearCmdShell, FileCmdShell, HistoryCmdShell):
     OFF_LINE_CONTENT = [ConnectCmdShell.NAME, HelpCommand.name, 'exit', "EOF"]
     ############################# INIT #################################
     def __init__(self, context, parser, completekey='tab', stdin=None, stdout=None):
@@ -61,6 +63,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         StatusCmdShell.__init__(self, context, parser)
         ClearCmdShell.__init__(self, context, parser)
         FileCmdShell.__init__(self, context, parser)
+        HistoryCmdShell.__init__(self, context, parser)
 
         self._set_prompt(mode=PromptMode.Disconnected)
         cmd.Cmd.doc_header = self.context.settings.get('ovirt-shell:commands')
@@ -73,13 +76,15 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
         readline.set_completer_delims(' ')
         signal.signal(signal.SIGINT, self.handler)
+
+        self.history = HistoryManager()
     ########################### SYSTEM #################################
     def cmdloop(self, intro=None, clear=True):
         try:
             if clear: self.do_clear('')
             return cmd.Cmd.cmdloop(self, intro)
         except Exception, e:
-            sys.stderr.write('error: %s\n' % str(e))
+            self._error(str(e))
             return self.cmdloop(intro)
 
     def print_line(self, line):
@@ -97,7 +102,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             if command == '' and not self.__input_buffer:
                 pass
             elif self.context.connection == None and command not in EngineShell.OFF_LINE_CONTENT:
-                print 'error: command "%s" not valid or not available while not connected.' % command
+                self._error('command "%s" not valid or not available while not connected.' % command)
             else:
                 if s.endswith('\\') and s != 'EOF':
                     self._set_prompt(mode=PromptMode.Multiline)
@@ -219,6 +224,13 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         except IndexError:
             return None
 
+    def _error(self, msg):
+        sys.stderr.write("\nerror: " + msg + "\n")
+        sys.stdout.write("\n")
+
+    def _print(self, msg):
+        sys.stdout.write("\n" + msg + "\n")
+        sys.stdout.write("\n")
 
     def do_EOF(self, line):
         """\
@@ -275,8 +287,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         else:
             cmd = args.split(' ')[0]
             if self.context.connection == None and cmd not in EngineShell.OFF_LINE_CONTENT:
-                self.context.terminal.stdout.error(\
-                   'error: command "%s" not valid or not available while not connected.' % cmd)
+                self._error('command "%s" not valid or not available while not connected.' % cmd)
             else:
                 if hasattr(self, 'do_' + cmd) and getattr(self, 'do_' + cmd).__doc__:
                     self.context.terminal.stdout.write('\n' + getattr(self, 'do_' + cmd).__doc__ + '\n')
