@@ -197,7 +197,7 @@ class ExecutionContext(object):
         if self.settings.get('cli:autopage'):
             pager = self.settings.get('cli:pager', platform.get_pager())
             if pipeline:
-                pipeline += '| %' % pager
+                pipeline += '| %s' % pager
             else:
                 pipeline = pager
         command = self._create_command(name, args, opts)
