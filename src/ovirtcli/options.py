@@ -17,6 +17,7 @@
 
 import textwrap
 from optparse import OptionParser
+import sys
 
 
 class OvirtCliOptionParser(OptionParser):
@@ -62,3 +63,8 @@ class OvirtCliOptionParser(OptionParser):
         self.add_option('-f', '--file', metavar='FILE',
                         help='read commands from FILE instead of stdin')
         self.disable_interspersed_args()
+
+    def exit(self, status=0, msg=None):
+        self.values._exit = True
+        if msg: print (msg + 'see help for more details.\n')
+        sys.exit(status)
