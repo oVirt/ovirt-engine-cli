@@ -20,7 +20,8 @@ pyflakes:
 .PHONY: tarball
 tarball: $(TARBALL)
 $(TARBALL): Makefile #$(TESTS)
-	git -c tar.umask=0022 archive --format=tar --prefix ovirt-engine-cli/ HEAD | gzip > $(TARBALL)
+	git config tar.umask 0022
+	git archive --format=tar --prefix ovirt-engine-cli/ HEAD | gzip > $(TARBALL)
 
 .PHONY: srpm rpm
 srpm: $(SRPM)
