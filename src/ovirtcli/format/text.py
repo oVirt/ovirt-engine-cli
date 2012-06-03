@@ -136,7 +136,7 @@ class TextFormatter(Formatter):
         context = self.context
         settings = context.settings
         stdout = context.terminal.stdout
-        fields_exceptions = ['link', 'href']
+        fields_exceptions = ['link', 'href', 'parentclass']
         reduced_mode_fields = ['id', 'name', 'description']
 
         fields = self.sort_fields(self._get_fields(resource), sort_strategy)
