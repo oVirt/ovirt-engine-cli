@@ -14,7 +14,7 @@ BuildRequires: python-ply
 BuildArch: noarch
 
 Requires: python
-Requires: ovirt-engine-sdk >= 3.1.0.1
+Requires: ovirt-engine-sdk <= 3.1.0.1
 Requires: pexpect
 Requires: python-setuptools
 Requires: python-ply
@@ -51,6 +51,16 @@ popd
 %doc LICENSE
 
 %changelog
+
+* Thu Jun 7 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.2-1alpha
+- Implement history browsing mechanism #823512, new capabilities:
+    - persistent history stack
+    - recursive history search - ctrl+r
+    - history listing - history
+    - history slide retrieval - history N
+- Implement pipe redirection to linux shell #823508
+- exit on incorrect option
+- miss-type in "help list" command #803399
 
 * Wed May 16 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.1-1alpha
 - add basic scripting capabilities
