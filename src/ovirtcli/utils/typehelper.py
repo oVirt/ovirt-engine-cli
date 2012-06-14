@@ -90,7 +90,9 @@ class TypeHelper():
                     if dct and len(dct) > 0:
                         for method in dct:
                             if method not in exceptions and not method.startswith('_'):
-                                MethodHelper.get_method_params(brokers, decorator, '__init__', types)
+                                MethodHelper.get_method_params(brokers, decorator, '__init__', types,
+                                                               expendNestedTypes=True,
+                                                               groupOptions=True)
                                 break
         return types
 
@@ -103,11 +105,13 @@ class TypeHelper():
                 if not decorator.endswith('s'):
                     dct = getattr(brokers, decorator).__dict__
                     if dct and len(dct) > 0 and dct.has_key(method):
-                        MethodHelper.get_method_params(brokers, decorator, '__init__', types)
+                        MethodHelper.get_method_params(brokers, decorator, '__init__', types,
+                                                       expendNestedTypes=True,
+                                                       groupOptions=True)
         return types
 
     @staticmethod
-    def get_types_by_method(plural, method):
+    def get_types_by_method(plural, method, expendNestedTypes=False, groupOptions=False):
         """INTERNAL: return a list of types that implement given method and context/s of this types."""
         sing_types = {}
 
@@ -118,7 +122,12 @@ class TypeHelper():
                     if decorator.endswith('s'):
                         cls_name = TypeHelper.getDecoratorType(decorator[:len(decorator) - 1])
                         if cls_name:
-                            MethodHelper.get_method_params(brokers, cls_name, '__init__', sing_types)
+                            MethodHelper.get_method_params(brokers,
+                                                           cls_name,
+                                                           '__init__',
+                                                           sing_types,
+                                                           expendNestedTypes,
+                                                           groupOptions)
 
             if plural:
                 sing_types_plural = {}

@@ -129,11 +129,12 @@ class Command(object):
         """Format a list of items, to be used with format_help()."""
         formatted = []
         for elem in mp.keys():
+            if sort and mp[elem] and type(mp[elem]) == list: mp[elem] = sorted(mp[elem])
             line = ' ' * indent
             if bullet:
                 line += bullet + ' '
             if mp[elem] != None:
-                line += elem + ' (context: ' + mp[elem] + ')'
+                line += elem + ' (contexts: ' + str(mp[elem]) + ')'
             else:
                 line += elem
             formatted.append(line)

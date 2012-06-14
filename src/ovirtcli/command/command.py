@@ -257,13 +257,13 @@ class OvirtCommand(Command):
         except:
             return None
 
-    def get_singular_types(self, method=None):
+    def get_singular_types(self, method, expendNestedTypes=True, groupOptions=True):
         """Return a list of singular types."""
-        return TypeHelper.get_types_by_method(False, method)
+        return TypeHelper.get_types_by_method(False, method, expendNestedTypes, groupOptions)
 
-    def get_plural_types(self, method=None):
+    def get_plural_types(self, method, expendNestedTypes=True, groupOptions=True):
         """Return a list of plural types."""
-        return TypeHelper.get_types_by_method(True, method)
+        return TypeHelper.get_types_by_method(True, method, expendNestedTypes, groupOptions)
 
     def get_options(self, method, resource, sub_resource=None, as_params_collection=False):
         """Return a list of options for typ/action."""

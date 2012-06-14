@@ -47,28 +47,77 @@ class MethodHelper():
         return []
 
     @staticmethod
-    def get_method_params(module, clazz, method, holder=OrderedDict()):
+    def get_method_params(module, clazz, method, holder=OrderedDict(), expendNestedTypes=False, groupOptions=False):
         args = MethodHelper.getMethodArgs(module, clazz, method)
-        if args:
-            if len(args) == 3:
-                if not holder.has_key(args[2]):
-                    holder[args[2]] = args[1]
-                else:
-                    if holder[args[2]] == None:
-                        if args[1] != None:
-                            holder[args[2]] = 'None, ' + args[1]
+        expender = MethodHelper.__expend_nested_type
+
+        if not groupOptions:
+            if args:
+                if len(args) == 3:
+                    cand = expender(args[1], module, method) if expendNestedTypes\
+                                                             else args[1]
+                    cand = ", ".join(cand) if type(cand) == list else cand
+
+                    if not holder.has_key(args[2]):
+                        holder[args[2]] = cand
                     else:
-                        holder[args[2]] = holder[args[2]] + ', ' + args[1]
-            elif len(args) == 2:
-                if not holder.has_key(args[1]):
-                    holder[args[1]] = None
-                else:
-                    if holder[args[1]] == None:
-                        if holder[args[1]] != None:
-                            holder[args[1]] = 'None' + ', ' + holder[args[1]]
+                        if holder[args[2]] == None:
+                            if args[1] != None:
+                                holder[args[2]] = 'None, ' + cand
+                        else:
+                            holder[args[2]] = holder[args[2]] + ', ' + cand
+                elif len(args) == 2:
+                    if not holder.has_key(args[1]):
+                        holder[args[1]] = None
                     else:
-                        holder[args[1]] = holder[args[1]] + ', ' + 'None'
-        return holder
+                        if holder[args[1]] == None:
+                            if holder[args[1]] != None:
+                                holder[args[1]] = 'None' + ', ' + holder[args[1]]
+                        else:
+                            holder[args[1]] = holder[args[1]] + ', ' + 'None'
+            return MethodHelper.__remove_replications(holder)
+        else:
+            if args:
+                if len(args) == 3:
+                    cand = expender(args[1], module, method) if expendNestedTypes\
+                                                             else args[1]
+                    cand = cand if type(cand) == list else [cand]
+
+                    if not holder.has_key(args[2]):
+                        holder[args[2]] = [cand]
+                    else:
+                        if holder[args[2]] == None:
+                            if args[1] != None:
+                                holder[args[2]] = [[], cand]
+                        elif cand not in holder[args[2]]:
+                            holder[args[2]].append(cand)
+                elif len(args) == 2:
+                    if not holder.has_key(args[1]):
+                        holder[args[1]] = [[]]
+                    else:
+                        if holder[args[1]] == None:
+                            if holder[args[1]] != None:
+                                holder[args[1]] = [[], holder[args[1]]]
+                        elif [] not in holder[args[1]]:
+                            holder[args[1]].append([])
+
+    @staticmethod
+    def __remove_replications(holder):
+        for k, v in holder.items():
+            if v:
+                new_val = []
+                for item in v.split(', '):
+                    if item and item not in new_val:
+                        new_val.append(item)
+                holder[k] = ", ".join(sorted(new_val))
+
+    @staticmethod
+    def __expend_nested_type(type_name, module, method):
+        from ovirtcli.utils.typehelper import TypeHelper
+        typ = TypeHelper.getDecoratorType(type_name)
+        if typ:
+            return MethodHelper.getMethodArgs(module, typ, method, drop_self=True)
+        return type_name
 
     @staticmethod
     def get_documented_arguments(method_ref, as_params_collection=False, spilt_or=False):
