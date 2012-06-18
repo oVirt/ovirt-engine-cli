@@ -24,6 +24,7 @@ import uuid
 from ovirtcli.utils.methodhelper import MethodHelper
 from ovirtsdk.infrastructure import brokers
 from ovirtsdk.utils.ordereddict import OrderedDict
+import itertools
 
 
 class OvirtCommand(Command):
@@ -37,28 +38,42 @@ class OvirtCommand(Command):
 
     def resolve_base(self, options):
         """resolve a base object from a set of '--typeid value' options."""
-        connection = self.check_connection()
+        collection_candidate = self.check_connection()
+        parnet_candidate_locator = 0
+        base = None
 
-        for opt, val in options.items():
-            if opt.endswith('-id') or not opt.endswith('-identifier'):
-                continue
-            typename = opt[2:-11]
-            coll = typename + 's'
-            if not (TypeHelper.isKnownType(typename) or  TypeHelper.isKnownType(coll)):
-                self.error('no such type: %s' % typename)
+        parnet_candidates = [key for key in options.keys() if key.endswith('-identifier')]
+        parnet_candidates_permutations = list(itertools.permutations(parnet_candidates))
 
-            if hasattr(connection, coll):
-                coll_ins = getattr(connection, coll)
-                uuid_cand = self._toUUID(val)
-                if uuid_cand != None:
-                    base = coll_ins.get(id=val)
-                else:
-                    base = coll_ins.get(name=val)
+        if parnet_candidates_permutations[0]:
+            for combination in parnet_candidates_permutations:
+                for item in combination:
+                    key = item
+                    val = options[key]
+                    parnet_candidate_locator += 1
+                    typename = key[2:-11]
 
-                if base is None and len(options) > 0:
-                    self.error('cannot find object %s' % val)
-                return base
+                    coll = typename + 's'
+                    if not (TypeHelper.isKnownType(typename) or  TypeHelper.isKnownType(coll)):
+                        self.error('no such type: %s' % typename)
 
+                    if hasattr(collection_candidate, coll):
+                        coll_ins = getattr(collection_candidate, coll)
+                        uuid_cand = self._toUUID(val)
+                        if uuid_cand != None:
+                            base = coll_ins.get(id=val)
+                        else:
+                            base = coll_ins.get(name=val)
+
+                        if base is None and len(options) > 0:
+                            continue
+
+                    if len(parnet_candidates) == parnet_candidate_locator:
+                        return base
+                    else:
+                        collection_candidate = base
+
+            self.error('cannot construct collection/member view, checked variants are %s.' % str(parnet_candidates_permutations))
 
     def __try_parse(self, param):
         """INTERNAL: try parsing data to int"""
