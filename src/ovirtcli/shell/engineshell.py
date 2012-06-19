@@ -85,7 +85,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             return cmd.Cmd.cmdloop(self, intro)
         except Exception, e:
             self._error(str(e))
-            return self.cmdloop(intro)
+            return self.cmdloop(intro, clear=False)
 
     def print_line(self, line):
         print self.prompt + line
