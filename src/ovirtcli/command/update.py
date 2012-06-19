@@ -147,7 +147,9 @@ class UpdateCommand(OvirtCommand):
         opts = self.options
 
         subst = {}
-        types = TypeHelper.get_types_containing_method('update')
+        types = TypeHelper.get_types_containing_method('update',
+                                                       expendNestedTypes=True,
+                                                       groupOptions=True)
 
         subst['types'] = self.format_map(types)
         statuses = self.get_statuses()

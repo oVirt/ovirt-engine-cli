@@ -35,7 +35,7 @@ class ActionCmdShell(CmdShell):
         obj_type = TypeHelper.getDecoratorType(TypeHelper.to_singular(obj))
         if obj_type and hasattr(brokers, obj_type):
 
-            args = TypeHelper.get_actionable_types()
+            args = TypeHelper.get_actionable_types(expendNestedTypes=True)
             specific_arguments = self.get_resource_specific_options(args,
                                                                     line,
                                                                     callback=self.__add_resource_specific_arguments)
@@ -65,7 +65,7 @@ class ActionCmdShell(CmdShell):
                 specific_options[obj if key == None else key] = method_args
 
     def complete_action(self, text, line, begidx, endidx):
-        args = TypeHelper.get_actionable_types()
+        args = TypeHelper.get_actionable_types(expendNestedTypes=True)
         specific_arguments = {}
 
         specific_options = self.get_resource_specific_options(args,

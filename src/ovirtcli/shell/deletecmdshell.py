@@ -44,7 +44,7 @@ class DeleteCmdShell(CmdShell):
                     specific_options[key if key is not None else obj] = method_args
 
     def complete_delete(self, text, line, begidx, endidx):
-        args = TypeHelper.get_types_containing_method(DeleteCmdShell.NAME)
+        args = TypeHelper.get_types_containing_method(DeleteCmdShell.NAME, expendNestedTypes=True)
         specific_options = self.get_resource_specific_options(args,
                                                               line,
                                                               callback=self.__add_resource_specific_options)

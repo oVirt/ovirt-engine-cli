@@ -46,7 +46,7 @@ class ListCmdShell(CmdShell):
                     specific_options[obj if key == None else key] = method_args
 
     def complete_list(self, text, line, begidx, endidx):
-        args = TypeHelper.get_types_by_method(True, ListCmdShell.NAME)
+        args = TypeHelper.get_types_by_method(True, ListCmdShell.NAME, expendNestedTypes=True)
         specific_options = self.get_resource_specific_options(args,
                                                               line,
                                                               callback=self.__add_resource_specific_options)

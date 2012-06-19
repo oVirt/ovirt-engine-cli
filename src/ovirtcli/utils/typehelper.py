@@ -79,7 +79,7 @@ class TypeHelper():
         return None
 
     @staticmethod
-    def get_actionable_types():
+    def get_actionable_types(expendNestedTypes=False, groupOptions=False):
         """INTERNAL: return a list of actionable types."""
         types = {}
         exceptions = ['delete', 'update']
@@ -91,13 +91,13 @@ class TypeHelper():
                         for method in dct:
                             if method not in exceptions and not method.startswith('_'):
                                 MethodHelper.get_method_params(brokers, decorator, '__init__', types,
-                                                               expendNestedTypes=True,
-                                                               groupOptions=True)
+                                                               expendNestedTypes=expendNestedTypes,
+                                                               groupOptions=groupOptions)
                                 break
         return types
 
     @staticmethod
-    def get_types_containing_method(method):
+    def get_types_containing_method(method, expendNestedTypes=False, groupOptions=False):
         """return a list of types by method including context in which this method available."""
         types = {}
 
@@ -106,8 +106,8 @@ class TypeHelper():
                     dct = getattr(brokers, decorator).__dict__
                     if dct and len(dct) > 0 and dct.has_key(method):
                         MethodHelper.get_method_params(brokers, decorator, '__init__', types,
-                                                       expendNestedTypes=True,
-                                                       groupOptions=True)
+                                                       expendNestedTypes=expendNestedTypes,
+                                                       groupOptions=groupOptions)
         return types
 
     @staticmethod
