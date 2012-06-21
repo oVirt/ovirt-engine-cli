@@ -145,13 +145,12 @@ class ListCommand(OvirtCommand):
         args = self.arguments
         opts = self.options
 
-        if not (TypeHelper.isKnownType(args[0])):
-            self.error('no such type: %s' % args[0])
-
+        typs = self.get_plural_types(method='list', typ=args[0])
         self.context.formatter.format(self.context,
                                       self.get_collection(typ=args[0],
                                                           opts=opts,
-                                                          base=self.resolve_base(opts)),
+                                                          base=self.resolve_base(opts),
+                                                          context_variants=typs),
                                       show_all=True if opts and opts.has_key(ShowCommand.SHOW_ALL_KEY) else False)
 
     def show_help(self):
@@ -161,26 +160,29 @@ class ListCommand(OvirtCommand):
         opts = self.options
 
         subst = {}
-
         types = self.get_plural_types(method='list')
-        subst['types'] = self.format_map(types)
 
-        statuses = self.get_statuses()
-        subst['statuses'] = self.format_list(statuses)
+        if not args or self.is_supported_type(types.keys(), args[0]):
+            subst['types'] = self.format_map(types)
 
-        if len(args) == 1 and self.is_supported_type(types.keys(), args[0]):
-            helptext = self.helptext1
-            params_list = self.get_options(method='list',
-                                           resource=TypeHelper.to_singular(args[0]),
-                                           sub_resource=self.resolve_base(opts))
-            subst['options'] = self.format_list(params_list)
-            subst['type'] = args[0]
-        else:
-            helptext = self.helptext
-            if len(args) == 1: self.is_supported_type(types.keys(), args[0])
+            statuses = self.get_statuses()
+            subst['statuses'] = self.format_list(statuses)
 
+            if len(args) == 1 and len(opts) == 1:
+                helptext = self.helptext
+                subst['types'] = self.format_map({args[0]:types[args[0]]})
+                subst['type'] = args[0]
+            elif len(args) == 1 and len(opts) > 1:
+                helptext = self.helptext1
+                params_list = self.get_options(method='list',
+                                               resource=TypeHelper.to_singular(args[0]),
+                                               sub_resource=self.resolve_base(opts),
+                                               context_variants=types[args[0]])
+                subst['options'] = self.format_list(params_list)
+                subst['type'] = args[0]
+            else:
+                helptext = self.helptext
 
-        helptext = self.format_help(helptext, subst)
-        stdout = self.context.terminal.stdout
-        stdout.write(helptext)
-
+            helptext = self.format_help(helptext, subst)
+            stdout = self.context.terminal.stdout
+            stdout.write(helptext)

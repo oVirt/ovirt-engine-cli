@@ -128,10 +128,12 @@ class ShowCommand(OvirtCommand):
         if len(args) < 2 and len(opts) == 0:
             self.error('%s identifier required.' % args[0])
 
+        types = self.get_singular_types(method='get')
         obj = self.get_object(typ=args[0],
                               obj_id=args[1] if len(args) > 1 else None,
                               base=self.resolve_base(opts),
-                              opts=opts)
+                              opts=opts,
+                              context_variants=types[args[0]])
 
         if not (obj):
             self.error('no such %s %s' % (args[0], args[1] if len(args) > 1
@@ -150,41 +152,42 @@ class ShowCommand(OvirtCommand):
         opts = self.options
 
         subst = {}
-
         types = self.get_singular_types(method='get')
-        subst['types'] = self.format_map(types)
 
-        statuses = self.get_statuses()
-        subst['statuses'] = self.format_list(statuses)
+        if not args or self.is_supported_type(types.keys(), args[0]):
 
-        if len(args) == 1 and self.is_supported_type(types.keys(), args[0]):
-            helptext = self.helptext1
-            params_list = self.get_options(method='get',
-                                           resource=TypeHelper.to_singular(args[0]),
-                                           sub_resource=self.resolve_base(opts))
-            subst['options'] = self.format_list(params_list)
-            subst['type'] = args[0]
-        elif len(args) == 2 and self.is_supported_type(types.keys(), args[0]):
-            helptext = self.helptext1
+            subst['types'] = self.format_map(types)
 
-            subst['type'] = args[0]
-            subst['id'] = args[1]
-            base = self.resolve_base(opts)
-            obj = self.get_object(args[0], args[1], base)
-            if obj is None:
-                self.error('no such %s: %s' % (args[0], args[1]))
+            statuses = self.get_statuses()
+            subst['statuses'] = self.format_list(statuses)
 
-            params_list = self.get_options(method='get',
-                                           resource=obj,
-                                           sub_resource=base)
-            subst['options'] = self.format_list(params_list)
+            if len(args) == 1:
+                helptext = self.helptext1
+                params_list = self.get_options(method='get',
+                                               resource=TypeHelper.to_singular(args[0]),
+                                               sub_resource=self.resolve_base(opts),
+                                               context_variants=types[args[0]])
+                subst['options'] = self.format_list(params_list)
+                subst['type'] = args[0]
+            elif len(args) == 2:
+                helptext = self.helptext1
 
-        else:
-            helptext = self.helptext
-            if len(args) == 1: self.is_supported_type(types.keys(), args[0])
+                subst['type'] = args[0]
+                subst['id'] = args[1]
+                base = self.resolve_base(opts)
+                obj = self.get_object(args[0], args[1], base)
+                if obj is None:
+                    self.error('no such %s: %s' % (args[0], args[1]))
 
+                params_list = self.get_options(method='get',
+                                               resource=obj,
+                                               sub_resource=base,
+                                               context_variants=types[args[0]])
+                subst['options'] = self.format_list(params_list)
 
-        helptext = self.format_help(helptext, subst)
-        stdout = self.context.terminal.stdout
-        stdout.write(helptext)
+            else:
+                helptext = self.helptext
 
+            helptext = self.format_help(helptext, subst)
+            stdout = self.context.terminal.stdout
+            stdout.write(helptext)

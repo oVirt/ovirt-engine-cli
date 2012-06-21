@@ -59,21 +59,25 @@ class OvirtCommand(Command):
 
                     if hasattr(collection_candidate, coll):
                         coll_ins = getattr(collection_candidate, coll)
-                        uuid_cand = self._toUUID(val)
-                        if uuid_cand != None:
-                            base = coll_ins.get(id=val)
-                        else:
-                            base = coll_ins.get(name=val)
+                        if hasattr(coll_ins, 'get'):
+                            uuid_cand = self._toUUID(val)
+                            if uuid_cand != None:
+                                base = coll_ins.get(id=val)
+                            else:
+                                base = coll_ins.get(name=val)
 
-                        if base is None and len(options) > 0:
-                            continue
+                            if not base:
+                                if len(combination) > parnet_candidate_locator:
+                                    continue
+                                else:
+                                    self.error('cannot find %s %s.' % (typename, val))
 
                     if len(parnet_candidates) == parnet_candidate_locator:
                         return base
                     else:
                         collection_candidate = base
 
-            self.error('cannot construct collection/member view, checked variants are %s.' % str(parnet_candidates_permutations))
+            self.error('cannot construct collection/member view, checked variants are:\n%s.\n' % str(parnet_candidates_permutations))
 
     def __try_parse(self, param):
         """INTERNAL: try parsing data to int"""
@@ -186,7 +190,7 @@ class OvirtCommand(Command):
         return query, kw
 
 
-    def get_collection(self, typ, opts={}, base=None):
+    def get_collection(self, typ, opts={}, base=None, context_variants=[]):
         """retrieves collection members"""
         self.check_connection()
         connection = self.context.connection
@@ -226,7 +230,12 @@ class OvirtCommand(Command):
                     return getattr(base, typ).list(**kwargs)
                 return getattr(base, typ).list()
 
-    def get_object(self, typ, obj_id, base=None, opts={}):
+        err_str = 'no such collection: "%s" or given arguments not valid'
+        if context_variants:
+            err_str = err_str + (',\npossible arguments combinations are: ' + str(context_variants))
+        self.error(err_str % typ)
+
+    def get_object(self, typ, obj_id, base=None, opts={}, context_variants=[]):
         """Return an object by id or name."""
         self.check_connection()
         connection = self.context.connection
@@ -236,9 +245,13 @@ class OvirtCommand(Command):
                         else type(typ).__name__.lower()
 
         if base:
-            options = self.get_options(method='get', resource=base, as_params_collection=True)
+            options = self.get_options(method='get', resource=base,
+                                       as_params_collection=True,
+                                       context_variants=context_variants)
         else:
-            options = self.get_options(method='get', resource=typ, as_params_collection=True)
+            options = self.get_options(method='get', resource=typ,
+                                       as_params_collection=True,
+                                       context_variants=context_variants)
             base = connection
 
         #TODO: support generic parameters processing        
@@ -263,7 +276,11 @@ class OvirtCommand(Command):
                     else:
                         return coll.get(name=obj_id)
         else:
-            self.error('no such type: %s' % candidate)
+            err_str = 'no such type: "%s" or given arguments not valid'
+            if context_variants:
+                err_str = err_str + (',\npossible arguments combinations are: ' + str(context_variants))
+            self.error(err_str % candidate)
+
         return None
 
     def _toUUID(self, string):
@@ -272,15 +289,27 @@ class OvirtCommand(Command):
         except:
             return None
 
-    def get_singular_types(self, method, expendNestedTypes=True, groupOptions=True):
+    def get_singular_types(self, method, typ=None, expendNestedTypes=True, groupOptions=True):
         """Return a list of singular types."""
-        return TypeHelper.get_types_by_method(False, method, expendNestedTypes, groupOptions)
+        typs = TypeHelper.get_types_by_method(False, method, expendNestedTypes, groupOptions)
+        if typ:
+            if typs.has_key(typ):
+                return typs[typ]
+            else: return []
+        else:
+            return typs
 
-    def get_plural_types(self, method, expendNestedTypes=True, groupOptions=True):
+    def get_plural_types(self, method, typ=None, expendNestedTypes=True, groupOptions=True):
         """Return a list of plural types."""
-        return TypeHelper.get_types_by_method(True, method, expendNestedTypes, groupOptions)
+        typs = TypeHelper.get_types_by_method(True, method, expendNestedTypes, groupOptions)
+        if typ:
+            if typs.has_key(typ):
+                return typs[typ]
+            else: return []
+        else:
+            return typs
 
-    def get_options(self, method, resource, sub_resource=None, as_params_collection=False):
+    def get_options(self, method, resource, sub_resource=None, as_params_collection=False, context_variants=[]):
         """Return a list of options for typ/action."""
 
         method_ref = None
@@ -311,7 +340,10 @@ class OvirtCommand(Command):
                                          method)
 
             if not method_ref:
-                self.error('cannot find any context for type "%s"' % resource)
+                err_str = 'cannot find any context for type "%s" using given arguments'
+                if context_variants:
+                    err_str = err_str + (',\npossible arguments combinations are: ' + str(context_variants))
+                self.error(err_str % resource)
 
         elif isinstance(resource, brokers.Base):
             if hasattr(resource, method):
@@ -324,7 +356,7 @@ class OvirtCommand(Command):
 
     def is_supported_type(self, types, typ):
         if typ not in types:
-            self.error('not supported type "%s"' % typ)
+            self.error('unknown type "%s"' % typ)
             return False
         return True
 

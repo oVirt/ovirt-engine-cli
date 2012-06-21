@@ -149,8 +149,11 @@ class ActionCommand(OvirtCommand):
             self.error('no such type: %s' % args[0])
 
         scope = '%s:%s' % (ParseHelper.getXmlWrapperType(args[0]), args[2])
+        actionable_types = TypeHelper.get_actionable_types(expendNestedTypes=True, groupOptions=True)
 
-        resource = self.get_object(args[0], args[1], self.resolve_base(opts))
+        resource = self.get_object(args[0], args[1],
+                                   self.resolve_base(opts),
+                                   context_variants=actionable_types[args[0]])
         if resource is None:
             self.error('object does not exist: %s/%s' % (args[0], args[1]))
         elif hasattr(resource, args[2]) and type(getattr(resource, args[2])) == types.MethodType:
@@ -180,7 +183,7 @@ class ActionCommand(OvirtCommand):
             #subst['action'] = args[0]
 
             base = self.resolve_base(self.options)
-            obj = self.get_object(args[0], args[1], base)
+            obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
             if obj is None:
                 self.error('no such "%s": "%s"' % (args[1], args[1]))
 
@@ -194,7 +197,7 @@ class ActionCommand(OvirtCommand):
             subst['action'] = args[0]
 
             base = self.resolve_base(self.options)
-            obj = self.get_object(args[1], args[2], base)
+            obj = self.get_object(args[1], args[2], base, context_variants=types[args[0]])
             if obj is None:
                 self.error('no such "%s": "%s"' % (args[0], args[1]))
 
@@ -203,7 +206,8 @@ class ActionCommand(OvirtCommand):
                 self.error('no such action "%s"' % args[2])
 
             options = self.get_options(method=args[0],
-                                       resource=obj)
+                                       resource=obj,
+                                       context_variants=types[args[0]])
             subst['actions'] = self.format_list(actions)
             subst['options'] = self.format_list(options, bullet='', sort=False)
         elif len(args) == 2 and self.is_supported_type(types.keys(), args[0]):
@@ -212,7 +216,7 @@ class ActionCommand(OvirtCommand):
             subst['type'] = args[0]
             subst['id'] = args[1]
             base = self.resolve_base(opts)
-            obj = self.get_object(args[0], args[1], base)
+            obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
             if obj is None:
                 self.error('no such %s: %s' % (args[0], args[1]))
             actions = self._get_action_methods(obj)
@@ -226,7 +230,7 @@ class ActionCommand(OvirtCommand):
             subst['action'] = args[2]
 
             base = self.resolve_base(self.options)
-            obj = self.get_object(args[0], args[1], base)
+            obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
             if obj is None:
                 self.error('no such "%s": "%s"' % (args[0], args[1]))
 
@@ -236,7 +240,8 @@ class ActionCommand(OvirtCommand):
 
             options = self.get_options(method=args[2],
                                        resource=obj,
-                                       sub_resource=base)
+                                       sub_resource=base,
+                                       context_variants=types[args[0]])
             subst['actions'] = self.format_list(actions)
             subst['options'] = self.format_list(options, bullet='', sort=False)
         else:

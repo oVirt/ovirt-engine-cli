@@ -123,16 +123,20 @@ class DeleteCommand(OvirtCommand):
         args = self.arguments
         opts = self.options
 
-        if not (TypeHelper.isKnownType(args[0])):
-            self.error('no such type: %s' % args[0])
+        typs = TypeHelper.get_types_containing_method('delete',
+                                                      expendNestedTypes=True,
+                                                      groupOptions=True)
 
-        resource = self.get_object(args[0], args[1], self.resolve_base(opts))
+        resource = self.get_object(args[0],
+                                   args[1],
+                                   self.resolve_base(opts),
+                                   context_variants=typs[args[0]])
         if resource is None:
-            self.error('object does not exist: %s/%s' % (args[0], args[1]))
+            self.error('%s "%s" does not exist.' % (args[0], args[1]))
         elif hasattr(resource, 'delete'):
             result = self.execute_method(resource, 'delete', opts)
         else:
-            self.error('object : %s/%s is immutable' % (args[0], args[1]))
+            self.error('%s "%s" is immutable.' % (args[0], args[1]))
 
         self.context.formatter.format(self.context, result)
 
@@ -147,36 +151,41 @@ class DeleteCommand(OvirtCommand):
                                                        expendNestedTypes=True,
                                                        groupOptions=True)
 
-        subst['types'] = self.format_map(types)
-        statuses = self.get_statuses()
-        subst['statuses'] = self.format_list(statuses)
+        if not args or self.is_supported_type(types.keys(), args[0]):
+            subst['types'] = self.format_map(types)
+            statuses = self.get_statuses()
+            subst['statuses'] = self.format_list(statuses)
 
-        if len(args) == 2 and self.is_supported_type(types.keys(), args[0]):
-            base = self.resolve_base(self.options)
-            obj = self.get_object(args[0], args[1], base)
-            if obj is None:
-                self.error('no such "%s": "%s"' % (args[0], args[1]))
-            helptext = self.helptext1
-            params_list = self.get_options(method='delete',
-                                           resource=obj,
-                                           sub_resource=base)
-            subst['options'] = self.format_list(params_list)
-            subst['type'] = args[0]
+            if len(args) == 2:
+                base = self.resolve_base(self.options)
+                obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
+                if obj is None:
+                    self.error('no such "%s": "%s"' % (args[0], args[1]))
+                helptext = self.helptext1
+                params_list = self.get_options(method='delete',
+                                               resource=obj,
+                                               sub_resource=base,
+                                               context_variants=types[args[0]])
+                subst['options'] = self.format_list(params_list)
+                subst['type'] = args[0]
 
-        elif len(args) == 1 and len(opts) == 2 and self.is_supported_type(types.keys(), args[0]):
-            helptext = self.helptext1
+            elif len(args) == 1 and len(opts) == 2:
+                helptext = self.helptext1
+                subst['type'] = args[0]
 
-            subst['type'] = args[0]
+                options = self.get_options(method='delete',
+                                           resource=args[0],
+                                           sub_resource=self.resolve_base(self.options),
+                                           context_variants=types[args[0]])
+                subst['options'] = self.format_list(options)
+                subst['type'] = args[0]
+            elif len(args) == 1:
+                helptext = self.helptext
+                subst['type'] = args[0]
+                subst['types'] = self.format_map({args[0]:types[args[0]]})
+            else:
+                helptext = self.helptext
 
-            options = self.get_options(method='delete',
-                                       resource=args[0],
-                                       sub_resource=self.resolve_base(self.options))
-            subst['options'] = self.format_list(options)
-            subst['type'] = args[0]
-        else:
-            helptext = self.helptext
-            if len(args) == 1: self.is_supported_type(types.keys(), args[0])
-
-        helptext = self.format_help(helptext, subst)
-        stdout = self.context.terminal.stdout
-        stdout.write(helptext)
+            helptext = self.format_help(helptext, subst)
+            stdout = self.context.terminal.stdout
+            stdout.write(helptext)

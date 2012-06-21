@@ -16,7 +16,6 @@
 
 
 from ovirtcli.command.command import OvirtCommand
-from ovirtcli.utils.typehelper import TypeHelper
 
 class CreateCommand(OvirtCommand):
 
@@ -120,18 +119,27 @@ class CreateCommand(OvirtCommand):
         """Execute the "create" command."""
         args = self.arguments
         opts = self.options
-        connection = self.check_connection()
         base = self.resolve_base(opts)
+        typ = args[0] + 's'
+        collection = None
+        typs = self.get_singular_types(method='add', typ=args[0])
 
-        if not (TypeHelper.isKnownType(args[0])):
-            self.error('no such type: %s' % args[0])
+        if base:
+            collection = getattr(base, typ)
+        else:
+            connection = self.check_connection()
+            if hasattr(connection, typ):
+                collection = getattr(connection, typ)
 
-        collection = getattr(base if base is not None else connection, args[0] + 's')
-        if collection:
+        if collection != None:
             result = self.execute_method(collection, 'add', opts)
             self.context.formatter.format(self.context, result)
         else:
-            self.error('cannot create type: %s because corresponding collection: %ss is not available.' % args[0])
+            err_str = 'cannot create "%s" because %s collection is not available or given arguments not valid'
+            if typs:
+                err_str = err_str + (',\npossible arguments combinations are: ' + str(typs))
+            self.error(err_str % (args[0], typ))
+
 
     def show_help(self):
         """Show help for "create"."""
@@ -148,7 +156,8 @@ class CreateCommand(OvirtCommand):
                 helptext = self.helptext1
                 params_list = self.get_options(method='add',
                                                resource=args[0],
-                                               sub_resource=self.resolve_base(opts))
+                                               sub_resource=self.resolve_base(opts),
+                                               context_variants=types[args[0]])
                 subst['options'] = self.format_list(params_list, sort=False)
                 subst['type'] = args[0]
         statuses = self.get_statuses()
