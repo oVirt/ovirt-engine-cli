@@ -30,7 +30,8 @@ class ShowCmdShell(CmdShell):
         return self.context.execute_string(ShowCmdShell.NAME + ' ' + args + '\n')
 
     def complete_show(self, text, line, begidx, endidx):
+        args = TypeHelper.get_types_by_method(False, 'get', expendNestedTypes=True)
         return AutoCompletionHelper.complete(line=line,
                                              text=text,
-                                             args=TypeHelper.get_types_by_method(False, 'get'),
+                                             args=args,
                                              common_options=['show-all', 'name', 'kwargs'])
