@@ -123,9 +123,6 @@ class ShowCommand(OvirtCommand):
         args = self.arguments
         opts = self.options
 
-        if not (TypeHelper.isKnownType(args[0])):
-            self.error(Messages.Error.NO_SUCH_TYPE % args[0])
-
         if len(args) < 2 and len(opts) == 0:
             self.error(Messages.Error.NO_IDENTIFIER % args[0])
 
