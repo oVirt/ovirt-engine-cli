@@ -16,6 +16,7 @@
 
 
 from ovirtcli.command.command import OvirtCommand
+from cli.messages import Messages
 
 class CreateCommand(OvirtCommand):
 
@@ -135,9 +136,10 @@ class CreateCommand(OvirtCommand):
             result = self.execute_method(collection, 'add', opts)
             self.context.formatter.format(self.context, result)
         else:
-            err_str = 'cannot create "%s" because %s collection is not available or given arguments not valid'
+            err_str = Messages.Error.CANNOT_CREATE
             if typs:
-                err_str = err_str + (',\npossible arguments combinations are: ' + str(typs))
+                err_str = err_str + \
+                (Messages.Info.POSSIBALE_ARGUMENTS_COMBINATIONS % str(typs))
             self.error(err_str % (args[0], typ))
 
 

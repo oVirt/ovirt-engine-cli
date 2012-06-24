@@ -122,3 +122,12 @@ class CmdShell(object):
          
         """
         return self.__generate_resource_specific_options__(args, line, callback)
+
+    def _error(self, msg):
+        """
+        prints error to stderr
+
+        @param msg: error message
+        """
+        sys.stderr.write("\nerror: " + msg + "\n")
+        sys.stdout.write("\n")

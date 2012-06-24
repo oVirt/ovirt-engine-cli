@@ -46,6 +46,4 @@ class FileCmdShell(CmdShell):
                     self.owner.print_line(line)
                     self.owner.onecmd(line)
         except Exception, e:
-            self.owner.emptyline(no_prompt=True)
-            print 'error: ' + str(e)
-            self.owner.emptyline(no_prompt=True)
+            self._error(str(e))

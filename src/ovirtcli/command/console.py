@@ -18,6 +18,7 @@
 from ovirtcli.platform import vnc, spice
 from ovirtcli.command.command import OvirtCommand
 from ovirtsdk.infrastructure import contextmanager
+from cli.messages import Messages
 
 
 class ConsoleCommand(OvirtCommand):
@@ -41,18 +42,21 @@ class ConsoleCommand(OvirtCommand):
     def execute(self):
         self.check_connection()
         args = self.arguments
+        CONSOLE_STATES = ['powering_up', 'up', 'reboot_in_progress']
+
         vm = self.get_object('vm', args[0])
         if vm is None:
-            self.error('no such vm: %s' % args[0])
-        if vm.status.state not in ('powering_up', 'up', 'reboot_in_progress'):
-            self.error('vm is not up')
+            self.error(Messages.Error.NO_SUCH_OBJECT % ('vm', args[0]))
+        if vm.status.state not in CONSOLE_STATES:
+            self.error(Messages.Error.CANNOT_CONNECT_TO_VM_DUE_TO_INVALID_STATE +
+                       Messages.Info.POSSIBLE_VM_STATES_FOR_CONSOLE % str(CONSOLE_STATES))
         proto = vm.display.type_
         host = vm.display.address
         port = vm.display.port
         secport = vm.display.secure_port
         action = vm.ticket()
         if action.status.state != 'complete':
-            self.error('could not set a ticket for the vm')
+            self.error(Messages.Error.CANNOT_SET_VM_TICKET)
         ticket = action.ticket.value
         debug = self.context.settings['cli:debug']
         if proto == 'vnc':
@@ -61,4 +65,4 @@ class ConsoleCommand(OvirtCommand):
             certurl = '%s/ca.crt' % (contextmanager.get('proxy').get_url().replace('/api', ''))
             spice.launch_spice_client(host, port, secport, ticket, certurl, vm.name, debug)
         else:
-            self.error('unsupported display protocol: %s' % proto)
+            self.error(Messages.Error.INVALID_DISPLAY_PROTOCOL % proto)

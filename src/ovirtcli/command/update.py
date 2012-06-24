@@ -17,6 +17,7 @@
 
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
+from cli.messages import Messages
 
 
 class UpdateCommand(OvirtCommand):
@@ -127,17 +128,16 @@ class UpdateCommand(OvirtCommand):
                                                        expendNestedTypes=True,
                                                        groupOptions=True)
 
-        resource = self.get_object(args[0],
-                                   args[1],
+        resource = self.get_object(args[0], args[1],
                                    self.resolve_base(opts),
                                    context_variants=typs[args[0]])
         if resource is None:
-            self.error('object does not exist: %s/%s' % (args[0], args[1]))
+            self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
         elif hasattr(resource, 'update'):
             obj = self.update_object_data(resource, opts)
             result = obj.update()
         else:
-            self.error('object : %s/%s is immutable' % (args[0], args[1]))
+            self.error(Messages.Error.OBJECT_IS_IMMUTABLE % (args[0], args[1]))
 
         self.context.formatter.format(self.context, result)
 
@@ -160,9 +160,11 @@ class UpdateCommand(OvirtCommand):
         if self.is_supported_type(types.keys(), args[0]):
             if len(args) == 2:
                 base = self.resolve_base(self.options)
-                obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
+                obj = self.get_object(args[0], args[1],
+                                      base,
+                                      context_variants=types[args[0]])
                 if obj is None:
-                    self.error('no such "%s": "%s"' % (args[0], args[1]))
+                    self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
                 helptext = self.helptext1
                 params_list = self.get_options(method='update',
                                                resource=obj,

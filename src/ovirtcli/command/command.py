@@ -25,6 +25,7 @@ from ovirtcli.utils.methodhelper import MethodHelper
 from ovirtsdk.infrastructure import brokers
 from ovirtsdk.utils.ordereddict import OrderedDict
 import itertools
+from cli.messages import Messages
 
 
 class OvirtCommand(Command):
@@ -55,11 +56,13 @@ class OvirtCommand(Command):
 
                     coll = typename + 's'
                     if not (TypeHelper.isKnownType(typename) or  TypeHelper.isKnownType(coll)):
-                        self.error('no such type: %s' % typename)
+                        self.error(Messages.Error.NO_SUCH_TYPE % typename)
 
                     if hasattr(collection_candidate, coll):
                         coll_ins = getattr(collection_candidate, coll)
                         if hasattr(coll_ins, 'get'):
+                            if not val:
+                                self.error(Messages.Error.INVALID_OPTION % key)
                             uuid_cand = self._toUUID(val)
                             if uuid_cand != None:
                                 base = coll_ins.get(id=val)
@@ -70,14 +73,14 @@ class OvirtCommand(Command):
                                 if len(combination) > parnet_candidate_locator:
                                     continue
                                 else:
-                                    self.error('cannot find %s %s.' % (typename, val))
+                                    self.error(Messages.Error.NO_SUCH_OBJECT % (typename, val))
 
                     if len(parnet_candidates) == parnet_candidate_locator:
                         return base
                     else:
                         collection_candidate = base
 
-            self.error('cannot construct collection/member view, checked variants are:\n%s.\n' % str(parnet_candidates_permutations))
+            self.error(Messages.Error.CANNOT_CONSTRUCT_COLLECTION_MEMBER_VIEW % str(parnet_candidates_permutations))
 
     def __try_parse(self, param):
         """INTERNAL: try parsing data to int"""
@@ -106,14 +109,14 @@ class OvirtCommand(Command):
                         if params_set_cand:
                             obj_params_set_cand = params_set_cand.factory()
                         else:
-                            self.error('cannot find type "%s".') % props[i]
+                            self.error(Messages.Error.NO_SUCH_TYPE) % props[i]
                         for param in params_set.replace('{', '').replace('}', '').split(';'):
                             param_data = param.replace(props[i] + '.', '').split('=')
                             if len(param_data) == 2:
                                 if hasattr(obj_params_set_cand, param_data[0]):
                                     setattr(obj_params_set_cand, param_data[0], self.__try_parse(param_data[1].strip()))
                             else:
-                                self.error('syntax error "%s", see help on collection based arguments for more details.') % param
+                                self.error(Messages.Error.INVALID_COLLECTION_BASED_OPTION_SYNTAX % prop)
                         getattr(obj, props[i]).append(obj_params_set_cand)
                 elif hasattr(obj, props[i]):
                     content = getattr(obj, props[i])
@@ -135,10 +138,9 @@ class OvirtCommand(Command):
                             setattr(obj, props[i], cand)
                             obj = cand
                         else:
-                            self.error('failed locating "%s" type.' % cand2)
+                            self.error(Messages.Error.NO_SUCH_TYPE % cand2)
                     else:
-#                        self.error('failed locating "%s" type.' % props[i])
-                        self.error('*%s* is not valid argument segment.' % props[i])
+                        self.error(Messages.Error.INVALID_ARGUMENT_SEGMENT % props[i])
         else:
             self.__set_property(obj, prop, val, fq_prop)
 
@@ -202,9 +204,9 @@ class OvirtCommand(Command):
 
                 #TODO: support generic parameters processing                 
                 if query and 'query' not in options:
-                    self.error('"--query" argument is not available for this type of listing')
+                    self.error(Messages.Error.NO_QUERY_ARGS)
                 if kwargs and 'kwargs' not in options:
-                    self.error('"--kwargs" argument is not available for this type of listing')
+                    self.error(Messages.Error.NO_KWARGS % 'list')
 
                 if query and kwargs:
                     return getattr(connection, typ).list(query=query, **kwargs)
@@ -218,9 +220,9 @@ class OvirtCommand(Command):
                 options = self.get_options(method='list', resource=getattr(base, typ), as_params_collection=True)
 
                 if query and 'query' not in options:
-                    self.error('"--query" argument is not available for this type of listing')
+                    self.error(Messages.Error.NO_QUERY_ARGS)
                 if kwargs and 'kwargs' not in options:
-                    self.error('"--kwargs" argument is not available for this type of listing')
+                    self.error(Messages.Error.NO_KWARGS % 'list')
 
                 if query and kwargs:
                     return getattr(base, typ).list(query=query, **kwargs)
@@ -230,9 +232,10 @@ class OvirtCommand(Command):
                     return getattr(base, typ).list(**kwargs)
                 return getattr(base, typ).list()
 
-        err_str = 'no such collection: "%s" or given arguments not valid'
+        err_str = Messages.Error.NO_SUCH_COLLECTION
         if context_variants:
-            err_str = err_str + (',\npossible arguments combinations are: ' + str(context_variants))
+            err_str = err_str + (Messages.Info.POSSIBALE_ARGUMENTS_COMBINATIONS +
+                                 str(context_variants))
         self.error(err_str % typ)
 
     def get_object(self, typ, obj_id, base=None, opts={}, context_variants=[]):
@@ -256,9 +259,9 @@ class OvirtCommand(Command):
 
         #TODO: support generic parameters processing        
         if name and 'name' not in options:
-            self.error('"--name" argument is not available for this type of show')
+            self.error(Messages.Error.NO_NAME)
         if kwargs and 'kwargs' not in options:
-            self.error('"--kwargs" argument is not available for this type of show')
+            self.error(Messages.Error.NO_KWARGS % 'show')
 
         if hasattr(base, candidate + 's'):
             coll = getattr(base, candidate + 's')
@@ -276,9 +279,10 @@ class OvirtCommand(Command):
                     else:
                         return coll.get(name=obj_id)
         else:
-            err_str = 'no such type: "%s" or given arguments not valid'
+            err_str = Messages.Error.NO_SUCH_TYPE_OR_ARS_NOT_VALID
             if context_variants:
-                err_str = err_str + (',\npossible arguments combinations are: ' + str(context_variants))
+                err_str = err_str + (Messages.Info.POSSIBALE_ARGUMENTS_COMBINATIONS
+                                      + str(context_variants))
             self.error(err_str % candidate)
 
         return None
@@ -340,9 +344,10 @@ class OvirtCommand(Command):
                                          method)
 
             if not method_ref:
-                err_str = 'cannot find any context for type "%s" using given arguments'
+                err_str = Messages.Error.NO_SUCH_CONTEXT
                 if context_variants:
-                    err_str = err_str + (',\npossible arguments combinations are: ' + str(context_variants))
+                    err_str = err_str + (Messages.Info.POSSIBALE_ARGUMENTS_COMBINATIONS
+                                         + str(context_variants))
                 self.error(err_str % resource)
 
         elif isinstance(resource, brokers.Base):
@@ -356,7 +361,7 @@ class OvirtCommand(Command):
 
     def is_supported_type(self, types, typ):
         if typ not in types:
-            self.error('unknown type "%s"' % typ)
+            self.error(Messages.Error.NO_SUCH_TYPE % typ)
             return False
         return True
 

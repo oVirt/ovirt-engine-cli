@@ -17,6 +17,7 @@
 
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
+from cli.messages import Messages
 
 
 class ShowCommand(OvirtCommand):
@@ -123,27 +124,29 @@ class ShowCommand(OvirtCommand):
         opts = self.options
 
         if not (TypeHelper.isKnownType(args[0])):
-            self.error('no such type: %s' % args[0])
+            self.error(Messages.Error.NO_SUCH_TYPE % args[0])
 
         if len(args) < 2 and len(opts) == 0:
-            self.error('%s identifier required.' % args[0])
+            self.error(Messages.Error.NO_IDENTIFIER % args[0])
 
         types = self.get_singular_types(method='get')
         obj = self.get_object(typ=args[0],
-                              obj_id=args[1] if len(args) > 1 else None,
+                              obj_id=args[1] if len(args) > 1
+                                             else None,
                               base=self.resolve_base(opts),
                               opts=opts,
                               context_variants=types[args[0]])
 
         if not (obj):
-            self.error('no such %s %s' % (args[0], args[1] if len(args) > 1
-                                                           else opts.values()
-                                                           if opts
-                                                           else ''))
+            self.error(Messages.Error.NO_SUCH_OBJECT %
+                       (args[0], args[1] if len(args) > 1
+                                         else opts.values()
+                                              if opts else ''))
 
         self.context.formatter.format(self.context,
                                       obj,
-                                      show_all=True if opts and opts.has_key(ShowCommand.SHOW_ALL_KEY) else False)
+                                      show_all=True if opts and opts.has_key(ShowCommand.SHOW_ALL_KEY)
+                                                    else False)
 
     def show_help(self):
         """Show help for "show"."""
@@ -177,7 +180,7 @@ class ShowCommand(OvirtCommand):
                 base = self.resolve_base(opts)
                 obj = self.get_object(args[0], args[1], base)
                 if obj is None:
-                    self.error('no such %s: %s' % (args[0], args[1]))
+                    self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
 
                 params_list = self.get_options(method='get',
                                                resource=obj,

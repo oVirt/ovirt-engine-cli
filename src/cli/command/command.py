@@ -106,6 +106,9 @@ class Command(object):
         """Raise an error. This function does not return. If the user is in
         active mode, an error message is displayed and he will be allowed to
         enter another command."""
+
+        print ''
+
         if cls is None:
             cls = CommandError
         elif not issubclass(cls, CommandError):

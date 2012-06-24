@@ -24,6 +24,7 @@ from ovirtcli.prompt import PromptMode
 
 class ConnectCmdShell(CmdShell):
     NAME = 'connect'
+    OPTIONS = [ 'url', 'user', 'password', 'key-file', 'cert-file', 'port', 'timeout']
 
     def __init__(self, context, parser):
         CmdShell.__init__(self, context, parser)
@@ -33,7 +34,7 @@ class ConnectCmdShell(CmdShell):
             sys.exit(1)
         if not self.copy_cmdline_options(opts, context, parser):
             sys.exit(1)
-        self.context.execute_string('connect\n')
+        self.context.execute_string(ConnectCmdShell.NAME + '\n')
 
         if self.context.status == self.context.OK:
             self.owner._set_prompt(mode=PromptMode.Connected)
@@ -55,7 +56,6 @@ class ConnectCmdShell(CmdShell):
             self.__do_connect(args)
 
     def complete_connect(self, text, line, begidx, endidx):
-        connect_args = [ 'url', 'user', 'password', 'key-file', 'cert-file', 'port', 'timeout']
         return AutoCompletionHelper.complete(line=line, text=text,
-                                             args={}.fromkeys(connect_args),
+                                             args={}.fromkeys(ConnectCmdShell.OPTIONS),
                                              all_options=True)

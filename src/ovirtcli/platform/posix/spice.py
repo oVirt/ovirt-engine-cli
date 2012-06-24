@@ -20,6 +20,7 @@ import urllib
 
 from cli.error import Error
 from ovirtcli.platform import util
+from cli.messages import Messages
 
 
 def launch_spice_client(host, port, secport, ticket, certurl, title,
@@ -27,12 +28,12 @@ def launch_spice_client(host, port, secport, ticket, certurl, title,
     """Launch the SPICE client."""
     display = os.environ.get('DISPLAY')
     if display is None:
-        raise Error, '$DISPLAY not set, cannot start a SPICE client'
+        raise Error, Messages.Error.CANNOT_START_CONSOLE_CLIENT % 'SPICE'
     cmd = util.which('spicec')
     if cmd is None:
         cmd = util.which('/usr/libexec/spicec')
     if cmd is None:
-        raise Error, 'Spice viewer was not found, please install Spice first.'
+        raise Error, Messages.Error.NO_CONSOLE_FOUND % ('spice', 'spice')
     certdir = os.path.join(util.get_home_dir(), '.spicec')
     try:
         os.stat(certdir)

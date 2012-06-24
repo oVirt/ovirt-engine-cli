@@ -40,6 +40,7 @@ from ovirtcli.prompt import PromptMode
 from ovirtcli.shell.filecmdshell import FileCmdShell
 from ovirtcli.historymanager import HistoryManager
 from ovirtcli.shell.historycmdshell import HistoryCmdShell
+from cli.messages import Messages
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
@@ -102,7 +103,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             if command == '' and not self.__input_buffer:
                 pass
             elif self.context.connection == None and command not in EngineShell.OFF_LINE_CONTENT:
-                self._error('command "%s" not valid or not available while not connected.' % command)
+                self._error(Messages.Error.INVALID_COMMAND % command)
             else:
                 if s.endswith('\\') and s != 'EOF':
                     self._set_prompt(mode=PromptMode.Multiline)
@@ -287,7 +288,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         else:
             cmd = args.split(' ')[0]
             if self.context.connection == None and cmd not in EngineShell.OFF_LINE_CONTENT:
-                self._error('command "%s" not valid or not available while not connected.' % cmd)
+                self._error(Messages.Error.INVALID_COMMAND % cmd)
             else:
                 if hasattr(self, 'do_' + cmd) and getattr(self, 'do_' + cmd).__doc__:
                     self.context.terminal.stdout.write('\n' + getattr(self, 'do_' + cmd).__doc__ + '\n')

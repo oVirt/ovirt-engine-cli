@@ -17,9 +17,7 @@
 
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
-#from ovirtsdk.infrastructure import brokers
-#from ovirtcli.utils.methodhelper import MethodHelper
-#from ovirtsdk.utils.parsehelper import ParseHelper
+from cli.messages import Messages
 
 
 class DeleteCommand(OvirtCommand):
@@ -123,7 +121,7 @@ class DeleteCommand(OvirtCommand):
         args = self.arguments
         opts = self.options
 
-        typs = TypeHelper.get_types_containing_method('delete',
+        typs = TypeHelper.get_types_containing_method(DeleteCommand.name,
                                                       expendNestedTypes=True,
                                                       groupOptions=True)
 
@@ -132,11 +130,11 @@ class DeleteCommand(OvirtCommand):
                                    self.resolve_base(opts),
                                    context_variants=typs[args[0]])
         if resource is None:
-            self.error('%s "%s" does not exist.' % (args[0], args[1]))
-        elif hasattr(resource, 'delete'):
-            result = self.execute_method(resource, 'delete', opts)
+            self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
+        elif hasattr(resource, DeleteCommand.name):
+            result = self.execute_method(resource, DeleteCommand.name, opts)
         else:
-            self.error('%s "%s" is immutable.' % (args[0], args[1]))
+            self.error(Messages.Error.OBJECT_IS_IMMUTABLE % (args[0], args[1]))
 
         self.context.formatter.format(self.context, result)
 
@@ -147,7 +145,7 @@ class DeleteCommand(OvirtCommand):
         opts = self.options
 
         subst = {}
-        types = TypeHelper.get_types_containing_method('delete',
+        types = TypeHelper.get_types_containing_method(DeleteCommand.name,
                                                        expendNestedTypes=True,
                                                        groupOptions=True)
 
@@ -160,9 +158,10 @@ class DeleteCommand(OvirtCommand):
                 base = self.resolve_base(self.options)
                 obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
                 if obj is None:
-                    self.error('no such "%s": "%s"' % (args[0], args[1]))
+                    self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
+
                 helptext = self.helptext1
-                params_list = self.get_options(method='delete',
+                params_list = self.get_options(method=DeleteCommand.name,
                                                resource=obj,
                                                sub_resource=base,
                                                context_variants=types[args[0]])
@@ -173,7 +172,7 @@ class DeleteCommand(OvirtCommand):
                 helptext = self.helptext1
                 subst['type'] = args[0]
 
-                options = self.get_options(method='delete',
+                options = self.get_options(method=DeleteCommand.name,
                                            resource=args[0],
                                            sub_resource=self.resolve_base(self.options),
                                            context_variants=types[args[0]])

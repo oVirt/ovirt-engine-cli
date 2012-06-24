@@ -17,6 +17,7 @@
 
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.settings import OvirtCliSettings
+from cli.messages import Messages
 
 
 class PingCommand(OvirtCommand):
@@ -43,6 +44,6 @@ class PingCommand(OvirtCommand):
             connection.test(throw_exception=True)
         except Exception, e:
             stdout.write('\n' + str(e) + '\n')
-            self.error('could NOT reach oVirt manager\n')
+            self.error(Messages.Error.CANNOT_CONNECT_TO_BACKEND % OvirtCliSettings.PRODUCT)
         else:
-            stdout.write('\nsuccess: oVirt manager could be reached OK\n\n')
+            stdout.write(Messages.Info.SUCESS_CONNECT_TO_BACKEND)

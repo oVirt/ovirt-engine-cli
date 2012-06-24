@@ -24,6 +24,8 @@ class Error(Exception):
     def __init__(self, message=None, **kwargs):
         if message is None:
             message = self.__doc__
+        message = message + '\n' if not message.endswith('\n') \
+                                 else message
         compat.super(Error, self).__init__(message)
         for key in kwargs:
             setattr(self, key, kwargs[key])

@@ -24,6 +24,7 @@ from ovirtcli.utils.methodhelper import MethodHelper
 
 class CreateCmdShell(CmdShell):
     NAME = 'create'
+    ALIAS = 'add'
 
     def __init__(self, context, parser):
         CmdShell.__init__(self, context, parser)
@@ -36,15 +37,15 @@ class CreateCmdShell(CmdShell):
         if obj_coll_type:
             if hasattr(brokers, obj_coll_type):
                 obj_coll = getattr(brokers, obj_coll_type)
-                if obj_coll and hasattr(obj_coll, 'add'):
-                    method_args = MethodHelper.get_documented_arguments(method_ref=getattr(obj_coll, 'add'),
+                if obj_coll and hasattr(obj_coll, CreateCmdShell.ALIAS):
+                    method_args = MethodHelper.get_documented_arguments(method_ref=getattr(obj_coll, CreateCmdShell.ALIAS),
                                                                         as_params_collection=True,
                                                                         spilt_or=True)
                     if method_args:
                         specific_options[obj if key == None else key] = method_args
 
     def complete_create(self, text, line, begidx, endidx):
-        args = TypeHelper.get_types_by_method(False, 'add', expendNestedTypes=True)
+        args = TypeHelper.get_types_by_method(False, CreateCmdShell.ALIAS, expendNestedTypes=True)
         specific_options = self.get_resource_specific_options(args, line,
                                                               callback=self.__add_resource_specific_options)
 

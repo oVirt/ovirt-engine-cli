@@ -18,6 +18,7 @@
 from ovirtcli.command.command import OvirtCommand
 from cli.context import ExecutionContext
 from ovirtcli.settings import OvirtCliSettings
+from cli.messages import Messages
 
 
 class DisconnectCommand(OvirtCommand):
@@ -40,7 +41,7 @@ class DisconnectCommand(OvirtCommand):
         stdout = self.context.terminal.stdout
         connection = self.context.connection
         if connection is None:
-            stdout.write('not connected\n')
+            self.error(Messages.Error.NOT_CONNECTED)
             return
         try:
             self.context._clean_settings()

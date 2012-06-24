@@ -18,16 +18,17 @@
 import os
 from cli.error import Error
 from ovirtcli.platform import util
+from cli.messages import Messages
 
 
 def launch_vnc_viewer(host, port, ticket, debug=False):
     """Launch a VNC viewer on host::port with `password'."""
     display = os.environ.get('DISPLAY')
     if display is None:
-        raise Error, 'not running in a GUI, cannot start a VNC viewer'
+        raise Error, Messages.Error.INVALID_ENV_MODE_FOR_CONSOLE % 'vnc'
     cmd = util.which('vncviewer')
     if cmd is None:
-        raise Error, 'VNC viewer was not found, please install VNC first.'
+        raise Error, Messages.Error.NO_CONSOLE_FOUND % ('vnc', 'vnc')
     args = ['vncviewer', '%s::%s' % (host, port), '-passwdInput' ]
     pid, pstdin = util.spawn(cmd, args, debug)
     os.write(pstdin, ticket)

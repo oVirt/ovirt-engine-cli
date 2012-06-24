@@ -19,6 +19,7 @@ from ovirtcli.command.command import OvirtCommand
 
 from ovirtsdk.infrastructure import contextmanager
 from ovirtcli.settings import OvirtCliSettings
+from cli.messages import Messages
 
 
 class StatusCommand(OvirtCommand):
@@ -47,11 +48,10 @@ class StatusCommand(OvirtCommand):
                     sstatus += ' (%s)' % sym
         else:
             sstatus = 'N/A'
-        stdout.write('\nlast command status: %s\n' % sstatus)
+        stdout.write(Messages.Info.STATUS % sstatus)
         if context.connection:
 #FIXME: retrive url via API proxy rather than inner proxy to connections_pool 
-            sstatus = 'connected to %s' % contextmanager.get('proxy').get_url() + \
-            "\n%s version: %s\n" % (OvirtCliSettings.PRODUCT, self.context.settings.get('ovirt-shell:version'))
+            stdout.write(Messages.Info.CONNECTED_TO_URL % contextmanager.get('proxy').get_url() + \
+            Messages.Info.PRODUCT_VERSION % (OvirtCliSettings.PRODUCT, self.context.settings.get('ovirt-shell:version')))
         else:
-            sstatus = 'not connected'
-        stdout.write('connection: %s\n' % sstatus)
+            stdout.write(Messages.Info.NOT_CONNECTED)

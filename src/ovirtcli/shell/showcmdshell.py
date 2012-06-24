@@ -22,6 +22,8 @@ from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
 
 class ShowCmdShell(CmdShell):
     NAME = 'show'
+    ALIAS = 'get'
+    OPTIONS = ['show-all', 'name', 'kwargs']
 
     def __init__(self, context, parser):
         CmdShell.__init__(self, context, parser)
@@ -30,8 +32,9 @@ class ShowCmdShell(CmdShell):
         return self.context.execute_string(ShowCmdShell.NAME + ' ' + args + '\n')
 
     def complete_show(self, text, line, begidx, endidx):
-        args = TypeHelper.get_types_by_method(False, 'get', expendNestedTypes=True)
+
+        args = TypeHelper.get_types_by_method(False, ShowCmdShell.ALIAS, expendNestedTypes=True)
         return AutoCompletionHelper.complete(line=line,
                                              text=text,
                                              args=args,
-                                             common_options=['show-all', 'name', 'kwargs'])
+                                             common_options=ShowCmdShell.OPTIONS)

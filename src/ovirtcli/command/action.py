@@ -20,6 +20,7 @@ from ovirtcli.utils.typehelper import TypeHelper
 
 from ovirtsdk.utils.parsehelper import ParseHelper
 import types
+from cli.messages import Messages
 
 class ActionCommand(OvirtCommand):
 
@@ -146,7 +147,7 @@ class ActionCommand(OvirtCommand):
         opts = self.options
 
         if not (TypeHelper.isKnownType(args[0])):
-            self.error('no such type: %s' % args[0])
+            self.error(Messages.Error.NO_SUCH_TYPE % args[0])
 
         scope = '%s:%s' % (ParseHelper.getXmlWrapperType(args[0]), args[2])
         actionable_types = TypeHelper.get_actionable_types(expendNestedTypes=True, groupOptions=True)
@@ -155,16 +156,16 @@ class ActionCommand(OvirtCommand):
                                    self.resolve_base(opts),
                                    context_variants=actionable_types[args[0]])
         if resource is None:
-            self.error('object does not exist: %s/%s' % (args[0], args[1]))
+            self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
         elif hasattr(resource, args[2]) and type(getattr(resource, args[2])) == types.MethodType:
             try:
                 result = self.execute_method(resource, args[2], opts)
             except Exception, e:
                 self.error(str(e))
             if result.status.state != 'complete':
-                self.error('action status: %s' % result.status.state)
+                self.error(Messages.Info.ACTION_STATUS % result.status.state)
         else:
-            self.error('no such action: %s' % args[2])
+            self.error(Messages.Error.NO_SUCH_ACTION % args[2])
         self.context.formatter.format(self.context, result)
 
     def show_help(self):
@@ -175,82 +176,88 @@ class ActionCommand(OvirtCommand):
         types = TypeHelper.get_actionable_types(expendNestedTypes=True, groupOptions=True)
         subst = {}
 
-        if len(args) == 2 and len(opts) == 2 and self.is_supported_type(types.keys(), args[0]):
-            helptext = self.helptext1
+        if not args or self.is_supported_type(types.keys(), args[0]):
+            if len(args) == 2 and len(opts) == 2:
+                helptext = self.helptext1
 
-            subst['type'] = args[0]
-            subst['id'] = args[1]
-            #subst['action'] = args[0]
+                subst['type'] = args[0]
+                subst['id'] = args[1]
+                #subst['action'] = args[0]
 
-            base = self.resolve_base(self.options)
-            obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
-            if obj is None:
-                self.error('no such "%s": "%s"' % (args[1], args[1]))
+                base = self.resolve_base(self.options)
+                obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
+                if obj is None:
+                    self.error(Messages.Error.NO_SUCH_OBJECT % (args[1], args[1]))
 
-            actions = self._get_action_methods(obj)
-            subst['actions'] = self.format_list(actions)
-        if len(args) == 3 and len(opts) == 2 and self.is_supported_type(types.keys(), args[1]):
-            helptext = self.helptext1
+                actions = self._get_action_methods(obj)
+                subst['actions'] = self.format_list(actions)
+            if len(args) == 3 and len(opts) == 2:
+                helptext = self.helptext1
 
-            subst['type'] = args[0]
-            subst['id'] = args[1]
-            subst['action'] = args[0]
+                subst['type'] = args[0]
+                subst['id'] = args[1]
+                subst['action'] = args[0]
 
-            base = self.resolve_base(self.options)
-            obj = self.get_object(args[1], args[2], base, context_variants=types[args[0]])
-            if obj is None:
-                self.error('no such "%s": "%s"' % (args[0], args[1]))
+                base = self.resolve_base(self.options)
+                obj = self.get_object(args[1], args[2], base, context_variants=types[args[0]])
+                if obj is None:
+                    self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
 
-            actions = self._get_action_methods(obj)
-            if args[0] not in actions:
-                self.error('no such action "%s"' % args[2])
+                actions = self._get_action_methods(obj)
+                if args[0] not in actions:
+                    self.error(Messages.Error.NO_SUCH_ACTION % args[2])
 
-            options = self.get_options(method=args[0],
-                                       resource=obj,
-                                       context_variants=types[args[0]])
-            subst['actions'] = self.format_list(actions)
-            subst['options'] = self.format_list(options, bullet='', sort=False)
-        elif len(args) == 2 and self.is_supported_type(types.keys(), args[0]):
-            helptext = self.helptext1
+                options = self.get_options(method=args[0],
+                                           resource=obj,
+                                           context_variants=types[args[0]])
+                subst['actions'] = self.format_list(actions)
+                subst['options'] = self.format_list(options, bullet='', sort=False)
+            elif len(args) == 1:
+                helptext = self.helptext0
+                subst['types'] = self.format_map({args[0]:types[args[0]]})
+                subst['type'] = args[0]
 
-            subst['type'] = args[0]
-            subst['id'] = args[1]
-            base = self.resolve_base(opts)
-            obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
-            if obj is None:
-                self.error('no such %s: %s' % (args[0], args[1]))
-            actions = self._get_action_methods(obj)
-            subst['actions'] = self.format_list(actions)
+            elif len(args) == 2:
+                helptext = self.helptext1
 
-        elif len(args) == 3 and self.is_supported_type(types.keys(), args[0]):
-            helptext = self.helptext1
+                subst['type'] = args[0]
+                subst['id'] = args[1]
+                base = self.resolve_base(opts)
+                obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
+                if obj is None:
+                    self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
+                actions = self._get_action_methods(obj)
+                subst['actions'] = self.format_list(actions)
 
-            subst['type'] = args[0]
-            subst['id'] = args[1]
-            subst['action'] = args[2]
+            elif len(args) == 3:
+                helptext = self.helptext1
 
-            base = self.resolve_base(self.options)
-            obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
-            if obj is None:
-                self.error('no such "%s": "%s"' % (args[0], args[1]))
+                subst['type'] = args[0]
+                subst['id'] = args[1]
+                subst['action'] = args[2]
 
-            actions = self._get_action_methods(obj)
-            if args[2] not in actions:
-                self.error('no such action "%s"' % args[2])
+                base = self.resolve_base(self.options)
+                obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
+                if obj is None:
+                    self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
 
-            options = self.get_options(method=args[2],
-                                       resource=obj,
-                                       sub_resource=base,
-                                       context_variants=types[args[0]])
-            subst['actions'] = self.format_list(actions)
-            subst['options'] = self.format_list(options, bullet='', sort=False)
-        else:
-            helptext = self.helptext0
-            subst['types'] = self.format_map(types)
+                actions = self._get_action_methods(obj)
+                if args[2] not in actions:
+                    self.error(Messages.Error.NO_SUCH_ACTION % args[2])
 
-#            scope = '%s:%s' % (type(obj).__name__, args[2])
+                options = self.get_options(method=args[2],
+                                           resource=obj,
+                                           sub_resource=base,
+                                           context_variants=types[args[0]])
+                subst['actions'] = self.format_list(actions)
+                subst['options'] = self.format_list(options, bullet='', sort=False)
+            else:
+                helptext = self.helptext0
+                subst['types'] = self.format_map(types)
 
-        statuses = self.get_statuses()
-        subst['statuses'] = self.format_list(statuses)
-        helptext = self.format_help(helptext, subst)
-        stdout.write(helptext)
+    #            scope = '%s:%s' % (type(obj).__name__, args[2])
+
+            statuses = self.get_statuses()
+            subst['statuses'] = self.format_list(statuses)
+            helptext = self.format_help(helptext, subst)
+            stdout.write(helptext)

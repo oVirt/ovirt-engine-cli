@@ -24,6 +24,7 @@ from ovirtcli.utils.methodhelper import MethodHelper
 
 class ListCmdShell(CmdShell):
     NAME = 'list'
+    OPTIONS = ['show-all']
 
     def __init__(self, context, parser):
         CmdShell.__init__(self, context, parser)
@@ -53,5 +54,5 @@ class ListCmdShell(CmdShell):
         return AutoCompletionHelper.complete(line,
                                              text,
                                              args=args,
-                                             common_options=['show-all'],
+                                             common_options=ListCmdShell.OPTIONS,
                                              specific_options=specific_options)
