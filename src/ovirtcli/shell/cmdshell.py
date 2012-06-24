@@ -17,6 +17,7 @@ import sys
 import os
 from ovirtcli.utils.typehelper import TypeHelper
 from ovirtsdk.infrastructure import brokers
+import itertools
 
 
 class CmdShell(object):
@@ -79,28 +80,37 @@ class CmdShell(object):
     #####################################################################
     def __generate_resource_specific_options__(self, args, line, callback):
         specific_options = {}
-        is_inner_type = False
 
         if line:
             spl = line.rstrip().split(' ')
             if len(spl) > 2:
                 obj = spl[1].strip()
-                canidate = TypeHelper.getDecoratorType(obj)
-                for arg in spl[1:]:
-                    if (arg.startswith('--') and arg.endswith('-identifier')):
-                        if arg.startswith('--') and arg.endswith('-identifier'):
-                            parent_candidate = arg[2:len(arg) - 11]
-                            canidate = TypeHelper.getDecoratorType(parent_candidate + obj)
-                        if canidate and hasattr(brokers, canidate):
-                            callback(canidate, specific_options, line=line, key=obj)
-                            is_inner_type = True
-                            break
-                if not is_inner_type:
+                base = self.__resolve_base(spl[1:])
+                if base:
+                    callback(base, specific_options, line=line, key=obj)
+                else:
                     callback(obj, specific_options, line=line)
             elif len(spl) == 2 and spl[1] != '' and spl[1].strip() in args.keys():
                 callback(spl[1].strip(), specific_options, line=line)
 
             return specific_options
+
+    def __resolve_base(self, args):
+        """resolves a base object from a set of '--type-identifier value' options."""
+        PARENT_IDENTIFIER = '-identifier'
+        parnet_candidates = [item for item in args
+                                      if item.endswith(PARENT_IDENTIFIER)]
+        parnet_candidates_permutations = list(itertools.permutations(parnet_candidates))
+
+        if parnet_candidates_permutations[0]:
+            for combination in parnet_candidates_permutations:
+                candidates = [item[2:-11] for item in combination
+                                              if item.endswith(PARENT_IDENTIFIER)]
+                candidate = (''.join(candidates) + args[0]).lower()
+                dt = TypeHelper.getDecoratorType(candidate)
+                if dt: return dt
+
+        return None
 
     def get_resource_specific_options(self, args, line, callback):
         """

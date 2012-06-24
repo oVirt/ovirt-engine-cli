@@ -37,7 +37,7 @@ class OvirtCommand(Command):
         return self.context.connection
 
     def resolve_base(self, options):
-        """resolve a base object from a set of '--typeid value' options."""
+        """resolves a base object from a set of '--type-identifier value' options."""
         collection_candidate = self.check_connection()
         parnet_candidate_locator = 0
         base = None
