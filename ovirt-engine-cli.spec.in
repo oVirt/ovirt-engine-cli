@@ -14,7 +14,7 @@ BuildRequires: python-ply
 BuildArch: noarch
 
 Requires: python
-Requires: ovirt-engine-sdk <= 3.1.0.1
+Requires: ovirt-engine-sdk >= 3.1.0.1
 Requires: pexpect
 Requires: python-setuptools
 Requires: python-ply
@@ -51,6 +51,13 @@ popd
 %doc LICENSE
 
 %changelog
+
+* Mon Jun 25 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.3-1
+- expend nested types as parameters overloads
+- refactor /help/ to support parameters overload
+- do not clear screen on sys.error
+- refactor auto-completion to support 3+ deep collections/resources
+- cli does not support 3+ deep collections/resources #827845
 
 * Thu Jun 7 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.2-1alpha
 - Implement history browsing mechanism #823512, new capabilities:
