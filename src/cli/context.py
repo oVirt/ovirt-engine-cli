@@ -28,6 +28,7 @@ from cli.settings import Settings
 from cli.parser import Parser
 from cli.platform import Terminal
 from cli import platform
+from ovirtsdk.infrastructure.errors import RequestError
 
 class ExecutionContext(object):
     """A CLI execution context."""
@@ -140,9 +141,9 @@ class ExecutionContext(object):
         if isinstance(e, KeyboardInterrupt):
             self.status = self.INTERRUPTED
             sys.stdout.write('\n')
-        elif isinstance(e, CommandError):
+        elif isinstance(e, CommandError) or isinstance(e, RequestError):
             self.status = getattr(e, 'status', self.COMMAND_ERROR)
-            sys.stderr.write('error: %s\n' % str(e))
+            sys.stderr.write('\nerror: %s\n\n' % str(e))
             if hasattr(e, 'help'):
                 sys.stderr.write('%s\n' % e.help)
         else:
