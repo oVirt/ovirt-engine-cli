@@ -108,7 +108,7 @@ class HelpCommand(Command):
         if len(args) == 0:
             subst = {}
             commands = self.get_commands()
-            subst['commands'] = self.format_list(commands)
+            subst['commands'] = self.format_list(commands, sort=True)
             helptext = self.format_help(self.helptext1, subst)
             stdout.write(helptext)
         else:

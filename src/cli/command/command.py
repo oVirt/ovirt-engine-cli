@@ -84,9 +84,9 @@ class Command(object):
         subst = {}
         subst['command'] = self.context.command.name
         commands = self.get_commands()
-        subst['commands'] = self.format_list(commands)
+        subst['commands'] = self.format_list(commands, sort=True)
         statuses = self.get_statuses()
-        subst['statuses'] = self.format_list(statuses)
+        subst['statuses'] = self.format_list(statuses, sort=True)
         helptext = self.format_help(self.helptext, subst)
         stdout = self.context.terminal.stdout
         stdout.write(helptext)
@@ -115,7 +115,7 @@ class Command(object):
             raise TypeError, 'Expecting a CommandError subclass'
         raise cls(message, **kwargs)
 
-    def format_list(self, lst, bullet='*', indent=0, sort=True):
+    def format_list(self, lst, bullet='*', indent=0, sort=False):
         """Format a list of items, to be used with format_help()."""
         formatted = []
         for elem in lst:

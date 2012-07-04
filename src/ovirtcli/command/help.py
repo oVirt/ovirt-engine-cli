@@ -113,7 +113,7 @@ class HelpCommand(OvirtCommand):
                             if f.split(' ')[0] in  EngineShell.OFF_LINE_CONTENT
                           ]
                 commands = off_line_content
-            subst['commands'] = self.format_list(commands)
+            subst['commands'] = self.format_list(commands, sort=True)
             subst['product'] = OvirtCliSettings.PRODUCT
             helptext = self.format_help(self.helptext1, subst)
             stdout.write(helptext)
