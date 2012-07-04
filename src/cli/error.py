@@ -37,3 +37,6 @@ class ParseError(Error):
 
 class CommandError(Error):
     """Illegal command."""
+
+class SyntaxError(Error):
+    """Illegal syntax."""

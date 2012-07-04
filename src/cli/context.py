@@ -146,12 +146,17 @@ class ExecutionContext(object):
             sys.stderr.write('\nerror: %s\n\n' % str(e))
             if hasattr(e, 'help'):
                 sys.stderr.write('%s\n' % e.help)
+        elif isinstance(e, SyntaxError):
+            self.status = getattr(e, 'status', self.SYNTAX_ERROR)
+            sys.stderr.write('\nerror: %s\n\n' % str(e))
+            if hasattr(e, 'help'):
+                sys.stderr.write('%s\n' % e.help)
         else:
             self.status = self.UNKNOWN_ERROR
             if self.settings['cli:debug']:
                 sys.stderr.write(traceback.format_exc())
             else:
-                sys.stderr.write('unknown error: %s\n' % str(e))
+                sys.stderr.write('\nunknown error: %s\n\n' % str(e))
 
     def _read_command(self):
         """Parse input until we can parse at least one full command, and

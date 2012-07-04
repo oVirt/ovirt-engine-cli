@@ -52,6 +52,6 @@ class StatusCommand(OvirtCommand):
         if context.connection:
 #FIXME: retrive url via API proxy rather than inner proxy to connections_pool 
             stdout.write(Messages.Info.CONNECTED_TO_URL % contextmanager.get('proxy').get_url() + \
-            Messages.Info.PRODUCT_VERSION % (OvirtCliSettings.PRODUCT, self.context.settings.get('ovirt-shell:version')))
+            Messages.Info.PRODUCT_VERSION % (OvirtCliSettings.PRODUCT, self.context.settings.get('ovirt-shell:version')) + '\n')
         else:
             stdout.write(Messages.Info.NOT_CONNECTED)

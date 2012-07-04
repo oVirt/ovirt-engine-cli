@@ -55,8 +55,7 @@ class Command(object):
         elif isinstance(self.args_check, tuple):
             argsok = len(args) in self.args_check
         if not argsok:
-            self.error('wrong number of arguments',
-                       help='try \'help %s\' for help' % self.name)
+            raise SyntaxError, 'wrong number of arguments, try \'help %s\' for help.' % self.name
 
     def check_options(self):
         """Check options for validity."""
