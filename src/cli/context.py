@@ -28,7 +28,6 @@ from cli.settings import Settings
 from cli.parser import Parser
 from cli.platform import Terminal
 from cli import platform
-from ovirtsdk.infrastructure.errors import RequestError
 
 class ExecutionContext(object):
     """A CLI execution context."""
@@ -137,6 +136,7 @@ class ExecutionContext(object):
                 self.status = self.OK
 
     def _handle_exception(self, e):
+        from ovirtsdk.infrastructure.errors import RequestError
         """Handle an exception. Can be overruled in a subclass."""
         if isinstance(e, KeyboardInterrupt):
             self.status = self.INTERRUPTED
