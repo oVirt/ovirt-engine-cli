@@ -23,7 +23,7 @@ from ovirtcli.platform import util
 from cli.messages import Messages
 
 
-def launch_spice_client(host, port, secport, ticket, certurl, title,
+def launch_spice_client(host, host_subject, port, secport, ticket, certurl, title,
                         debug=False):
     """Launch the SPICE client."""
     display = os.environ.get('DISPLAY')
@@ -54,6 +54,8 @@ def launch_spice_client(host, port, secport, ticket, certurl, title,
             args.extend([str(secport)])
             args.extend(['--ssl-channels', 'smain,sinputs'])
             args.extend(['--ca-file', certfile])
+            if host_subject:
+                args.extend(['--host-subject', host_subject])
         args.extend(['-p', ticket])
     else:
         args.extend(['-h', host])
