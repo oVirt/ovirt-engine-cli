@@ -54,7 +54,7 @@ def launch_spice_client(host, host_subject, port, secport, ticket, certurl, titl
             args.extend([str(secport)])
             args.extend(['--ssl-channels', 'smain,sinputs'])
             args.extend(['--ca-file', certfile])
-            if host_subject:
+            if host_subject and host_subject != '':
                 args.extend(['--host-subject', host_subject])
         args.extend(['-p', ticket])
     else:
