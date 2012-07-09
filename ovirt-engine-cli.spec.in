@@ -52,6 +52,12 @@ popd
 
 %changelog
 
+* Mon Jul 9 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.4-1
+- use host-subject (certificate) to validate host identity during spice initiation
+- implement syntax error
+- recognize RequestError as command failure
+- do not sort command options in /help/ commands
+
 * Mon Jun 25 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.3-1
 - expend nested types as parameters overloads
 - refactor /help/ to support parameters overload
