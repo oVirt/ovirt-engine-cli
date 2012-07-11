@@ -24,6 +24,11 @@ from ovirtcli.command import *
 from ovirtcli.format import *
 
 from ovirtcli.object import create
+import pkg_resources
+from ovirtcli.command.info import InfoCommand
+import sys
+import inspect
+from ovirtcli.utils.versionhelper import VersionHelper
 
 
 class OvirtCliExecutionContext(ExecutionContext):
@@ -35,6 +40,10 @@ class OvirtCliExecutionContext(ExecutionContext):
     REMOTE_ERROR = 10
     NOT_FOUND = 11
 
+    SDK_MODULE_NAME = "ovirt-engine-sdk"
+    CLI_MODULE_NAME = "ovirt-shell"
+    DEFAULT_VERSION = (0, 0, 0, 0)
+
     def __init__(self):
         super(OvirtCliExecutionContext, self).__init__()
         self.connection = None
@@ -42,6 +51,23 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.settings.add_callback('cli:verbosity', self._set_verbosity)
         self.settings.add_callback('ovirt-shell:output_format', self._set_formatter)
         self.product_info = None
+        self.sdk_version, self.cli_version, self.backend_version = self.__get_version_info()
+
+    def __get_version_info(self):
+        SNAPSHOT_SUFFIX = '-SNAPSHOT'
+
+        try:
+            sdk_version = pkg_resources.parse_version(
+                              pkg_resources.get_distribution(self.SDK_MODULE_NAME)
+                                           .version.replace(SNAPSHOT_SUFFIX, ''))
+
+            cli_version = pkg_resources.parse_version(
+                              pkg_resources.get_distribution(self.CLI_MODULE_NAME)
+                                           .version.replace(SNAPSHOT_SUFFIX, ''))
+
+            return sdk_version, cli_version, self.DEFAULT_VERSION
+        except:
+            return self.DEFAULT_VERSION, self.DEFAULT_VERSION, self.DEFAULT_VERSION
 
     def _set_verbosity(self, key, value):
         if self.connection is None:
@@ -79,20 +105,26 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.add_command(ShowCommand)
         self.add_command(StatusCommand)
         self.add_command(UpdateCommand)
+        self.add_command(InfoCommand)
 
     def _get_prompt_variables(self):
         """Return a dict with prompt variables."""
-        subst = {}
+
+        version = self.__get_backend_version()
+        self.settings['ovirt-shell:version'] = version
+        self.backend_version = pkg_resources.parse_version(version)
+
+        return {'version':version}
+
+    def __get_backend_version(self):
+        backend_version = self.DEFAULT_VERSION
         if self.connection:
             self.product_info = self.connection.get_product_info()
             if self.product_info:
                 version = self.product_info.version
-                ver = '%s.%s.%s.%s' % (version.major, version.minor, version.revision, version.build_)
-                subst['version'] = ver
-                self.settings['ovirt-shell:version'] = ver
-        else:
-            subst['version'] = ''
-        return subst
+                backend_version = (version.major, version.minor,
+                                   version.build_, version.revision)
+        return '%s.%s.%s.%s' % backend_version
 
     def _set_prompt(self):
         """Update the prompt."""

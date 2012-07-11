@@ -104,6 +104,9 @@ class Command(object):
     def warning(self, message):
         self.context.terminal.stdout.write('warning: ' + message + '\n')
 
+    def write(self, message):
+        self.context.terminal.stdout.write(message + '\n')
+
     def error(self, message, cls=None, **kwargs):
         """Raise an error. This function does not return. If the user is in
         active mode, an error message is displayed and he will be allowed to
