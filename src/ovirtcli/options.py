@@ -31,8 +31,8 @@ class OvirtCliOptionParser(OptionParser):
 
         OptionParser.__init__(self, usage=self.usage,
                               description=self.description)
-#        self.add_option('-d', '--debug', action='store_true',
-#                        help='enable debugging')
+        self.add_option('-d', '--debug', action='store_true',
+                        help='enable debugging')
 #        self.add_option('-v', '--verbose', action='store_const',
 #                        const=10, dest='verbosity', help='be more verbose')
 #        self.add_option('-H', '--help-commands', action='store_true',

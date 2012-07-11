@@ -60,6 +60,7 @@ class ConnectCommand(OvirtCommand):
         cert_file = settings.get('ovirt-shell:cert_file')
         port = settings.get('ovirt-shell:port')
         timeout = settings.get('ovirt-shell:timeout')
+        debug = settings.get('cli:debug')
 
         if self.context.connection is not None:
             stdout.write('already connected\n')
@@ -89,7 +90,8 @@ class ConnectCommand(OvirtCommand):
                                           key_file=key_file,
                                           cert_file=cert_file,
                                           port=port if port != -1 else None,
-                                          timeout=timeout if timeout != -1 else None)
+                                          timeout=timeout if timeout != -1 else None,
+                                          debug=debug)
             self.testConnectivity()
             self.context._set_prompt()
             stdout.write(OvirtCliSettings.CONNECTED_TEMPLATE % \
