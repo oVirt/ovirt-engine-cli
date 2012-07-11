@@ -23,7 +23,6 @@ from ovirtcli.shell.engineshell import EngineShell
 
     ############################## MAIN #################################
 def main():
-    #TODO: support reading script from the file
     parser = create(OvirtCliOptionParser)
     context = create(OvirtCliExecutionContext)
     shell = EngineShell(context, parser)

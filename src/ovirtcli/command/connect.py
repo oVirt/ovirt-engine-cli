@@ -78,11 +78,6 @@ class ConnectCommand(OvirtCommand):
             if not password:
                 self.error('missing configuration variable: password')
 
-#        if settings['cli:verbosity']:
-#            level = 10
-#        else:
-#            level = 1
-#        connection.verbosity = level
         try:
             self.context.connection = API(url=url,
                                           username=username,

@@ -80,22 +80,10 @@ class HelpCommand(OvirtCommand):
           * Shell commands can be executed by typing a '!' or 'shell' at the 
             beginning of a line.
           * Comments start with '#' and end at the end of a line.
-          * Multiple commands can be entered on a single line by separating
-            them with a semicolon (';').
-
-        == Environment Variables ==
-
-        The following environment variables are recognized:
-
-          * oVirt_URL        - The URL to connect to, same as --url.
-          * oVirt_USERNAME   - The username, same as --username
-          * oVirt_PASSWORD   - The password, same as --password.
-
+            
         == Examples ==
         
         See 'SUPPORTED HELP FORMATS' section under each command help.
-
-        
         """
 
     def execute(self):

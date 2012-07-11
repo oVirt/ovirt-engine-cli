@@ -18,6 +18,7 @@ import os
 from ovirtcli.utils.typehelper import TypeHelper
 from ovirtsdk.infrastructure import brokers
 import itertools
+from ovirtcli.settings import OvirtCliSettings
 
 
 class CmdShell(object):
@@ -45,7 +46,7 @@ class CmdShell(object):
         """Copy environment variables into configuration variables in the
         execution context."""
         for var in ('url', 'username', 'password'):
-            envvar = 'oVirt_%s' % var.upper()
+            envvar = OvirtCliSettings.PRODUCT + '_%s' % var.upper()
             confvar = 'ovirt-shell:%s' % var
             if envvar in os.environ:
                 try:
