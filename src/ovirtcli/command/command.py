@@ -189,6 +189,12 @@ class OvirtCommand(Command):
             for item in opts[kwargs_arg].split(';'):
                 k, v = item.split('=')
                 kw[k.replace('-', '.')] = v
+        mopts = {}
+        for k, v in opts.iteritems():
+            if k != query_arg and k != kwargs_arg:
+                mopts[k if not k.startswith('--') else k[2:]] = v
+        kw.update(mopts)
+
         return query, kw
 
 
@@ -202,7 +208,6 @@ class OvirtCommand(Command):
             if hasattr(connection, typ):
                 options = self.get_options(method='list', resource=TypeHelper.to_singular(typ), as_params_collection=True)
 
-                #TODO: support generic parameters processing                 
                 if query and 'query' not in options:
                     self.error(Messages.Error.NO_QUERY_ARGS)
                 if kwargs and 'kwargs' not in options:
