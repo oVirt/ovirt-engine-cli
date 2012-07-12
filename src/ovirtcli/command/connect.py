@@ -55,6 +55,9 @@ class ConnectCommand(OvirtCommand):
         args = self.arguments
         settings = self.context.settings
         stdout = self.context.terminal.stdout
+        context = self.context
+
+        MIN_FORCE_CREDENTIALS_CHECK_VERSION = ('00000003', '00000001', '00000000', '00000004')
 
         key_file = settings.get('ovirt-shell:key_file')
         cert_file = settings.get('ovirt-shell:cert_file')
@@ -87,7 +90,10 @@ class ConnectCommand(OvirtCommand):
                                           port=port if port != -1 else None,
                                           timeout=timeout if timeout != -1 else None,
                                           debug=debug)
-            self.testConnectivity()
+
+            if context.sdk_version < MIN_FORCE_CREDENTIALS_CHECK_VERSION:
+                self.testConnectivity()
+
             self.context._set_prompt()
             stdout.write(OvirtCliSettings.CONNECTED_TEMPLATE % \
             self.context.settings.get('ovirt-shell:version'))
