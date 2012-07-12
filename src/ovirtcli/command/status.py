@@ -16,9 +16,6 @@
 
 
 from ovirtcli.command.command import OvirtCommand
-
-from ovirtsdk.infrastructure import contextmanager
-from ovirtcli.settings import OvirtCliSettings
 from cli.messages import Messages
 
 
@@ -39,7 +36,6 @@ class StatusCommand(OvirtCommand):
 
     def execute(self):
         context = self.context
-        stdout = context.terminal.stdout
         status = context.status
         if status is not None:
             sstatus = str(status)
@@ -48,10 +44,5 @@ class StatusCommand(OvirtCommand):
                     sstatus += ' (%s)' % sym
         else:
             sstatus = 'N/A'
-        stdout.write(Messages.Info.STATUS % sstatus)
-        if context.connection:
-#FIXME: retrive url via API proxy rather than inner proxy to connections_pool 
-            stdout.write(Messages.Info.CONNECTED_TO_URL % contextmanager.get('proxy').get_url() + \
-            Messages.Info.PRODUCT_VERSION % (OvirtCliSettings.PRODUCT, self.context.settings.get('ovirt-shell:version')) + '\n')
-        else:
-            stdout.write(Messages.Info.NOT_CONNECTED)
+        self.write(Messages.Info.STATUS % sstatus + '\n')
+

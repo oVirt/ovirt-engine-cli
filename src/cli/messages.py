@@ -50,7 +50,7 @@ class Messages():
         POSSIBALE_ARGUMENTS_COMBINATIONS = ',\npossible arguments combinations are %s.'
         POSSIBLE_VM_STATES_FOR_CONSOLE = ',\npossible vm states are %s.'
         ACTION_STATUS = 'action status "%s".'
-        STATUS = '\nlast command status: %s\n'
+        STATUS = '\nlast command status: %s'
         PRODUCT_VERSION = "\n%s version: %s.\n"
         NOT_CONNECTED = 'not connected.'
         SUCESS_CONNECT_TO_BACKEND = '\nsuccess: oVirt manager could be reached OK.\n\n'
@@ -60,4 +60,3 @@ class Messages():
         BACKEND_ENTRY_POINT = 'entry point    : %s'
         PYTHON_VERSION = 'python version : %s'
         PLATFORM = 'platform       : %s'
-
