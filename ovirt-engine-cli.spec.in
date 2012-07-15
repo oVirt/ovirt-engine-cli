@@ -52,6 +52,9 @@ popd
 
 %changelog
 
+* Sun Jul 15 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.6-1
+- support python 2.6 version format
+
 * Sun Jul 15 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.5-1
 - refactor /status/ command
 - do not force credentials check on sdk > 3.1.0.4
