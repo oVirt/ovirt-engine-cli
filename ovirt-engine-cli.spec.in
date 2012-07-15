@@ -52,6 +52,12 @@ popd
 
 %changelog
 
+* Sun Jul 15 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.5-1
+- refactor /status/ command
+- do not force credentials check on sdk > 3.1.0.4
+- implement /info/ command
+- implement generic parameters processing for /list/ command
+
 * Mon Jul 9 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.4-1
 - use host-subject (certificate) to validate host identity during spice initiation
 - implement syntax error
