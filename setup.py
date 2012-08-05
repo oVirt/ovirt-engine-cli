@@ -10,8 +10,8 @@ version_info = {
     'name': 'ovirt-shell',
     'version': '3.1.0.6-SNAPSHOT',
     'description': 'A command-line interface to oVirt Virtualization',
-    'author': 'www.ovirt.org',
-    'author_email': 'engine-devel@ovirt.org',
+    'author': 'Michael Pasternak',
+    'author_email': 'mpastern@redhat.com',
     'url': 'http://www.ovirt.org/wiki/CLI',
     'license': 'ASL2',
     'classifiers': [
