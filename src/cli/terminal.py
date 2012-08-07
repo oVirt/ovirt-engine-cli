@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+from kitchen.text.converters import getwriter
+
 
 class Terminal(object):
     """Base class for terminal objects."""
@@ -23,7 +25,7 @@ class Terminal(object):
 
     def __init__(self, stdin, stdout, stderr):
         self.stdin = stdin
-        self.stdout = stdout
+        self.stdout = getwriter('utf8')(stdout)
         self.stderr = stderr
 
     def clear(self):

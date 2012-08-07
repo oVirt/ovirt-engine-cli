@@ -28,6 +28,10 @@ from cli.settings import Settings
 from cli.parser import Parser
 from cli.platform import Terminal
 from cli import platform
+import codecs
+import cStringIO
+from kitchen.text.converters import getwriter
+
 
 class ExecutionContext(object):
     """A CLI execution context."""
@@ -245,7 +249,7 @@ class ExecutionContext(object):
             self._pipeline = None
             return
         self._pipeline = Popen(pipeline, stdin=PIPE, stderr=PIPE, shell=True)
-        self._pipeinput = StringIO()
+        self._pipeinput = codecs.getwriter("utf8")(cStringIO.StringIO())
         self.terminal.stdout = self._pipeinput
 
     def _setup_io_streams(self, redirections=[]):
@@ -263,7 +267,7 @@ class ExecutionContext(object):
     def _restore_io_streams(self):
         """INTERNAL: reset IO streams."""
         self.terminal.stdin = sys.stdin
-        self.terminal.stdout = sys.stdout
+        self.terminal.stdout = getwriter('utf8')(sys.stdout)
         self.terminal.stderr = sys.stderr
 
     def _execute_pipeline(self):

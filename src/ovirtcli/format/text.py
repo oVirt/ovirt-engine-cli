@@ -22,7 +22,7 @@ from ovirtcli.format.format import Formatter
 from ovirtsdk.xml import params
 from ovirtsdk.infrastructure.common import Base
 from ovirtsdk.infrastructure import brokers
-#import gtk
+import types
 
 
 class FormatMode():
@@ -111,8 +111,10 @@ class TextFormatter(Formatter):
     def __write_context(self, format0, format1, width1, field, value, resource_context, reduced_mode_fields, mode=FormatMode.FULL):
         context = self.context
         stdout = context.terminal.stdout
-
-        val = str(value)
+        if type(value) == types.UnicodeType:
+            val = value
+        else:
+            val = str(value)
         fil = (field if resource_context is None
                      else resource_context.lower() + '.' + field)\
               .replace('.', '-')
