@@ -112,7 +112,13 @@ class UpdateCommand(OvirtCommand):
 
           $options
 
-          Note: collection based arguments syntax is: "{x=a1;y=b1;z=c1;...},{x=a2;y=b2;z=c2;...},..."
+          Note: collection based arguments syntax is:
+          --<type>.<collection-obj>.<collection-member> "<collection-item>.<collection-item-property>=value,..."
+
+          e.g:
+
+          --power_management-options-option "option.name=n1,option.value=v1"
+          --power_management-options-option "option.name=n2,option.value=v2"
 
         == Return Values ==
 

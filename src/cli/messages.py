@@ -42,6 +42,7 @@ class Messages():
         INVALID_OPTION = 'option %s cannot be empty.'
         INVALID_COLLECTION_BASED_OPTION_SYNTAX = 'invalid syntax at "--%s", see help on collection based arguments for more details.'
         INVALID_ARGUMENT_SEGMENT = '"%s" is invalid argument segment.'
+        INVALID_OPTION_SEGMENT = '"%s" is invalid segment at option "--%s".'
     class Warning():
         CANNOT_FETCH_HOST_CERT_SUBJECT = 'could not fetch host certificate info.'
         CANNOT_FETCH_HOST_CERT_SUBJECT_LEGACY_SDK = 'could not fetch host certificate info cause used backend/sdk does not support it.'

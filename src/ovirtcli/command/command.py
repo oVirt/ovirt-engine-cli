@@ -26,6 +26,7 @@ from ovirtsdk.infrastructure import brokers
 from ovirtsdk.utils.ordereddict import OrderedDict
 import itertools
 from cli.messages import Messages
+import types
 
 
 class OvirtCommand(Command):
@@ -89,6 +90,7 @@ class OvirtCommand(Command):
                 return int(param)
             elif param and param.isdigit():
                 return int(param)
+            else: return param
         except:
             return param
 
@@ -104,17 +106,40 @@ class OvirtCommand(Command):
                     self.__set_property(obj, props[i], val, fq_prop)
                     return
                 if hasattr(obj, props[i]) and type(getattr(obj, props[i])) == list:
-                    for params_set in val.split(','):
                         params_set_cand = ParseHelper.getXmlType(props[i])
                         if params_set_cand:
                             obj_params_set_cand = params_set_cand.factory()
+                            root_obj_params_set_cand = obj_params_set_cand
                         else:
                             self.error(Messages.Error.NO_SUCH_TYPE) % props[i]
-                        for param in params_set.replace('{', '').replace('}', '').split(';'):
+                        for param in val.split(','):
+                            obj_params_set_cand = root_obj_params_set_cand
                             param_data = param.replace(props[i] + '.', '').split('=')
                             if len(param_data) == 2:
-                                if hasattr(obj_params_set_cand, param_data[0]):
-                                    setattr(obj_params_set_cand, param_data[0], self.__try_parse(param_data[1].strip()))
+                                spplited_param_data = param_data[0].split('.')
+                                for param_period in spplited_param_data:
+                                    if spplited_param_data[-1] == param_period:
+                                        if hasattr(obj_params_set_cand, param_period):
+                                            setattr(obj_params_set_cand, param_period,
+                                                    self.__try_parse(param_data[1].strip()))
+                                        else:
+                                            self.error(Messages.Error.INVALID_OPTION_SEGMENT % \
+                                                       (param_period, param))
+                                    elif hasattr(obj_params_set_cand, param_period) and \
+                                         getattr(obj_params_set_cand, param_period) == None:
+                                        param_period_cand = ParseHelper.getXmlType(param_period)
+                                        if param_period_cand:
+                                            param_period_cand_obj = param_period_cand.factory()
+                                            setattr(obj_params_set_cand, param_period, param_period_cand_obj)
+                                            obj_params_set_cand = param_period_cand_obj
+                                    elif hasattr(obj_params_set_cand, param_period):
+                                        param_period_cand = ParseHelper.getXmlType(param_period)
+                                        if param_period_cand:
+                                            param_period_cand_obj = getattr(obj_params_set_cand, param_period)
+                                            obj_params_set_cand = param_period_cand_obj
+                                    else:
+                                        self.error(Messages.Error.INVALID_OPTION_SEGMENT % \
+                                                   (param_period, param))
                             else:
                                 self.error(Messages.Error.INVALID_COLLECTION_BASED_OPTION_SYNTAX % prop)
                         getattr(obj, props[i]).append(obj_params_set_cand)
@@ -161,7 +186,11 @@ class OvirtCommand(Command):
             prop = key.replace('--', '')
             val = options[key]
             if not prop.endswith('-id') and prop.endswith('-identifier'): continue
-            self.__do_set_data(obj=obj, prop=prop, fq_prop=key, val=val)
+            if type(val) == types.ListType:
+                for item in val:
+                    self.__do_set_data(obj=obj, prop=prop, fq_prop=key, val=item)
+            else:
+                self.__do_set_data(obj=obj, prop=prop, fq_prop=key, val=val)
 
         return obj
 

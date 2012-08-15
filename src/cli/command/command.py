@@ -19,6 +19,7 @@ from fnmatch import fnmatch
 from cli.error import CommandError
 from ovirtcli.format.help import Help
 from ovirtcli.utils.methodhelper import MethodHelper
+from ovirtcli.utils.multivaluedict import MultiValueDict
 
 
 class Command(object):
@@ -34,7 +35,7 @@ class Command(object):
     def __init__(self, arguments, options):
         """Constructor."""
         self.arguments = arguments
-        self.options = dict(options)
+        self.options = MultiValueDict(options)
         if '--help' in self.options:
             self.mode = 'show_help'
         else:
