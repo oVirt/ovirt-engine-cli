@@ -18,14 +18,15 @@
 import textwrap
 from optparse import OptionParser
 import sys
+from ovirtcli import settings
 
 
 class OvirtCliOptionParser(OptionParser):
 
     usage = '%prog [options]\n       %prog [options] command...'
     description = textwrap.dedent("""\
-        This program is a command-line interface to oVirt Virtualization.
-        """)
+        This program is a command-line interface to %s Virtualization.
+        """ % settings.OvirtCliSettings.PRODUCT)
 
     def __init__(self):
 
@@ -34,11 +35,12 @@ class OvirtCliOptionParser(OptionParser):
         self.add_option('-d', '--debug', action='store_true',
                         help='enable debugging')
         self.add_option('-l', '--url',
-                        help='specifies the API entry point URL')
+                        help='specifies the API entry point URL (http[s]://server[:port]/api)')
         self.add_option('-u', '--username', help='connect as this user')
         self.add_option('-p', '--password', help='specify password')
-        self.add_option('-K', '--key-file', help='specify key-file')
-        self.add_option('-C', '--cert-file', help='specify cert-file')
+        self.add_option('-K', '--key-file', help='specify client PEM key-file')
+        self.add_option('-C', '--cert-file', help='specify client PEM cert-file')
+        self.add_option('-A', '--ca-file', help='specify server CA cert-file')
         self.add_option('-P', '--port', help='specify port')
         self.add_option('-T', '--timeout', help='specify timeout')
         self.add_option('-c', '--connect', action='store_true',

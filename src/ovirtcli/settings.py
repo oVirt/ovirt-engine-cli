@@ -52,6 +52,7 @@ class OvirtCliSettings(Settings):
         ('ovirt-shell:password', str, ''),
         ('ovirt-shell:key_file', str, None),
         ('ovirt-shell:cert_file', str, None),
+        ('ovirt-shell:ca_file', str, None),
         ('ovirt-shell:port', int, -1),
         ('ovirt-shell:timeout', int, -1),
         ('ovirt-shell:input_format', enum('xml'), 'xml'),

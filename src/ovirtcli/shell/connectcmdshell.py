@@ -24,7 +24,7 @@ from ovirtcli.prompt import PromptMode
 
 class ConnectCmdShell(CmdShell):
     NAME = 'connect'
-    OPTIONS = [ 'url', 'user', 'password', 'key-file', 'cert-file', 'port', 'timeout']
+    OPTIONS = [ 'url', 'user', 'password', 'key-file', 'cert-file', 'ca-file', 'port', 'timeout']
 
     def __init__(self, context, parser):
         CmdShell.__init__(self, context, parser)

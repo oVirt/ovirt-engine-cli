@@ -18,7 +18,10 @@
 from ovirtcli.command.command import OvirtCommand
 from ovirtsdk.api import API
 from ovirtcli.settings import OvirtCliSettings
-from ovirtsdk.infrastructure.errors import RequestError
+from ovirtsdk.infrastructure.errors import RequestError, NoCertificatesError, \
+    ConnectionError
+from cli.messages import Messages
+from ovirtsdk.web.connection import Connection
 
 
 class ConnectCommand(OvirtCommand):
@@ -45,8 +48,9 @@ class ConnectCommand(OvirtCommand):
          * url          - The URL to connect to.
          * username     - The user to connect as. (format user@domain).
          * password     - The password to use.
-         * [key-file]   - The key file to use.
-         * [cert-file]  - The certificate file to use.
+         * [key-file]   - The client PEM key file to use.
+         * [cert-file]  - The client PEM certificate file to use.
+         * [ca-file]    - The server CA certificate file to use.
          * [port]       - The port to use (if not specified in url).
          * [timeout]    - The timeout on request.
         """
@@ -59,8 +63,9 @@ class ConnectCommand(OvirtCommand):
 
         MIN_FORCE_CREDENTIALS_CHECK_VERSION = ('00000003', '00000001', '00000000', '00000004')
 
-        key_file = settings.get('ovirt-shell:key_file')
-        cert_file = settings.get('ovirt-shell:cert_file')
+        key_file = self.xNoneType(settings.get('ovirt-shell:key_file'))
+        cert_file = self.xNoneType(settings.get('ovirt-shell:cert_file'))
+        ca_file = self.xNoneType(settings.get('ovirt-shell:ca_file'))
         port = settings.get('ovirt-shell:port')
         timeout = settings.get('ovirt-shell:timeout')
         debug = settings.get('cli:debug')
@@ -87,6 +92,7 @@ class ConnectCommand(OvirtCommand):
                                           password=password,
                                           key_file=key_file,
                                           cert_file=cert_file,
+                                          ca_file=ca_file,
                                           port=port if port != -1 else None,
                                           timeout=timeout if timeout != -1 else None,
                                           debug=debug)
@@ -100,10 +106,15 @@ class ConnectCommand(OvirtCommand):
 
         except RequestError, e:
             self.__cleanContext()
-            stdout.write('\n')
             self.error(str(e.reason + ", [Errno: " + str(e.status) + ']\n'))
+        except NoCertificatesError:
+            self.__cleanContext()
+            self.error(Messages.Error.NO_CERTIFICATES)
+        except ConnectionError, e:
+            self.__cleanContext()
+            self.context._clean_settings()
+            self.error(str(e))
         except Exception, e:
-            stdout.write('\n')
             self.__cleanContext()
             self.error(str(e).replace(', ', ',\n'))
 
@@ -118,3 +129,6 @@ class ConnectCommand(OvirtCommand):
             except Exception, e:
                 self.error(e.strerror.lower())
         self.context.connection = None
+
+    def xNoneType(self, s):
+        return None if s == 'None' else s
