@@ -45,14 +45,15 @@ class ConnectCommand(OvirtCommand):
 
         The arguments are:
 
-         * url          - The URL to connect to.
-         * username     - The user to connect as. (format user@domain).
+         * url          - The URL to connect to (http[s]://server[:port]/api).
+         * username     - The user to connect as. (user@domain).
          * password     - The password to use.
          * [key-file]   - The client PEM key file to use.
          * [cert-file]  - The client PEM certificate file to use.
          * [ca-file]    - The server CA certificate file to use.
+         * [insecure]   - Allow connecting to SSL sites without certificates.
          * [port]       - The port to use (if not specified in url).
-         * [timeout]    - The timeout on request.
+         * [timeout]    - The request timeout.
         """
 
     def execute(self):
@@ -69,6 +70,7 @@ class ConnectCommand(OvirtCommand):
         port = settings.get('ovirt-shell:port')
         timeout = settings.get('ovirt-shell:timeout')
         debug = settings.get('cli:debug')
+        insecure = settings.get('ovirt-shell:insecure')
 
         if self.context.connection is not None:
             stdout.write('already connected\n')
@@ -93,6 +95,7 @@ class ConnectCommand(OvirtCommand):
                                           key_file=key_file,
                                           cert_file=cert_file,
                                           ca_file=ca_file,
+                                          insecure=insecure,
                                           port=port if port != -1 else None,
                                           timeout=timeout if timeout != -1 else None,
                                           debug=debug)
