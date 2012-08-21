@@ -14,7 +14,7 @@ BuildRequires: python-ply
 BuildArch: noarch
 
 Requires: python
-Requires: ovirt-engine-sdk >= 3.1.0.1
+Requires: ovirt-engine-sdk >= 3.1.0.6
 Requires: pexpect
 Requires: python-setuptools
 Requires: python-ply
@@ -51,6 +51,12 @@ popd
 %doc LICENSE
 
 %changelog
+
+* Tue Jul 21 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.8-1
+- implement insecure flag #848046
+- implement server identity check
+- collection-based-options definition doesnt look like cli format #833788
+- support utf-8 encoding
 
 * Sun Jul 15 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.6-1
 - support python 2.6 version format
