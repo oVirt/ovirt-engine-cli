@@ -31,6 +31,7 @@ from cli import platform
 import codecs
 import cStringIO
 from kitchen.text.converters import getwriter
+from cli.executionmode import ExecutionMode
 
 
 class ExecutionContext(object):
@@ -65,6 +66,7 @@ class ExecutionContext(object):
         self._setup_logging()
         self._load_settings()
         self.setup_commands()
+        self.mode = ExecutionMode.SHELL
 
     def _setup_logging(self):
         """Configure logging."""
@@ -245,7 +247,7 @@ class ExecutionContext(object):
 
     def _setup_pipeline(self, pipeline):
         """INTERNAL: set up the pipeline, if any."""
-        if not pipeline:
+        if not pipeline or self.mode == ExecutionMode.SCRIPT:# or pipeline == 'less -FSRX':
             self._pipeline = None
             return
         self._pipeline = Popen(pipeline, stdin=PIPE, stderr=PIPE, shell=True)

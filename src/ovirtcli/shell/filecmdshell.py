@@ -14,8 +14,8 @@
 # limitations under the License.
 #
 
-
 from ovirtcli.shell.cmdshell import CmdShell
+from cli.executionmode import ExecutionMode
 
 
 class FileCmdShell(CmdShell):
@@ -40,6 +40,7 @@ class FileCmdShell(CmdShell):
         """
 
         try:
+            self.context.mode = ExecutionMode.SCRIPT
             with open(arg) as script:
                 for line in script:
                     line = self.owner.precmd(line)
@@ -47,3 +48,5 @@ class FileCmdShell(CmdShell):
                     self.owner.onecmd(line)
         except Exception, e:
             self._error(str(e))
+        finally:
+            self.context.mode = ExecutionMode.SHELL
