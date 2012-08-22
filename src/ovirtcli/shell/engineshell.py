@@ -268,8 +268,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         exit
         """
 
-        self.emptyline(no_prompt=True)
-        return True
+        sys.exit(0)
 
     def do_help(self, args):
         """\
