@@ -21,7 +21,6 @@ from ovirtcli.settings import OvirtCliSettings
 from ovirtsdk.infrastructure.errors import RequestError, NoCertificatesError, \
     ConnectionError
 from cli.messages import Messages
-from ovirtsdk.web.connection import Connection
 
 
 class ConnectCommand(OvirtCommand):
@@ -51,6 +50,7 @@ class ConnectCommand(OvirtCommand):
          * [key-file]   - The client PEM key file to use.
          * [cert-file]  - The client PEM certificate file to use.
          * [ca-file]    - The server CA certificate file to use.
+         * [filter]     - Enables user permission based filtering.
          * [insecure]   - Allow connecting to SSL sites without certificates.
          * [port]       - The port to use (if not specified in url).
          * [timeout]    - The request timeout.
@@ -71,6 +71,7 @@ class ConnectCommand(OvirtCommand):
         timeout = settings.get('ovirt-shell:timeout')
         debug = settings.get('cli:debug')
         insecure = settings.get('ovirt-shell:insecure')
+        filter_ = settings.get('ovirt-shell:filter')
 
         if self.context.connection is not None:
             stdout.write('already connected\n')
@@ -96,6 +97,7 @@ class ConnectCommand(OvirtCommand):
                                           cert_file=cert_file,
                                           ca_file=ca_file,
                                           insecure=insecure,
+                                          filter=filter_,
                                           port=port if port != -1 else None,
                                           timeout=timeout if timeout != -1 else None,
                                           debug=debug)
@@ -109,7 +111,7 @@ class ConnectCommand(OvirtCommand):
 
         except RequestError, e:
             self.__cleanContext()
-            self.error(str(e.reason + ", [Errno: " + str(e.status) + ']\n'))
+            self.error("[" + str(e.status) + '] - ' + str(e.reason) + ', ' + str(e.detail))
         except NoCertificatesError:
             self.__cleanContext()
             self.error(Messages.Error.NO_CERTIFICATES)

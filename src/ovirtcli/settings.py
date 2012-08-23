@@ -54,6 +54,7 @@ class OvirtCliSettings(Settings):
         ('ovirt-shell:cert_file', str, None),
         ('ovirt-shell:ca_file', str, None),
         ('ovirt-shell:insecure', boolean, False),
+        ('ovirt-shell:filter', boolean, False),
         ('ovirt-shell:port', int, -1),
         ('ovirt-shell:timeout', int, -1),
         ('ovirt-shell:input_format', enum('xml'), 'xml'),
