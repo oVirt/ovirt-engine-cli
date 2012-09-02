@@ -30,7 +30,7 @@ class Messages():
         NO_CONSOLE_FOUND = '%s viewer was not found, please install %s first.'
         NOT_CONNECTED = OvirtCliSettings.PRODUCT.lower() + '-shell is not connected.'
         NO_SUCH_COLLECTION = 'no such collection "%s" or given arguments not valid.'
-        NO_CERTIFICATES = 'client/server certificate files must be specified for SSL secured connection.'
+        NO_CERTIFICATES = 'server CA certificate file must be specified for SSL secured connection.'
         CANNOT_CREATE = 'cannot create "%s" because %s collection is not available or given arguments not valid.'
         CANNOT_CONNECT_TO_VM_DUE_TO_INVALID_STATE = 'cannot connect to vm due to invalid state.'
         CANNOT_START_CONSOLE_CLIENT = '$DISPLAY not set, cannot start a %s client.'
