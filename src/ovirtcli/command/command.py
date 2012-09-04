@@ -220,7 +220,7 @@ class OvirtCommand(Command):
                 kw[k.replace('-', '.')] = v
         mopts = {}
         for k, v in opts.iteritems():
-            if k != query_arg and k != kwargs_arg:
+            if k != query_arg and k != kwargs_arg and not k.endswith('-identifier'):
                 mopts[k if not k.startswith('--') else k[2:]] = v
         kw.update(mopts)
 
