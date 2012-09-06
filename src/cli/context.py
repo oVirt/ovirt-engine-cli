@@ -64,7 +64,7 @@ class ExecutionContext(object):
         self.parser = create(self.Parser)
         self.terminal = create(self.Terminal)
         self._setup_logging()
-        self._load_settings()
+#        self._load_settings()
         self.setup_commands()
         self.mode = ExecutionMode.SHELL
 
