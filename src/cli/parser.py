@@ -29,7 +29,7 @@ class Parser(PLYParser):
     multi-line inputs.
     """
 
-    tokens = ('WORD', 'STRING', 'NUMBER', 'OPTION', 'LT', 'LTLT', 'GT', 'GTGT',
+    tokens = ('UUID', 'WORD', 'STRING', 'NUMBER', 'OPTION', 'LT', 'LTLT', 'GT', 'GTGT',
               'BANG', 'PIPE', 'NEWLINE', 'MARKER', 'HEREDOC', 'SHELL')
     literals = ('=', ';')
     states = [('heredoc1', 'inclusive'), ('heredoc2', 'exclusive'),
@@ -46,6 +46,11 @@ class Parser(PLYParser):
     t_ignore_quoted_newline = r'\\\n'
     t_heredoc2_ignore = ' \t'
     t_shell_ignore = ' \t'
+
+    def t_UUID(self, t):
+        r'[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+        t.value = str(t.value)
+        return t
 
     def t_STRING(self, t):
         r'''(?s)("([^"\\]|\\.)*"|'[^']*')'''
@@ -190,7 +195,8 @@ class Parser(PLYParser):
             p[0] = (p[1], p[3])
 
     def p_option_value(self, p):
-        """option_value : WORD
+        """option_value : UUID
+                        | WORD
                         | STRING
                         | NUMBER
                         | empty
