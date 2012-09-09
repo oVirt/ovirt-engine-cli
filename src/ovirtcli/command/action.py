@@ -103,13 +103,22 @@ class ActionCommand(OvirtCommand):
 
           $actions
 
-          Note: collection based arguments syntax is:
-          --<type>.<collection-obj>.<collection-member> "<collection-item>.<collection-item-property>=value,..."
+        == Collection based option format ==
+
+          * [--x-y: collection]
+            {
+              [y.a: string]
+              [y.b: string]
+              [y.c: string]
+            }
 
           e.g:
 
-          --power_management-options-option "option.name=n1,option.value=v1"
-          --power_management-options-option "option.name=n2,option.value=v2"
+          --x-y "y.a=a1,y.b=b1,y.c=c1"
+          --x-y "y.a=a2,y.b=b2,y.c=c2"
+          ...
+
+          where a, b, c are option properties and aN, bN, cN is actual user's data
 
         == Object Identifiers ==
 
