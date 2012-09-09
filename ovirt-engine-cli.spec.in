@@ -14,7 +14,7 @@ BuildRequires: python-ply
 BuildArch: noarch
 
 Requires: python
-Requires: ovirt-engine-sdk >= 3.1.0.6
+Requires: ovirt-engine-sdk >= 3.2.0.1
 Requires: pexpect
 Requires: python-setuptools
 Requires: python-ply
@@ -51,6 +51,13 @@ popd
 %doc LICENSE
 
 %changelog
+* Sun Sep  9 2012 Michael Pasternak <mpastern@redhat.com> - 3.2.0.1-1
+- do not load/save example_config. file
+- subcollection are not shown #854047
+- change NoCertificatesError message to ask only for ca_file
+- implement /filter flag
+- do not write to file i/o during script execution
+- shell does not exit when using /exit/ command in script
 
 * Tue Jul 21 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.8-1
 - implement insecure flag #848046
