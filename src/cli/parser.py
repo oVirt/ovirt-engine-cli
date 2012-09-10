@@ -169,6 +169,7 @@ class Parser(PLYParser):
         """argument : UUID
                     | WORD
                     | STRING
+                    | NUMBER
         """
         p[0] = p[1]
 

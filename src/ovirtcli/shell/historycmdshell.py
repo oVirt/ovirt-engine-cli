@@ -24,44 +24,5 @@ class HistoryCmdShell(CmdShell):
     def __init__(self, context, parser):
         CmdShell.__init__(self, context, parser)
 
-    def do_history(self, indx):
-        """\
-        == Usage ==
-
-        history [indx]
-
-        or 
-
-        recursive search by ctrl+r
-
-        == Description ==
-
-        List/Retrieves executed command/s
-
-        == Examples ==
-
-        - ctrl+r
-
-        - history
-
-        - history 1
-
-        """
-        hformat = '[%d] %s'
-
-        if indx:
-            try:
-                slide = int(indx)
-                h_item = self.owner.history.get(slide)
-                if h_item:
-                    self.owner._print(hformat % (slide , str(h_item)))
-            except Exception, e:
-                self.owner._error(str(e))
-        else:
-            i = 0
-            history = self.history.list()
-            if history:
-                for item in history:
-                    print hformat % (i , str(item))
-                    i += 1
-                print ''
+    def do_history(self, args):
+        return self.context.execute_string(HistoryCmdShell.NAME + ' ' + args + '\n')

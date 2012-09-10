@@ -38,7 +38,6 @@ from ovirtcli.shell.clearcmdshell import ClearCmdShell
 from cli.command.help import HelpCommand
 from ovirtcli.prompt import PromptMode
 from ovirtcli.shell.filecmdshell import FileCmdShell
-from ovirtcli.historymanager import HistoryManager
 from ovirtcli.shell.historycmdshell import HistoryCmdShell
 from cli.messages import Messages
 from ovirtcli.shell.infocmdshell import InfoCmdShell
@@ -81,7 +80,6 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         readline.set_completer_delims(' ')
         signal.signal(signal.SIGINT, self.handler)
 
-        self.history = HistoryManager()
     ########################### SYSTEM #################################
     def cmdloop(self, intro=None, clear=True):
         try:

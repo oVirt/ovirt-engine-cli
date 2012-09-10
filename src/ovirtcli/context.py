@@ -25,6 +25,7 @@ from ovirtcli.format import *
 from ovirtcli.object import create
 import pkg_resources
 from ovirtcli.command.info import InfoCommand
+from ovirtcli.historymanager import HistoryManager
 
 
 class OvirtCliExecutionContext(ExecutionContext):
@@ -48,6 +49,7 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.settings.add_callback('ovirt-shell:output_format', self._set_formatter)
         self.product_info = None
         self.sdk_version, self.cli_version, self.backend_version = self.__get_version_info()
+        self.history = HistoryManager()
 
     def __get_version_info(self):
         SNAPSHOT_SUFFIX = '-SNAPSHOT'
@@ -101,6 +103,7 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.add_command(StatusCommand)
         self.add_command(UpdateCommand)
         self.add_command(InfoCommand)
+        self.add_command(HistoryCommand)
 
     def _get_prompt_variables(self):
         """Return a dict with prompt variables."""

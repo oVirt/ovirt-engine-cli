@@ -12,3 +12,4 @@ from ovirtcli.command.ping import PingCommand
 from ovirtcli.command.show import ShowCommand
 from ovirtcli.command.status import StatusCommand
 from ovirtcli.command.update import UpdateCommand
+from ovirtcli.command.history import HistoryCommand
