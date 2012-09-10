@@ -20,24 +20,24 @@ from ovirtcli.utils.typehelper import TypeHelper
 from cli.messages import Messages
 
 
-class DeleteCommand(OvirtCommand):
+class RemoveCommand(OvirtCommand):
 
     name = 'delete'
     aliases = ('remove',)
-    description = 'delete an object'
+    description = 'removes an object'
     args_check = 2
     valid_options = [ ('*', str) ]
 
     helptext = """\
         == Usage ==
     
-        delete <type> <id> [object identifiers] [attribute options]
+        remove <type> <id> [object identifiers] [attribute options]
 
         == Description ==
 
-        Delete an object. The following arguments are required:
+        Removes an object. The following arguments are required:
 
-          * type        The type of object to delete
+          * type        The type of object to remove
           * id          The object identifier
 
         Objects can be identified by their name and by their unique id.
@@ -46,13 +46,13 @@ class DeleteCommand(OvirtCommand):
 
         - This help will list all available attribute options for given resource removal
           
-          * format      - help delete type
-          * example     - help delete storagedomain mydomain
+          * format      - help remove type
+          * example     - help remove storagedomain mydomain
 
         - This help will list all available attribute options for given subresource removal
           
-          * format      - help delete subtype --resource-identifier
-          * example     - help delete disk --vm-identifier iscsi_desktop
+          * format      - help remove subtype --resource-identifier
+          * example     - help remove disk --vm-identifier iscsi_desktop
 
         == Available Types ==
 
@@ -73,17 +73,17 @@ class DeleteCommand(OvirtCommand):
 
         == Examples ==
 
-        - This example deletes a virtual machine named "myvm"
+        - This example removes a virtual machine named "myvm"
 
-          $ delete vm myvm
+          $ remove vm myvm
 
-        - This example deletes the disk "disk0" from the virtual machine named "myvm"
+        - This example removes the disk "disk0" from the virtual machine named "myvm"
 
-          $ delete disk disk0 --vm-identifier myvm
-          
-        - This example deletes the storagedomain "mydomain" using host named "myhost"
+          $ remove disk disk0 --vm-identifier myvm
 
-          $ delete storagedomain mydomain --host-id myhost
+        - This example removes the storagedomain "mydomain" using host named "myhost"
+
+          $ remove storagedomain mydomain --host-id myhost
           
         == Return values ==
 
@@ -96,11 +96,11 @@ class DeleteCommand(OvirtCommand):
     helptext1 = """\
         == Usage ==
 
-        delete <type> <id> [object identifiers]
+        remove <type> <id> [object identifiers]
 
         == Description ==
 
-        Delete an object with type '$type'. See 'help delete' for generic
+        Removes an object with type '$type'. See 'help remove' for generic
         help on deleting objects.
 
         == Attribute Options ==
@@ -132,11 +132,11 @@ class DeleteCommand(OvirtCommand):
         """
 
     def execute(self):
-        """Execute "delete"."""
+        """Execute "remove"."""
         args = self.arguments
         opts = self.options
 
-        typs = TypeHelper.get_types_containing_method(DeleteCommand.name,
+        typs = TypeHelper.get_types_containing_method(RemoveCommand.name,
                                                       expendNestedTypes=True,
                                                       groupOptions=True)
 
@@ -146,21 +146,21 @@ class DeleteCommand(OvirtCommand):
                                    context_variants=typs[args[0]])
         if resource is None:
             self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
-        elif hasattr(resource, DeleteCommand.name):
-            result = self.execute_method(resource, DeleteCommand.name, opts)
+        elif hasattr(resource, RemoveCommand.name):
+            result = self.execute_method(resource, RemoveCommand.name, opts)
         else:
             self.error(Messages.Error.OBJECT_IS_IMMUTABLE % (args[0], args[1]))
 
         self.context.formatter.format(self.context, result)
 
     def show_help(self):
-        """Show help for "delete"."""
+        """Show help for "remove"."""
         self.check_connection()
         args = self.arguments
         opts = self.options
 
         subst = {}
-        types = TypeHelper.get_types_containing_method(DeleteCommand.name,
+        types = TypeHelper.get_types_containing_method(RemoveCommand.name,
                                                        expendNestedTypes=True,
                                                        groupOptions=True)
 
@@ -176,7 +176,7 @@ class DeleteCommand(OvirtCommand):
                     self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
 
                 helptext = self.helptext1
-                params_list = self.get_options(method=DeleteCommand.name,
+                params_list = self.get_options(method=RemoveCommand.name,
                                                resource=obj,
                                                sub_resource=base,
                                                context_variants=types[args[0]])
@@ -187,7 +187,7 @@ class DeleteCommand(OvirtCommand):
                 helptext = self.helptext1
                 subst['type'] = args[0]
 
-                options = self.get_options(method=DeleteCommand.name,
+                options = self.get_options(method=RemoveCommand.name,
                                            resource=args[0],
                                            sub_resource=self.resolve_base(self.options),
                                            context_variants=types[args[0]])

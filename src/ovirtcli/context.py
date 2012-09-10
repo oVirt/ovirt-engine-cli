@@ -91,7 +91,7 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.add_command(AddCommand)
         self.add_command(ConnectCommand)
         self.add_command(ConsoleCommand)
-        self.add_command(DeleteCommand)
+        self.add_command(RemoveCommand)
         self.add_command(DisconnectCommand)
 #        self.add_command(GetKeyCommand)
         self.add_command(HelpCommand)

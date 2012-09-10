@@ -22,29 +22,30 @@ from ovirtsdk.infrastructure import brokers
 from ovirtcli.utils.methodhelper import MethodHelper
 
 
-class DeleteCmdShell(CmdShell):
-    NAME = 'delete'
+class RemoveCmdShell(CmdShell):
+    NAME = 'remove'
+    ALIAS = 'delete'
 
     def __init__(self, context, parser):
         CmdShell.__init__(self, context, parser)
 
-    def do_delete(self, args):
-        return self.context.execute_string(DeleteCmdShell.NAME + ' ' + args + '\n')
+    def do_remove(self, args):
+        return self.context.execute_string(RemoveCmdShell.ALIAS + ' ' + args + '\n')
 
     def __add_resource_specific_options(self, obj, specific_options, line, key=None):
         obj_type = TypeHelper.getDecoratorType(TypeHelper.to_singular(obj))
         if obj_type and hasattr(brokers, obj_type):
             obj_typ_ref = getattr(brokers, obj_type)
-            if obj_typ_ref and hasattr(obj_typ_ref, DeleteCmdShell.NAME):
-                method_args = MethodHelper.get_documented_arguments(method_ref=getattr(obj_typ_ref, DeleteCmdShell.NAME),
+            if obj_typ_ref and hasattr(obj_typ_ref, RemoveCmdShell.ALIAS):
+                method_args = MethodHelper.get_documented_arguments(method_ref=getattr(obj_typ_ref, RemoveCmdShell.ALIAS),
                                                                     as_params_collection=True,
                                                                     spilt_or=True)
 
                 if method_args:
                     specific_options[key if key is not None else obj] = method_args
 
-    def complete_delete(self, text, line, begidx, endidx):
-        args = TypeHelper.get_types_containing_method(DeleteCmdShell.NAME, expendNestedTypes=True)
+    def complete_remove(self, text, line, begidx, endidx):
+        args = TypeHelper.get_types_containing_method(RemoveCmdShell.ALIAS, expendNestedTypes=True)
         specific_options = self.get_resource_specific_options(args,
                                                               line,
                                                               callback=self.__add_resource_specific_options)
