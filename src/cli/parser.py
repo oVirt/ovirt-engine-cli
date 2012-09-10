@@ -166,7 +166,8 @@ class Parser(PLYParser):
             p[0] = p[1] + [p[2]]
 
     def p_argument(self, p):
-        """argument : WORD
+        """argument : UUID
+                    | WORD
                     | STRING
         """
         p[0] = p[1]
