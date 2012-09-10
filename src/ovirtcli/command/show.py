@@ -117,7 +117,14 @@ class ShowCommand(OvirtCommand):
         args = self.arguments
         opts = self.options
 
-        if len(args) < 2 and len(opts) == 0:
+        #Raise an error if object identifier xxx is not specified #855750
+        #e.g:
+        #show vm xxx
+        #show disk xxx --vm-identifier yyy
+        if len(args) < 2 and (len(opts) == 0 or
+                              (len(opts) == 1
+                               and
+                               opts.keys()[0].endswith('-identifier'))):
             self.error(Messages.Error.NO_IDENTIFIER % args[0])
 
         types = self.get_singular_types(method='get')
