@@ -28,6 +28,7 @@ class ListCommand(OvirtCommand):
     usage = 'list <type> [search]... [options]'
     args_check = lambda self, x: len(x) > 0
     valid_options = [ ('*', str) ]
+    SHOW_ALL_KEY = '--show-all'
 
     helptext = """\
         == Usage ==
@@ -151,7 +152,7 @@ class ListCommand(OvirtCommand):
                                                           opts=opts,
                                                           base=self.resolve_base(opts),
                                                           context_variants=typs),
-                                      show_all=True if opts and opts.has_key(ShowCommand.SHOW_ALL_KEY) else False)
+                                      show_all=True if opts and opts.has_key(ListCommand.SHOW_ALL_KEY) else False)
 
     def show_help(self):
         """Show help for "list"."""

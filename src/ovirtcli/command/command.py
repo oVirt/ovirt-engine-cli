@@ -272,6 +272,14 @@ class OvirtCommand(Command):
                                  str(context_variants))
         self.error(err_str % typ)
 
+    def validate_options(self, opts, options):
+        for opt in opts.keys():
+            if opt.startswith('--'):
+                opt_item = opt[2:]
+            else: opt_item = opt
+            if opt_item not in options and not opt_item.endswith('-identifier'):
+                self.error(Messages.Error.NO_SUCH_OPTION % opt)
+
     def get_object(self, typ, obj_id, base=None, opts={}, context_variants=[]):
         """Return an object by id or name."""
         self.check_connection()
@@ -291,7 +299,8 @@ class OvirtCommand(Command):
                                        context_variants=context_variants)
             base = connection
 
-        #TODO: support generic parameters processing        
+        self.validate_options(opts, options)
+
         if name and 'name' not in options:
             self.error(Messages.Error.NO_NAME)
         if kwargs and 'kwargs' not in options:

@@ -18,6 +18,7 @@ from ovirtcli.settings import OvirtCliSettings
 class Messages():
     class Error():
         OBJECT_IS_IMMUTABLE = '%s "%s" is immutable.'
+        NO_SUCH_OPTION = 'option "%s" is not supported.'
         NO_SUCH_OBJECT = '%s "%s" does not exist.'
         NO_SUCH_ACTION = 'action "%s" does not exist.'
         NO_SUCH_TYPE = 'type "%s" does not exist.'

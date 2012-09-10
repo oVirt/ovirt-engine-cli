@@ -26,7 +26,6 @@ class ShowCommand(OvirtCommand):
     description = 'show one object'
     args_check = lambda self, x: len(x) > 0
     valid_options = [ ('*', str) ]
-    SHOW_ALL_KEY = '--show-all'
 
     helptext = """\
         == Usage ==
@@ -73,11 +72,6 @@ class ShowCommand(OvirtCommand):
         - This example shows information about the virtual machine "myvm"
 
           $ show vm myvm
-
-        - This example shows all information about the virtual machine "myvm"
-          including empty properties
-
-          $ show vm myvm --show-all
 
         - This example shows information about the nic named 'nic1' of the 
           virtual machine "myvm"
@@ -140,10 +134,7 @@ class ShowCommand(OvirtCommand):
                                          else opts.values()
                                               if opts else ''))
 
-        self.context.formatter.format(self.context,
-                                      obj,
-                                      show_all=True if opts and opts.has_key(ShowCommand.SHOW_ALL_KEY)
-                                                    else False)
+        self.context.formatter.format(self.context, obj)
 
     def show_help(self):
         """Show help for "show"."""
