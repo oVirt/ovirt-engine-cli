@@ -27,7 +27,7 @@ from ovirtcli.shell.showcmdshell import ShowCmdShell
 from ovirtcli.shell.listcmdshell import ListCmdShell
 from ovirtcli.shell.updatecmdshell import UpdateCmdShell
 from ovirtcli.shell.deletecmdshell import DeleteCmdShell
-from ovirtcli.shell.createcmdshell import CreateCmdShell
+from ovirtcli.shell.addcmdshell import AddCmdShell
 from ovirtcli.shell.disconnectcmdshell import DisconnectCmdShell
 from ovirtcli.shell.consolecmdshell import ConsoleCmdShell
 from ovirtcli.shell.pingcmdshell import PingCmdShell
@@ -45,7 +45,7 @@ from ovirtcli.shell.infocmdshell import InfoCmdShell
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
-                  DeleteCmdShell, CreateCmdShell, DisconnectCmdShell, \
+                  DeleteCmdShell, AddCmdShell, DisconnectCmdShell, \
                   ConsoleCmdShell, PingCmdShell, StatusCmdShell, \
                   ClearCmdShell, FileCmdShell, HistoryCmdShell, \
                   InfoCmdShell):
@@ -59,7 +59,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         ListCmdShell.__init__(self, context, parser)
         UpdateCmdShell.__init__(self, context, parser)
         DeleteCmdShell.__init__(self, context, parser)
-        CreateCmdShell.__init__(self, context, parser)
+        AddCmdShell.__init__(self, context, parser)
         DisconnectCmdShell.__init__(self, context, parser)
         ConsoleCmdShell.__init__(self, context, parser)
         PingCmdShell.__init__(self, context, parser)

@@ -18,38 +18,38 @@
 from ovirtcli.command.command import OvirtCommand
 from cli.messages import Messages
 
-class CreateCommand(OvirtCommand):
+class AddCommand(OvirtCommand):
 
-    name = 'create'
+    name = 'add'
     aliases = ('add',)
-    description = 'create a new object'
+    description = 'creates a new object or adds existent'
     args_check = 1
     valid_options = [ ('*', str) ]
 
     helptext0 = """\
         == Usage ==
 
-        create <type> [base identifiers] [attribute options]
+        add <type> [base identifiers] [attribute options]
 
         == Description ==
 
-        Create a new object with type <type>.
+        Creates a new object or adds existent
 
         == Supported Help formats ==
 
         - This help will list all available attribute options for given resource creation
           
-          * format      - help create resource_name
-          * example     - help create vm
+          * format      - help add resource_name
+          * example     - help add vm
 
         - This help will list all available attribute options for given subresource creation
           
-          * format      - help create subresource_name --resource-identifier xxx
-          * example     - help create disk --vm-identifier myvm
+          * format      - help add subresource_name --resource-identifier xxx
+          * example     - help add disk --vm-identifier myvm
 
         == Available Types ==
 
-        The following types of objects can be created:
+        The following types of objects can be added:
 
           $types
 
@@ -68,12 +68,12 @@ class CreateCommand(OvirtCommand):
         Attributes for the new object can be specified in one of two ways.
 
           * Using command-line options. For example, "--description foo"
-            would create the object with a description of "foo".
+            would add the object with a description of "foo".
           * By providing pre-formatted input, in the format specified by the
             'input_format' configuration variable. In this case the input
             needs to be provided using the '<<' input redirection operator.
 
-        Type 'help create <type>' to see an overview of which attributes are
+        Type 'help add <type>' to see an overview of which attributes are
         available for a given type.
           
         == Examples ==
@@ -81,11 +81,11 @@ class CreateCommand(OvirtCommand):
         - This example create a new virtual machine in the Default cluster based on the
           Blank template:
 
-          $ create vm --name myvm --template-name iscsi_desktop_tmpl --cluster-name Default_iscsi
+          $ add vm --name myvm --template-name iscsi_desktop_tmpl --cluster-name Default_iscsi
                       
         - This example create vm nic:
 
-          $ create nic --vm-identifier cli_vm3 --network-name engine --name test
+          $ add nic --vm-identifier cli_vm3 --network-name engine --name test
 
 
         == Return Values ==
@@ -96,11 +96,11 @@ class CreateCommand(OvirtCommand):
     helptext1 = """\
         == Usage ==
 
-        create <type> [base identifiers] [attribute options]
+        add <type> [base identifiers] [attribute options]
 
         == Description ==
 
-        Create a new object with type $type. See 'help create' for generic
+        Creates a new object or adds existent with type $type. See 'help add' for generic
         help on creating objects.
 
         == Attribute Options ==
@@ -132,7 +132,7 @@ class CreateCommand(OvirtCommand):
         """
 
     def execute(self):
-        """Execute the "create" command."""
+        """Execute the "add" command."""
         args = self.arguments
         opts = self.options
         base = self.resolve_base(opts)
@@ -159,7 +159,7 @@ class CreateCommand(OvirtCommand):
 
 
     def show_help(self):
-        """Show help for "create"."""
+        """Show help for "add"."""
         args = self.arguments
         opts = self.options
         stdout = self.context.terminal.stdout

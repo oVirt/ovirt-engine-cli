@@ -22,30 +22,29 @@ from ovirtsdk.infrastructure import brokers
 from ovirtcli.utils.methodhelper import MethodHelper
 
 
-class CreateCmdShell(CmdShell):
-    NAME = 'create'
-    ALIAS = 'add'
+class AddCmdShell(CmdShell):
+    NAME = 'add'
 
     def __init__(self, context, parser):
         CmdShell.__init__(self, context, parser)
 
-    def do_create(self, args):
-        return self.context.execute_string(CreateCmdShell.NAME + ' ' + args + '\n')
+    def do_add(self, args):
+        return self.context.execute_string(AddCmdShell.NAME + ' ' + args + '\n')
 
     def __add_resource_specific_options(self, obj, specific_options, line, key=None):
         obj_coll_type = TypeHelper.getDecoratorType(TypeHelper.to_plural(obj))
         if obj_coll_type:
             if hasattr(brokers, obj_coll_type):
                 obj_coll = getattr(brokers, obj_coll_type)
-                if obj_coll and hasattr(obj_coll, CreateCmdShell.ALIAS):
-                    method_args = MethodHelper.get_documented_arguments(method_ref=getattr(obj_coll, CreateCmdShell.ALIAS),
+                if obj_coll and hasattr(obj_coll, AddCmdShell.NAME):
+                    method_args = MethodHelper.get_documented_arguments(method_ref=getattr(obj_coll, AddCmdShell.NAME),
                                                                         as_params_collection=True,
                                                                         spilt_or=True)
                     if method_args:
                         specific_options[obj if key == None else key] = method_args
 
-    def complete_create(self, text, line, begidx, endidx):
-        args = TypeHelper.get_types_by_method(False, CreateCmdShell.ALIAS, expendNestedTypes=True)
+    def complete_add(self, text, line, begidx, endidx):
+        args = TypeHelper.get_types_by_method(False, AddCmdShell.NAME, expendNestedTypes=True)
         specific_options = self.get_resource_specific_options(args, line,
                                                               callback=self.__add_resource_specific_options)
 

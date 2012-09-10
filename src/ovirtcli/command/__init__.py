@@ -1,6 +1,6 @@
 
 from ovirtcli.command.action import ActionCommand
-from ovirtcli.command.create import CreateCommand
+from ovirtcli.command.add import AddCommand
 from ovirtcli.command.connect import ConnectCommand
 from ovirtcli.command.console import ConsoleCommand
 from ovirtcli.command.delete import DeleteCommand
