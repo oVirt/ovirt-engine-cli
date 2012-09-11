@@ -22,8 +22,8 @@ from cli.messages import Messages
 
 class RemoveCommand(OvirtCommand):
 
-    name = 'delete'
-    aliases = ('remove',)
+    name = 'remove'
+    aliases = ('delete',)
     description = 'removes an object'
     args_check = 2
     valid_options = [ ('*', str) ]
@@ -136,7 +136,7 @@ class RemoveCommand(OvirtCommand):
         args = self.arguments
         opts = self.options
 
-        typs = TypeHelper.get_types_containing_method(RemoveCommand.name,
+        typs = TypeHelper.get_types_containing_method(RemoveCommand.aliases[0],
                                                       expendNestedTypes=True,
                                                       groupOptions=True)
 
@@ -146,8 +146,8 @@ class RemoveCommand(OvirtCommand):
                                    context_variants=typs[args[0]])
         if resource is None:
             self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
-        elif hasattr(resource, RemoveCommand.name):
-            result = self.execute_method(resource, RemoveCommand.name, opts)
+        elif hasattr(resource, RemoveCommand.aliases[0]):
+            result = self.execute_method(resource, RemoveCommand.aliases[0], opts)
         else:
             self.error(Messages.Error.OBJECT_IS_IMMUTABLE % (args[0], args[1]))
 
@@ -160,7 +160,7 @@ class RemoveCommand(OvirtCommand):
         opts = self.options
 
         subst = {}
-        types = TypeHelper.get_types_containing_method(RemoveCommand.name,
+        types = TypeHelper.get_types_containing_method(RemoveCommand.aliases[0],
                                                        expendNestedTypes=True,
                                                        groupOptions=True)
 
@@ -176,7 +176,7 @@ class RemoveCommand(OvirtCommand):
                     self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
 
                 helptext = self.helptext1
-                params_list = self.get_options(method=RemoveCommand.name,
+                params_list = self.get_options(method=RemoveCommand.aliases[0],
                                                resource=obj,
                                                sub_resource=base,
                                                context_variants=types[args[0]])
@@ -187,7 +187,7 @@ class RemoveCommand(OvirtCommand):
                 helptext = self.helptext1
                 subst['type'] = args[0]
 
-                options = self.get_options(method=RemoveCommand.name,
+                options = self.get_options(method=RemoveCommand.aliases[0],
                                            resource=args[0],
                                            sub_resource=self.resolve_base(self.options),
                                            context_variants=types[args[0]])
