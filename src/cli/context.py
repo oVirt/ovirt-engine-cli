@@ -32,6 +32,7 @@ import codecs
 import cStringIO
 from kitchen.text.converters import getwriter
 from cli.executionmode import ExecutionMode
+import getpass
 
 
 class ExecutionContext(object):
@@ -52,10 +53,11 @@ class ExecutionContext(object):
     welcome = None
     goodbye = None
 
-    def __init__(self, cmdin=None):
+    def __init__(self, cmdin=None, args=None):
         """Constructor."""
         self.parameters_cash = {}
         self.cmdin = cmdin or sys.stdin
+        self.args = args
         self.commands = []
         self.status = None
         self.interactive = sys.stdin.isatty() and sys.stdout.isatty() \
@@ -64,7 +66,7 @@ class ExecutionContext(object):
         self.parser = create(self.Parser)
         self.terminal = create(self.Terminal)
         self._setup_logging()
-#        self._load_settings()
+        self._load_settings()
         self.setup_commands()
         self.mode = ExecutionMode.SHELL
 
@@ -78,11 +80,27 @@ class ExecutionContext(object):
         logger.setLevel(logging.INFO)
         self._logger = logger
 
+    def __collect_connection_data(self):
+        if self.settings['ovirt-shell:url'] == '':
+            self.settings['ovirt-shell:url'] = raw_input('URL: ')
+        if self.settings['ovirt-shell:username'] == '':
+            self.settings['ovirt-shell:username'] = raw_input('Username: ')
+        if self.settings['ovirt-shell:password'] == '':
+            self.settings['ovirt-shell:password'] = getpass.getpass()
+        sys.stdin.flush()
+
+    def __is_auto_connect(self):
+        return self.args and ('-c' in self.args or '--connect' in self.args)
+
     def _load_settings(self):
         """Load settings."""
-        found = self.settings.load_config_file()
+        found, old_format = self.settings.load_config_file()
         if not found:
             self.settings.write_example_config_file()
+        elif old_format:
+            self.settings.write_config_file()
+        if self.__is_auto_connect():
+            self.__collect_connection_data()
         self.settings.add_callback('cli:debug', self._set_debug)
         self._set_debug('cli:debug', self.settings['cli:debug'])
 

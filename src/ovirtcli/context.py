@@ -41,8 +41,8 @@ class OvirtCliExecutionContext(ExecutionContext):
     CLI_MODULE_NAME = "ovirt-shell"
     DEFAULT_VERSION = (0, 0, 0, 0)
 
-    def __init__(self):
-        super(OvirtCliExecutionContext, self).__init__()
+    def __init__(self, args=None):
+        super(OvirtCliExecutionContext, self).__init__(args=args)
         self.connection = None
         self.formatter = create(Formatter, self.settings['ovirt-shell:output_format'])
         self.settings.add_callback('cli:verbosity', self._set_verbosity)

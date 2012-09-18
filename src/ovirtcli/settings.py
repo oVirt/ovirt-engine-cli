@@ -71,3 +71,17 @@ class OvirtCliSettings(Settings):
         ('ovirt-shell:version', str, ''),
         ('ovirt-shell:prompt', str, '')
     ]
+
+    #config file white list
+    config_items = [
+        'ovirt-shell:url',
+        'ovirt-shell:username',
+        'ovirt-shell:password',
+        'ovirt-shell:key_file',
+        'ovirt-shell:cert_file',
+        'ovirt-shell:ca_file',
+        'ovirt-shell:insecure',
+        'ovirt-shell:filter',
+        'ovirt-shell:timeout',
+        'cli:debug'
+    ]

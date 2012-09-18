@@ -17,6 +17,7 @@
 
 import os
 import re
+import stat
 
 from fnmatch import fnmatch
 from ConfigParser import ConfigParser
@@ -100,17 +101,27 @@ class Settings(dict):
                      if d is not None and '*' not in p))
 
     def load_config_file(self):
-        """Load default values from a configuration file."""
+        """
+        Load default values from a configuration file.
+
+        @return: if-file-exist, is-config-file-in-old-format
+        """
+        old_format = False
         fname = platform.local_settings_file(self.name)
+        from ovirtcli.settings import OvirtCliSettings
         if fname is None:
-            return False
+            return False, old_format
         cp = ConfigParser()
         if not cp.read(fname):
-            return False
+            return False, old_format
         for section in cp.sections():
             for key, value in cp.items(section):
-                self['%s:%s' % (section, key)] = value
-        return True
+                conf_key = '%s:%s' % (section, key)
+                self[conf_key] = value
+                if conf_key not in OvirtCliSettings.config_items:
+                    old_format = True
+
+        return True, old_format
 
     def _write_config_file(self, settings, example=False):
         """Overwrite the configuration file with the current settings."""
@@ -120,19 +131,33 @@ class Settings(dict):
         ftmp = '%s.%d-tmp' % (fname, os.getpid())
         fout = file(ftmp, 'w')
         sections = {}
+        from ovirtcli.settings import OvirtCliSettings
         for key in settings:
-            section, name = key.split(':')
-            if section not in sections:
-                sections[section] = {}
-            sections[section][name] = settings[key]
+            if key in OvirtCliSettings.config_items:
+                section, name = key.split(':')
+                if section not in sections:
+                    sections[section] = {}
+                sections[section][name] = settings[key]
         for section in sorted(sections):
             fout.write('[%s]\n' % section)
-            for key in sorted(sections[section]):
+            for key in sections[section]:
                 if example:
                     fout.write('#')
                 fout.write('%s = %s\n' % (key, sections[section][key]))
         fout.close()
+        self.set_file_permissions(ftmp)
         os.rename(ftmp, fname)
+
+    def set_file_permissions(self, f):
+        #Set UID bit
+        #Owner has read permission
+        #Owner has write permission
+        #Do not dump the file.
+        os.chmod(f,
+                 stat.S_ISGID |
+                 stat.S_IRUSR |
+                 stat.S_IWUSR |
+                 stat.UF_NODUMP)
 
     def write_config_file(self):
         """Overwrite the config file with the current settings."""
