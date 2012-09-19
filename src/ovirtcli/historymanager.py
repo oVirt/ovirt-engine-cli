@@ -73,6 +73,10 @@ class HistoryManager(code.InteractiveConsole):
             self.__register_file(self.tmp_histfile)
             self.clear()
 
+    def remove(self, entry):
+        if self.length() > 0:
+            readline.remove_history_item(entry)
+
     def __unregister_dump_callback(self):
         for item in atexit._exithandlers:
             if hasattr(item[0], 'func_name') and \

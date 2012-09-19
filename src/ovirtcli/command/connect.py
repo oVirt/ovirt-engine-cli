@@ -110,6 +110,10 @@ class ConnectCommand(OvirtCommand):
             self.context.settings.get('ovirt-shell:version'))
             self.context.history.enable()
 
+            #do not log connect command details as it may be
+            #a subject for password stealing or DOS attack
+            self.__remove_history_entry()
+
         except RequestError, e:
             self.__cleanContext()
             self.error("[" + str(e.status) + '] - ' + str(e.reason) + ', ' + str(e.detail))
@@ -126,6 +130,11 @@ class ConnectCommand(OvirtCommand):
 
     def testConnectivity(self):
         self.context.connection.test(throw_exception=True)
+
+    def __remove_history_entry(self):
+        last_entry = self.context.history.get(self.context.history.length() - 1)
+        if last_entry and last_entry.startswith(ConnectCommand.name):
+            self.context.history.remove(self.context.history.length() - 1)
 
     def __cleanContext(self):
         if self.context.connection is not None:
