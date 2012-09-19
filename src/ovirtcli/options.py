@@ -44,8 +44,7 @@ class OvirtCliOptionParser(OptionParser):
                         action='store_true')
         self.add_option('-F', '--filter', help='enables user permission based filtering',
                         action='store_true')
-        #disabled due to bug in httplib
-        #self.add_option('-P', '--port', help='specify port')
+        self.add_option('-P', '--port', help='specify port')
         self.add_option('-T', '--timeout', help='specify timeout')
         self.add_option('-c', '--connect', action='store_true',
                         help='automatically connect')
