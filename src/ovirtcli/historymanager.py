@@ -19,28 +19,27 @@ import readline
 import atexit
 import os
 from ovirtcli.settings import OvirtCliSettings
+import threading
 
-HISTORY_METAFILE = "~/." + OvirtCliSettings.PRODUCT.lower() + "-shell.history"
+HISTORY_METAFILE = "~/." + OvirtCliSettings.PRODUCT.lower() + "shellhistory"
+TMP_HISTORY_METAFILE = HISTORY_METAFILE + ".tmp"
 
 class HistoryManager(code.InteractiveConsole):
     """ Provides history management capabilities """
 
-    def __init__(self, locals=None, filename="<console>",
-                 histfile=os.path.expanduser(HISTORY_METAFILE)):
-        code.InteractiveConsole.__init__(self, locals, filename)
-        self.__init_history(histfile)
+    def __init__(self,
+                 locals=None,
+                 filename="<console>",
+                 histfile=os.path.expanduser(HISTORY_METAFILE),
+                 temp_histfile=os.path.expanduser(TMP_HISTORY_METAFILE),
+                 enabled=False):
+
+        self.lock = threading.RLock()
+        self.enabled = enabled
         self.histfile = histfile
-
-    def __init_history(self, histfile):
-        if hasattr(readline, "read_history_file"):
-            try:
-                readline.read_history_file(histfile)
-            except IOError:
-                pass
-            atexit.register(self.__register_history_metafile, histfile)
-
-    def __register_history_metafile(self, histfile):
-        readline.write_history_file(histfile)
+        self.tmp_histfile = temp_histfile
+        code.InteractiveConsole.__init__(self, locals, filename)
+        if enabled: self.enable()
 
     def get(self, indx):
         return readline.get_history_item(indx)
@@ -53,7 +52,7 @@ class HistoryManager(code.InteractiveConsole):
         ln = self.length()
         if ln > 0:
             for i in range(ln):
-                buff.append(self.get(i))
+                if i > 0: buff.append(self.get(i))
         return buff
 
     def export(self, filename):
@@ -61,3 +60,33 @@ class HistoryManager(code.InteractiveConsole):
 
     def clear(self):
         readline.clear_history()
+
+    def enable(self):
+        with self.lock:
+            self.enabled = True
+            self.__register_file(self.histfile)
+
+    def disable(self):
+        with self.lock:
+            self.enabled = False
+            self.__dump_callback(self.histfile)
+            self.__register_file(self.tmp_histfile)
+            self.clear()
+
+    def __unregister_dump_callback(self):
+        for item in atexit._exithandlers:
+            if hasattr(item[0], 'func_name') and \
+               item[0].func_name == '__dump_callback':
+                atexit._exithandlers.remove(item)
+
+    def __register_file(self, filename):
+        self.__unregister_dump_callback()
+        if hasattr(readline, "read_history_file"):
+            try:
+                readline.read_history_file(filename)
+            except IOError:
+                pass
+            atexit.register(self.__dump_callback, filename)
+
+    def __dump_callback(self, histfile):
+        readline.write_history_file(histfile)

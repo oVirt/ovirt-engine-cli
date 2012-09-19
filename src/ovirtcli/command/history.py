@@ -57,14 +57,17 @@ class HistoryCommand(OvirtCommand):
                 slide = int(indx)
                 h_item = context.history.get(slide)
                 if h_item:
+                    self.write('')
                     self.write(hformat % (slide , str(h_item)))
+                    self.write('')
             except Exception, e:
                 self.error(str(e))
         else:
             i = 0
             history = context.history.list()
             if history:
+                self.write('')
                 for item in history:
-                    self.write(hformat % (i , str(item)))
+                    self.write(hformat % (i + 1 , str(item)))
                     i += 1
                 self.write('')

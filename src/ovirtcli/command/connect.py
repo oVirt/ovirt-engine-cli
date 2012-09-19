@@ -108,6 +108,7 @@ class ConnectCommand(OvirtCommand):
             self.context._set_prompt()
             stdout.write(OvirtCliSettings.CONNECTED_TEMPLATE % \
             self.context.settings.get('ovirt-shell:version'))
+            self.context.history.enable()
 
         except RequestError, e:
             self.__cleanContext()

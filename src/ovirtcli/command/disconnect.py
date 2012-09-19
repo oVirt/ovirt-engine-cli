@@ -49,5 +49,7 @@ class DisconnectCommand(OvirtCommand):
             self.context.status = ExecutionContext.OK
         except Exception:
             self.context.status = ExecutionContext.COMMAND_ERROR
+        finally:
+            self.context.history.disable()
         stdout.write(OvirtCliSettings.DISCONNECTED_TEMPLATE)
         self.context.connection = None
