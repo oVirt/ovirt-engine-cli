@@ -81,13 +81,25 @@ class ExecutionContext(object):
         self._logger = logger
 
     def __collect_connection_data(self):
-        if self.settings['ovirt-shell:url'] == '':
+        if self.settings['ovirt-shell:url'] == '' and \
+        not self.__is_option_specified_in_cli_args('--url')  and \
+        not self.__is_option_specified_in_cli_args('-l'):
             self.settings['ovirt-shell:url'] = raw_input('URL: ')
-        if self.settings['ovirt-shell:username'] == '':
+        if self.settings['ovirt-shell:username'] == '' and \
+        not self.__is_option_specified_in_cli_args('--username') and \
+        not self.__is_option_specified_in_cli_args('-u'):
             self.settings['ovirt-shell:username'] = raw_input('Username: ')
         if self.settings['ovirt-shell:password'] == '':
             self.settings['ovirt-shell:password'] = getpass.getpass()
         sys.stdin.flush()
+
+    def __is_option_specified_in_cli_args(self, optionname):
+        if self.args:
+            if optionname in self.args: return True
+            for item in self.args:
+                if item.startswith(optionname + '='):
+                    return True
+        return False
 
     def __is_auto_connect(self):
         return self.args and ('-c' in self.args or '--connect' in self.args)
