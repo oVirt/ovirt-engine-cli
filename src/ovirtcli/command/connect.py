@@ -106,13 +106,9 @@ class ConnectCommand(OvirtCommand):
                 self.testConnectivity()
 
             self.context._set_prompt()
-            stdout.write(OvirtCliSettings.CONNECTED_TEMPLATE % \
-            self.context.settings.get('ovirt-shell:version'))
             self.context.history.enable()
-
-            #do not log connect command details as it may be
-            #a subject for password stealing or DOS attack
-            self.__remove_history_entry()
+            stdout.write(OvirtCliSettings.CONNECTED_TEMPLATE % \
+                         self.context.settings.get('ovirt-shell:version'))
 
         except RequestError, e:
             self.__cleanContext()
@@ -127,6 +123,10 @@ class ConnectCommand(OvirtCommand):
         except Exception, e:
             self.__cleanContext()
             self.error(str(e))
+        finally:
+            #do not log connect command details as it may be
+            #a subject for password stealing or DOS attack
+            self.__remove_history_entry()
 
     def testConnectivity(self):
         self.context.connection.test(throw_exception=True)
