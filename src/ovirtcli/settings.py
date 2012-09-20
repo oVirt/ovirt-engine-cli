@@ -82,6 +82,5 @@ class OvirtCliSettings(Settings):
         'ovirt-shell:ca_file',
         'ovirt-shell:insecure',
         'ovirt-shell:filter',
-        'ovirt-shell:timeout',
-        'cli:debug'
+        'ovirt-shell:timeout'
     ]
