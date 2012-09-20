@@ -51,6 +51,19 @@ popd
 %doc LICENSE
 
 %changelog
+* Sun Sep  20 2012 Michael Pasternak <mpastern@redhat.com> - 3.2.0.2-1
+- valid UUIDs are treated as syntax error #854391
+- change collection based arguments syntax help #854506
+- rename "create" command with "add" #855773
+- remove --show-all option from /show command #855749
+- Raise an error if identifier is not specified in /show command #855750
+- Rename /delete command with /remove #855769
+- valid UUIDs are treated as syntax error #854391
+- history command does not support pipe redirection #854486
+- do not log /connect command in history
+- disable /history while not  connected
+- add username/password prompt/conf-file functionality
+
 * Sun Sep  9 2012 Michael Pasternak <mpastern@redhat.com> - 3.2.0.1-1
 - do not load/save example_config. file
 - subcollection are not shown #854047
