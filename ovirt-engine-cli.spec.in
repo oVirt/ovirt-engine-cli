@@ -10,6 +10,7 @@ Source0:        http://ovirt.org/releases/stable/src/%{name}-%{version}.tar.gz
 BuildRequires: python2-devel
 BuildRequires: python-setuptools-devel
 BuildRequires: python-ply
+BuildRequires: python-kitchen
 
 BuildArch: noarch
 
@@ -18,6 +19,7 @@ Requires: ovirt-engine-sdk >= 3.2.0.1
 Requires: pexpect
 Requires: python-setuptools
 Requires: python-ply
+Requires: python-kitchen
 Conflicts: python-cli
 
 %description
