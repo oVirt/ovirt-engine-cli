@@ -53,7 +53,10 @@ popd
 %doc LICENSE
 
 %changelog
-* Sun Sep  20 2012 Michael Pasternak <mpastern@redhat.com> - 3.2.0.3-1
+* Thu Sep  20 2012 Michael Pasternak <mpastern@redhat.com> - 3.2.0.4-1
+- add the kitchen build/runtime require
+
+* Thu Sep  20 2012 Michael Pasternak <mpastern@redhat.com> - 3.2.0.3-1
 - valid UUIDs are treated as syntax error #854391
 - change collection based arguments syntax help #854506
 - rename "create" command with "add" #855773
