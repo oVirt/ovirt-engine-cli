@@ -53,11 +53,12 @@ class ExecutionContext(object):
     welcome = None
     goodbye = None
 
-    def __init__(self, cmdin=None, args=None):
+    def __init__(self, cmdin=None, args=None, option_parser=None):
         """Constructor."""
         self.parameters_cash = {}
         self.cmdin = cmdin or sys.stdin
         self.args = args
+        self.option_parser = option_parser
         self.commands = []
         self.status = None
         self.interactive = sys.stdin.isatty() and sys.stdout.isatty() \
@@ -81,6 +82,7 @@ class ExecutionContext(object):
         self._logger = logger
 
     def __collect_connection_data(self):
+        self.__exclude_app_options()
         if self.settings['ovirt-shell:url'] == '' and \
         not self.__is_option_specified_in_cli_args('--url')  and \
         not self.__is_option_specified_in_cli_args('-l'):
@@ -92,6 +94,15 @@ class ExecutionContext(object):
         if self.settings['ovirt-shell:password'] == '':
             self.settings['ovirt-shell:password'] = getpass.getpass()
         sys.stdin.flush()
+
+    def __exclude_app_options(self):
+        for opt in self.option_parser.app_options:
+            if self.__is_option_specified_in_cli_args(opt):
+                self.__option_error(opt)
+
+    def __option_error(self, opt):
+        from cli.messages import Messages
+        sys.exit('\n' + Messages.Error.NO_SUCH_OPTION % opt + '\n')
 
     def __is_option_specified_in_cli_args(self, optionname):
         if self.args:
