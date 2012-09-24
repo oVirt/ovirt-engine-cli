@@ -23,7 +23,7 @@ class AutoCompletionHelper(object):
             if args[key] != None:
                 vals = []
                 for val in args[key].split(','):
-                    vals.append(val.strip())
+                    if val and val != '': vals.append(val.strip())
 
                 if common_options:
                     vals.extend(common_options)

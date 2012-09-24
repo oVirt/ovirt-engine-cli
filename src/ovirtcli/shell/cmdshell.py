@@ -84,9 +84,9 @@ class CmdShell(object):
 
         if line:
             spl = line.rstrip().split(' ')
-            if len(spl) > 2:
+            if len(spl) >= 2:
                 obj = spl[1].strip()
-                base = self.__resolve_base(spl[1:])
+                base = self._resolve_base(spl[1:])
                 if base:
                     callback(base, specific_options, line=line, key=obj)
                 else:
@@ -96,7 +96,7 @@ class CmdShell(object):
 
             return specific_options
 
-    def __resolve_base(self, args):
+    def _resolve_base(self, args):
         """resolves a base object from a set of '--type-identifier value' options."""
         PARENT_IDENTIFIER = '-identifier'
         parnet_candidates = [item for item in args
