@@ -303,18 +303,16 @@ class OvirtCommand(Command):
 
         if name and 'name' not in options:
             self.error(Messages.Error.NO_NAME)
-        if kwargs and 'kwargs' not in options:
-            self.error(Messages.Error.NO_KWARGS % 'show')
+        if kwargs and kwargs.has_key('id') and 'id' not in options:
+            self.error(Messages.Error.NO_ID % 'show')
 
         if hasattr(base, candidate + 's'):
             coll = getattr(base, candidate + 's')
             if coll is not None:
-                if name and kwargs:
-                    return coll.get(name=name, **kwargs)
                 if name:
                     return coll.get(name=name)
-                if kwargs:
-                    return coll.get(**kwargs)
+                if kwargs and kwargs.has_key('id'):
+                    return coll.get(id=kwargs['id'])
                 else:
                     uuid_cand = self._toUUID(obj_id)
                     if uuid_cand != None:

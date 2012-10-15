@@ -23,7 +23,8 @@ from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
 class ShowCmdShell(CmdShell):
     NAME = 'show'
     ALIAS = 'get'
-    OPTIONS = ['name', 'kwargs']
+    #TODO: retrieve options dynamically 
+    OPTIONS = ['name', 'id']
 
     def __init__(self, context, parser):
         CmdShell.__init__(self, context, parser)

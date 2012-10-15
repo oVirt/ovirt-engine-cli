@@ -27,6 +27,7 @@ class Messages():
         NO_IDENTIFIER = '%s identifier required.'
         NO_QUERY_ARGS = '"--query" argument is not available for this type of listing.'
         NO_KWARGS = '"--kwargs" argument is not available for this type of %s.'
+        NO_ID = '"--id" argument is not available for this type of %s.'
         NO_NAME = '"--name" argument is not available for this type of show.'
         NO_CONSOLE_FOUND = '%s viewer was not found, please install %s first.'
         NOT_CONNECTED = OvirtCliSettings.PRODUCT.lower() + '-shell is not connected.'
