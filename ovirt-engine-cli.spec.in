@@ -15,7 +15,7 @@ BuildRequires: python-kitchen
 BuildArch: noarch
 
 Requires: python
-Requires: ovirt-engine-sdk >= 3.2.0.1
+Requires: ovirt-engine-sdk >= 3.2.0.3
 Requires: pexpect
 Requires: python-setuptools
 Requires: python-ply
@@ -53,6 +53,9 @@ popd
 %doc LICENSE
 
 %changelog
+* Thu Nov  1 2012 Michael Pasternak <mpastern@redhat.com> - 3.2.0.6-1
+- adapt to sdk restriction of .get() to id/name
+
 * Mon Sep  24 2012 Michael Pasternak <mpastern@redhat.com> - 3.2.0.5-1
 - storagedomain option appears in all vm actions #856164
 - disallow specifying app internal options

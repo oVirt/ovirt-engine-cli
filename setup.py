@@ -8,17 +8,17 @@ from setuptools import setup, Command
 
 version_info = {
     'name': 'ovirt-shell',
-    'version': '3.2.0.5-SNAPSHOT',
+    'version': '3.2.0.6-SNAPSHOT',
     'description': 'A command-line interface to oVirt Virtualization',
     'author': 'Michael Pasternak',
     'author_email': 'mpastern@redhat.com',
     'url': 'http://www.ovirt.org/wiki/CLI',
     'license': 'ASL2',
     'classifiers': [
-        'Development Status :: 1 - Beta',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: System Administrators',
-        'License :: OSI Approved :: ASL2 License',
+        'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.4' ],
 }
@@ -30,7 +30,7 @@ setup(
                  'ovirtcli.platform', 'ovirtcli.platform.posix',
                  'ovirtcli.platform.windows', 'ovirtcli.shell', 'ovirtcli.utils', 'cli',
                  'cli.command', 'cli.platform', 'cli.platform.posix'],
-    install_requires=[ 'ovirt-engine-sdk >= 3.2.0.1-SNAPSHOT', 'pexpect <= 2.3', 'ply >= 3.3', 'kitchen >= 1' ],
+    install_requires=[ 'ovirt-engine-sdk >= 3.2.0.3-SNAPSHOT', 'pexpect <= 2.3', 'ply >= 3.3', 'kitchen >= 1' ],
     entry_points={ 'console_scripts': [ 'ovirt-shell = ovirtcli.main:main' ] },
     **version_info
 )
