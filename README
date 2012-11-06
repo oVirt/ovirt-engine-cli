@@ -2,18 +2,6 @@
 
 This is a command-line interface for oVirt Virtualization.
 
-== Installation ==
-
-NOTE: ovirt-shell depends on ovirt-engine-sdk, 
-
-Installation from the source directory:
-
- $ python setup.py build
- # python setup.py install
-
 == Usage ==
 
-ovirt-shell comes with an extensive only help system. To start out, use:
-
- $ ovirt-shell --help
- $ ovirt-shell
+http://wiki.ovirt.org/wiki/CLI#Usage
