@@ -23,7 +23,7 @@ class MethodHelper():
     NON_ARG_TEMPLATE = ':not-arg'
 
     @staticmethod
-    def getMethodArgs(module, cls, method, get_varargs=False, get_keywords=False, drop_self=False):
+    def getMethodArgs(module, cls, method, get_varargs=False, get_keywords=False, drop_self=False, exclude=['context']):
         '''Returns list of method's arguments'''
         if hasattr(module, cls):
             cls_ref = getattr(module, cls)
@@ -32,6 +32,7 @@ class MethodHelper():
                 if method_ref:
                     try:
                         res = getattr(inspect.getargspec(method_ref), 'args')
+                        for item in exclude: res.remove(item)
                         if not res: res = []
                         if drop_self and res.__contains__('self'):
                             res.remove('self')
