@@ -83,17 +83,24 @@ class ExecutionContext(object):
 
     def __collect_connection_data(self):
         self.__exclude_app_options()
-        if self.settings['ovirt-shell:url'] == '' and \
-        not self.__is_option_specified_in_cli_args('--url')  and \
-        not self.__is_option_specified_in_cli_args('-l'):
-            self.settings['ovirt-shell:url'] = raw_input('URL: ')
-        if self.settings['ovirt-shell:username'] == '' and \
-        not self.__is_option_specified_in_cli_args('--username') and \
-        not self.__is_option_specified_in_cli_args('-u'):
-            self.settings['ovirt-shell:username'] = raw_input('Username: ')
-        if self.settings['ovirt-shell:password'] == '':
-            self.settings['ovirt-shell:password'] = getpass.getpass()
-        sys.stdin.flush()
+
+        try:
+            if self.settings['ovirt-shell:url'] == '' and \
+            not self.__is_option_specified_in_cli_args('--url')  and \
+            not self.__is_option_specified_in_cli_args('-l'):
+                self.settings['ovirt-shell:url'] = raw_input('URL: ')
+            if self.settings['ovirt-shell:username'] == '' and \
+            not self.__is_option_specified_in_cli_args('--username') and \
+            not self.__is_option_specified_in_cli_args('-u'):
+                self.settings['ovirt-shell:username'] = raw_input('Username: ')
+            if self.settings['ovirt-shell:password'] == '':
+                self.settings['ovirt-shell:password'] = getpass.getpass()
+        except KeyboardInterrupt:
+            sys.exit('')
+        except EOFError:
+            sys.exit('')
+        finally:
+            sys.stdin.flush()
 
     def __exclude_app_options(self):
         for opt in self.option_parser.app_options:
