@@ -115,7 +115,10 @@ class Settings(dict):
         if not cp.read(fname):
             return False, old_format
         for section in cp.sections():
-            for key, value in cp.items(section):
+            items = cp.items(section)
+            if len(items) != len(OvirtCliSettings.config_items):
+                old_format = True
+            for key, value in items:
                 conf_key = '%s:%s' % (section, key)
                 self[conf_key] = value
                 if conf_key not in OvirtCliSettings.config_items:

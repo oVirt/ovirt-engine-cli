@@ -69,7 +69,8 @@ class OvirtCliSettings(Settings):
         ('ovirt-shell:commands', str, '%s shell commands:' % PRODUCT),
         ('ovirt-shell:misc_commands', str, '%s shell commands:' % PRODUCT),
         ('ovirt-shell:version', str, ''),
-        ('ovirt-shell:prompt', str, '')
+        ('ovirt-shell:prompt', str, ''),
+        ('ovirt-shell:no_paging', boolean, False),
     ]
 
     #config file white list
@@ -82,5 +83,6 @@ class OvirtCliSettings(Settings):
         'ovirt-shell:ca_file',
         'ovirt-shell:insecure',
         'ovirt-shell:filter',
-        'ovirt-shell:timeout'
+        'ovirt-shell:timeout',
+        'ovirt-shell:no_paging'
     ]

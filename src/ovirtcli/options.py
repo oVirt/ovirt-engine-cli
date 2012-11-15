@@ -53,7 +53,7 @@ class OvirtCliOptionParser(OptionParser):
         self.disable_interspersed_args()
 
         # list of hidden app. options (long format)
-        self.app_options = ['--password', '-p']
+        self.app_options = ['--password', '-p', '--no-paging', '--no_paging']
 
     def exit(self, status=0, msg=None):
         self.values._exit = True

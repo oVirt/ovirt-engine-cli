@@ -16,7 +16,7 @@
 
 
 class ExecutionMode():
-    SHELL, SCRIPT, DEFAULT = range(3)
+    SHELL, SCRIPT, DEFAULT, NOPAGING = range(4)
 
     def __init__(self, Type):
         self.value = Type
@@ -28,6 +28,8 @@ class ExecutionMode():
             return 'SCRIPT'
         if self.value == ExecutionMode.DEFAULT:
             return 'DEFAULT'
+        if self.value == ExecutionMode.NOPAGING:
+            return 'NOPAGING'
 
     def __eq__(self, y):
         return self.value == y.value
