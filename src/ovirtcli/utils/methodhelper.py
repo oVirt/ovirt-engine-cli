@@ -32,7 +32,9 @@ class MethodHelper():
                 if method_ref:
                     try:
                         res = getattr(inspect.getargspec(method_ref), 'args')
-                        for item in exclude: res.remove(item)
+                        for item in exclude:
+                            if(res.__contains__(item)):
+                                res.remove(item)
                         if not res: res = []
                         if drop_self and res.__contains__('self'):
                             res.remove('self')
