@@ -45,6 +45,7 @@ class ExecutionContext(object):
     COMMAND_ERROR = 2
     INTERRUPTED = 3
     UNKNOWN_ERROR = 4
+    COMMUNICATION_ERROR = 5
 
     Parser = Parser
     Terminal = Terminal
@@ -192,7 +193,7 @@ class ExecutionContext(object):
                 self.status = self.OK
 
     def _handle_exception(self, e):
-        from ovirtsdk.infrastructure.errors import RequestError
+        from ovirtsdk.infrastructure.errors import RequestError, ConnectionError
         """Handle an exception. Can be overruled in a subclass."""
         if isinstance(e, KeyboardInterrupt):
             self.status = self.INTERRUPTED
@@ -205,6 +206,12 @@ class ExecutionContext(object):
         elif isinstance(e, SyntaxError):
             self.status = getattr(e, 'status', self.SYNTAX_ERROR)
             sys.stderr.write('\nerror: %s\n\n' % str(e))
+            if hasattr(e, 'help'):
+                sys.stderr.write('%s\n' % e.help)
+        elif isinstance(e, ConnectionError):
+            self.status = getattr(e, 'status', self.COMMUNICATION_ERROR)
+            sys.stderr.write('\nerror: %s\n\n' % str(e)\
+                 .replace("[ERROR]::oVirt API connection failure, ", ""))
             if hasattr(e, 'help'):
                 sys.stderr.write('%s\n' % e.help)
         else:

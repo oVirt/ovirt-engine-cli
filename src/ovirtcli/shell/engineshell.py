@@ -68,14 +68,15 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         HistoryCmdShell.__init__(self, context, parser)
         InfoCmdShell.__init__(self, context, parser)
 
+        self.last_output = ''
+        self.__input_buffer = ''
+        self.__org_prompt = ''
+        self.__last_status = -1
+
         self._set_prompt(mode=PromptMode.Disconnected)
         cmd.Cmd.doc_header = self.context.settings.get('ovirt-shell:commands')
         cmd.Cmd.undoc_header = self.context.settings.get('ovirt-shell:misc_commands')
         cmd.Cmd.intro = OvirtCliSettings.INTRO
-
-        self.last_output = ''
-        self.__input_buffer = ''
-        self.__org_prompt = ''
 
         readline.set_completer_delims(' ')
         signal.signal(signal.SIGINT, self.handler)
@@ -119,7 +120,17 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                     self.__input_buffer = ''
                     self._set_prompt(mode=PromptMode.Original)
 
-                return cmd.Cmd.onecmd(self, s)
+                result = cmd.Cmd.onecmd(self, s)
+
+                # if communication error occurred, change prompt state
+                if self.context.status == self.context.COMMUNICATION_ERROR:
+                    self.__last_status = self.context.COMMUNICATION_ERROR
+                    self.owner._set_prompt(mode=PromptMode.Disconnected)
+                elif self.__last_status == self.context.COMMUNICATION_ERROR:
+                    self.__last_status = -1
+                    self.owner._set_prompt(mode=PromptMode.Original)
+
+                return result
 
     def _set_prompt(self, mode=PromptMode.Default):
         if mode == PromptMode.Multiline:
@@ -131,6 +142,8 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                 self.prompt = self.__org_prompt
                 self.__org_prompt = ''
         elif mode == PromptMode.Disconnected or mode == PromptMode.Default:
+            if not self.__org_prompt and self.prompt != "(Cmd) ":
+                self.__org_prompt = self.prompt
             self.prompt = self.context.settings.get('ovirt-shell:ps1.disconnected')
         elif mode == PromptMode.Connected:
             self.prompt = self.context.settings.get('ovirt-shell:ps2.connected')

@@ -125,18 +125,7 @@ class OvirtCliExecutionContext(ExecutionContext):
                                    version.build_, version.revision)
         return '%s.%s.%s.%s' % backend_version
 
-    def _set_prompt(self):
-        """Update the prompt."""
-        if self.connection is None:
-            prompt = self.settings['ovirt-shell:ps1.disconnected']
-        else:
-            subst = self._get_prompt_variables()
-            prompt = self.settings['ovirt-shell:ps1.connected'] % subst
-
-        self.settings['ovirt-shell:prompt'] = prompt
-
     def _read_command(self):
-        self._set_prompt()
         return super(OvirtCliExecutionContext, self)._read_command()
 
     def _clean_settings(self):

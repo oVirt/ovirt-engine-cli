@@ -46,10 +46,12 @@ class Messages():
         INVALID_COLLECTION_BASED_OPTION_SYNTAX = 'invalid syntax at "--%s", see help on collection based arguments for more details.'
         INVALID_ARGUMENT_SEGMENT = '"%s" is invalid argument segment.'
         INVALID_OPTION_SEGMENT = '"%s" is invalid segment at option "--%s".'
+        MISSING_CONFIGURATION_VARIABLE = 'missing configuration variable: %s'
     class Warning():
         CANNOT_FETCH_HOST_CERT_SUBJECT = 'could not fetch host certificate info.'
         CANNOT_FETCH_HOST_CERT_SUBJECT_LEGACY_SDK = 'could not fetch host certificate info cause used backend/sdk does not support it.'
         HOST_IDENTITY_WILL_NOT_BE_VALIDATED = 'host identity will not be validated.'
+        ALREADY_CONNECTED = '\nalready connected\n\n'
     class Info():
         POSSIBALE_ARGUMENTS_COMBINATIONS = ',\npossible arguments combinations are %s.'
         POSSIBLE_VM_STATES_FOR_CONSOLE = ',\npossible vm states are %s.'

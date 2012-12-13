@@ -73,21 +73,23 @@ class ConnectCommand(OvirtCommand):
         insecure = settings.get('ovirt-shell:insecure')
         filter_ = settings.get('ovirt-shell:filter')
 
-        if self.context.connection is not None:
-            stdout.write('already connected\n')
+        if self.context.connection is not None and \
+                self.__test_connectivity() and \
+                self.context.status != self.context.COMMUNICATION_ERROR:
+            stdout.write(Messages.Warning.ALREADY_CONNECTED)
             return
         if len(args) == 3:
             url, username, password = args
         else:
             url = settings.get('ovirt-shell:url')
             if not url:
-                self.error('missing configuration variable: url')
+                self.error(Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'url')
             username = settings.get('ovirt-shell:username')
             if not username:
-                self.error('missing configuration variable: username')
+                self.error(Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'username')
             password = settings.get('ovirt-shell:password')
             if not password:
-                self.error('missing configuration variable: password')
+                self.error(Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'password')
 
         try:
             self.context.connection = API(url=url,
@@ -103,10 +105,9 @@ class ConnectCommand(OvirtCommand):
                                           debug=debug)
 
             if context.sdk_version < MIN_FORCE_CREDENTIALS_CHECK_VERSION:
-                self.testConnectivity()
+                self.__test_connectivity()
 
             self.context.url = url
-            self.context._set_prompt()
             self.context.history.enable()
             stdout.write(OvirtCliSettings.CONNECTED_TEMPLATE % \
                          self.context.settings.get('ovirt-shell:version'))
@@ -125,12 +126,12 @@ class ConnectCommand(OvirtCommand):
             self.__cleanContext()
             self.error(str(e))
         finally:
-            #do not log connect command details as it may be
-            #a subject for password stealing or DOS attack
+            # do not log connect command details as it may be
+            # a subject for password stealing or DOS attack
             self.__remove_history_entry()
 
-    def testConnectivity(self):
-        self.context.connection.test(throw_exception=True)
+    def __test_connectivity(self):
+        return self.context.connection.test(throw_exception=True)
 
     def __remove_history_entry(self):
         last_entry = self.context.history.get(self.context.history.length() - 1)
