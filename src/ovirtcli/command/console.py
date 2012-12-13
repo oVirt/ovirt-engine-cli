@@ -17,7 +17,6 @@
 
 from ovirtcli.platform import vnc, spice
 from ovirtcli.command.command import OvirtCommand
-from ovirtsdk.infrastructure import contextmanager
 from cli.messages import Messages
 
 
@@ -65,7 +64,7 @@ class ConsoleCommand(OvirtCommand):
         if proto == 'vnc':
             vnc.launch_vnc_viewer(host_addr, port, ticket, debug)
         elif proto == 'spice':
-            certurl = '%s/ca.crt' % (contextmanager.get('proxy').get_url().replace('/api', ''))
+            certurl = '%s/ca.crt' % (self.context.url.replace('/api', ''))
 
             if vm.host and vm.host.id:
                 host = self.get_object('host', vm.host.id)

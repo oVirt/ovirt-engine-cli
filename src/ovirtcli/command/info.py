@@ -20,7 +20,6 @@ from cli.messages import Messages
 
 import sys
 from ovirtcli.utils.versionhelper import VersionHelper
-from ovirtsdk.infrastructure import contextmanager
 
 
 class InfoCommand(OvirtCommand):
@@ -47,5 +46,5 @@ class InfoCommand(OvirtCommand):
         self.write(Messages.Info.PYTHON_VERSION % VersionHelper.to_string((sys.version_info)))
 
         self.write('')
-        self.write(Messages.Info.BACKEND_ENTRY_POINT % contextmanager.get('proxy').get_url())
+        self.write(Messages.Info.BACKEND_ENTRY_POINT % self.context.url)
         self.write('')

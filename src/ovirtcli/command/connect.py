@@ -105,6 +105,7 @@ class ConnectCommand(OvirtCommand):
             if context.sdk_version < MIN_FORCE_CREDENTIALS_CHECK_VERSION:
                 self.testConnectivity()
 
+            self.context.url = url
             self.context._set_prompt()
             self.context.history.enable()
             stdout.write(OvirtCliSettings.CONNECTED_TEMPLATE % \

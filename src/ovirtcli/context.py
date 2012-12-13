@@ -44,6 +44,7 @@ class OvirtCliExecutionContext(ExecutionContext):
     def __init__(self, args=None, option_parser=None):
         super(OvirtCliExecutionContext, self).__init__(args=args, option_parser=option_parser)
         self.connection = None
+        self.url = None
         self.formatter = create(Formatter, self.settings['ovirt-shell:output_format'])
         self.settings.add_callback('cli:verbosity', self._set_verbosity)
         self.settings.add_callback('ovirt-shell:output_format', self._set_formatter)
