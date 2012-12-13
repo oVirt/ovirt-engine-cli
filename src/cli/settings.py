@@ -120,9 +120,10 @@ class Settings(dict):
                 old_format = True
             for key, value in items:
                 conf_key = '%s:%s' % (section, key)
-                self[conf_key] = value
                 if conf_key not in OvirtCliSettings.config_items:
                     old_format = True
+                else:
+                    self[conf_key] = value
 
         return True, old_format
 
