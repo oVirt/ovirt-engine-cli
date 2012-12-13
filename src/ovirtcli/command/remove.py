@@ -151,7 +151,10 @@ class RemoveCommand(OvirtCommand):
         else:
             self.error(Messages.Error.OBJECT_IS_IMMUTABLE % (args[0], args[1]))
 
-        self.context.formatter.format(self.context, result)
+        if not result:
+            self.write(Messages.Info.ACCEPTED)
+        else:
+            self.context.formatter.format(self.context, result)
 
     def show_help(self):
         """Show help for "remove"."""
