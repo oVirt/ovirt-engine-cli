@@ -26,7 +26,7 @@ class AutoCompletionHelper(object):
                     if val and val != '': vals.append(val.strip())
 
                 if common_options:
-                    vals.extend(common_options)
+                    vals.extend(common_options[:])
 
                 mp[key] = vals
 
@@ -37,7 +37,7 @@ class AutoCompletionHelper(object):
                     mp[key].extend(specific_arguments[key])
             else:
                 if common_options:
-                    mp[key] = common_options
+                    mp[key] = common_options[:]
                 else:
                     mp[key] = []
 
