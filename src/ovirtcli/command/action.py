@@ -177,7 +177,7 @@ class ActionCommand(OvirtCommand):
                 result = self.execute_method(resource, args[2], opts)
             except Exception, e:
                 self.error(str(e))
-            if result.status.state != 'complete':
+            if result.status.state == 'failed':
                 self.error(Messages.Info.ACTION_STATUS % result.status.state)
         else:
             self.error(Messages.Error.NO_SUCH_ACTION % args[2])
@@ -197,7 +197,6 @@ class ActionCommand(OvirtCommand):
 
                 subst['type'] = args[0]
                 subst['id'] = args[1]
-                #subst['action'] = args[0]
 
                 base = self.resolve_base(self.options)
                 obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
