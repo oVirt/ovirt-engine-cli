@@ -27,6 +27,7 @@ from ovirtsdk.utils.ordereddict import OrderedDict
 import itertools
 from cli.messages import Messages
 import types
+import re
 
 
 class OvirtCommand(Command):
@@ -314,9 +315,9 @@ class OvirtCommand(Command):
                 if kwargs and kwargs.has_key('id'):
                     return coll.get(id=kwargs['id'])
                 else:
-                    uuid_cand = self._toUUID(obj_id)
-                    if uuid_cand != None:
-                        return coll.get(id=obj_id)
+                    identifier = self.__produce_identifier(obj_id)
+                    if identifier:
+                        return coll.get(id=str(obj_id))
                     else:
                         return coll.get(name=obj_id)
         else:
@@ -327,6 +328,24 @@ class OvirtCommand(Command):
             self.error(err_str % candidate)
 
         return None
+
+    def __produce_identifier(self, candidate):
+        if type(candidate) == str:
+            match = re.search(r'[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}', candidate)
+            if match:
+                return self._toUUID(candidate)
+            match = re.search(r'[-+]?\d+', candidate)
+            if match:
+                return self._toLong(candidate)
+        elif type(candidate) == int or type(candidate) == long:
+            return candidate
+        return None
+
+    def _toLong(self, string):
+        try:
+            return long(string)
+        except:
+            return None
 
     def _toUUID(self, string):
         try:
@@ -425,7 +444,7 @@ class OvirtCommand(Command):
                     elif opts.has_key('--' + arg):
                         method_args[arg] = opts['--' + arg]
                     else:
-                        #TODO: throw error if param is mandatory
+                        # TODO: throw error if param is mandatory
                         pass
 
                 result = method(**method_args)
