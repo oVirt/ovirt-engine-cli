@@ -37,8 +37,8 @@ class UpdateCommand(OvirtCommand):
         Update an existing object. This command requires the following
         arguments:
 
-          * type        The type of object to delete.
-          * id          The identifier of the object to delete
+          * type        The type of object to update.
+          * id          The identifier of the object to update
 
         == Supported Help formats ==
 
@@ -101,8 +101,8 @@ class UpdateCommand(OvirtCommand):
         Update an existing object. This command requires the following
         arguments:
 
-          * type        The type of object to delete.
-          * id          The identifier of the object to delete
+          * type        The type of object to update.
+          * id          The identifier of the object to update
 
         See 'help update' for generic help on creating objects.
 
