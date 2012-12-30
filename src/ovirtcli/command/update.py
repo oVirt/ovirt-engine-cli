@@ -172,7 +172,7 @@ class UpdateCommand(OvirtCommand):
         statuses = self.get_statuses()
         subst['statuses'] = self.format_list(statuses)
 
-        if self.is_supported_type(types.keys(), args[0]):
+        if len(args) > 0 and self.is_supported_type(types.keys(), args[0]):
             if len(args) == 2:
                 base = self.resolve_base(self.options)
                 obj = self.get_object(args[0], args[1],
@@ -205,7 +205,9 @@ class UpdateCommand(OvirtCommand):
                 subst['types'] = self.format_map({args[0]:types[args[0]]})
             else:
                 helptext = self.helptext
+        else:
+            helptext = self.helptext
 
-            helptext = self.format_help(helptext, subst)
-            stdout = self.context.terminal.stdout
-            stdout.write(helptext)
+        helptext = self.format_help(helptext, subst)
+        stdout = self.context.terminal.stdout
+        stdout.write(helptext)
