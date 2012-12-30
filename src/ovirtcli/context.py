@@ -52,6 +52,11 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.sdk_version, self.cli_version, self.backend_version = self.__get_version_info()
         self.history = HistoryManager()
 
+    def set_connection(self, connection, url=None):
+        self.connection = connection
+        self.url = url
+        self.__update_backend_metadata()
+
     def __get_version_info(self):
         SNAPSHOT_SUFFIX = '-SNAPSHOT'
 
@@ -106,7 +111,7 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.add_command(InfoCommand)
         self.add_command(HistoryCommand)
 
-    def _get_prompt_variables(self):
+    def __update_backend_metadata(self):
         """Return a dict with prompt variables."""
 
         version = self.__get_backend_version()

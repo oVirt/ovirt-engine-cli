@@ -92,22 +92,22 @@ class ConnectCommand(OvirtCommand):
                 self.error(Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'password')
 
         try:
-            self.context.connection = API(url=url,
-                                          username=username,
-                                          password=password,
-                                          key_file=key_file,
-                                          cert_file=cert_file,
-                                          ca_file=ca_file,
-                                          insecure=insecure,
-                                          filter=filter_,
-                                          port=port if port != -1 else None,
-                                          timeout=timeout if timeout != -1 else None,
-                                          debug=debug)
+            self.context.set_connection (API(url=url,
+                                             username=username,
+                                             password=password,
+                                             key_file=key_file,
+                                             cert_file=cert_file,
+                                             ca_file=ca_file,
+                                             insecure=insecure,
+                                             filter=filter_,
+                                             port=port if port != -1 else None,
+                                             timeout=timeout if timeout != -1 else None,
+                                             debug=debug),
+                                         url=url)
 
             if context.sdk_version < MIN_FORCE_CREDENTIALS_CHECK_VERSION:
                 self.__test_connectivity()
 
-            self.context.url = url
             self.context.history.enable()
             stdout.write(OvirtCliSettings.CONNECTED_TEMPLATE % \
                          self.context.settings.get('ovirt-shell:version'))
