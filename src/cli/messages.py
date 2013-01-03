@@ -46,6 +46,8 @@ class Messages():
         INVALID_COLLECTION_BASED_OPTION_SYNTAX = 'invalid syntax at "--%s", see help on collection based arguments for more details.'
         INVALID_ARGUMENT_SEGMENT = '"%s" is invalid argument segment.'
         INVALID_OPTION_SEGMENT = '"%s" is invalid segment at option "--%s".'
+        INVALID_KWARGS_FORMAT = '"%s" is invalid --kwargs argument, valid format is "x=y;z=q;...".'
+        INVALID_KWARGS_CONTENT = '--kwargs constraint cannot be empty.'
         MISSING_CONFIGURATION_VARIABLE = 'missing configuration variable: %s.'
     class Warning():
         CANNOT_FETCH_HOST_CERT_SUBJECT = 'could not fetch host certificate info.'

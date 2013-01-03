@@ -215,10 +215,18 @@ class OvirtCommand(Command):
         """INTERNAL: retrieves query and kwargs from attribute options"""
         query = opts[query_arg] if opts.has_key(query_arg) else None
         kw = {}
+        empty = True
         if opts.has_key(kwargs_arg):
-            for item in opts[kwargs_arg].split(';'):
-                k, v = item.split('=')
-                kw[k.replace('-', '.')] = v
+            if opts[kwargs_arg]:
+                for item in opts[kwargs_arg].split(';'):
+                    if item.find("=") != -1:
+                        k, v = item.split('=')
+                        kw[k.replace('-', '.')] = v
+                        empty = False
+                    elif empty:
+                        self.error(Messages.Error.INVALID_KWARGS_FORMAT % item)
+            else:
+                self.error(Messages.Error.INVALID_KWARGS_CONTENT)
         mopts = {}
         for k, v in opts.iteritems():
             if k != query_arg and k != kwargs_arg and not k.endswith('-identifier'):
