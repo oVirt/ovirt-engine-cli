@@ -113,6 +113,10 @@ class OvirtCommand(Command):
                             root_obj_params_set_cand = obj_params_set_cand
                         else:
                             self.error(Messages.Error.NO_SUCH_TYPE) % props[i]
+
+                        if not val:
+                            self.error(Messages.Error.INVALID_COLLECTION_BASED_OPTION_SYNTAX % prop)
+
                         for param in val.split(','):
                             obj_params_set_cand = root_obj_params_set_cand
                             param_data = param.replace(props[i] + '.', '').split('=')
