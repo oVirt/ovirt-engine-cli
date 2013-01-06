@@ -84,6 +84,12 @@ class HelpCommand(OvirtCommand):
         == Examples ==
         
         See 'SUPPORTED HELP FORMATS' section under each command help.
+
+        == Configuration File ==
+
+        oVirt-Shell can be configured with configuration file, configuration file
+        ( ~/.ovirtshellrc) automatically created under your home directory (if not exist)
+        at first ovirt-shell execution.
         """
 
     def execute(self):
