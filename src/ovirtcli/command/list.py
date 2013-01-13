@@ -120,7 +120,7 @@ class ListCommand(OvirtCommand):
 
         - list <type>
             
-        - list <type> <id> [object identifiers]
+        - list <type> <id> [parent identifiers] [command options]
 
         == Description ==
 

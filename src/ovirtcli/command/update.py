@@ -94,7 +94,7 @@ class UpdateCommand(OvirtCommand):
     helptext1 = """\
         == Usage ==
 
-        update <type> <id> [base identifiers] [attribute options]
+        update <type> <id> [parent identifiers] [command options]
 
         == Description ==
 

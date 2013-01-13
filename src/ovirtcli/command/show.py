@@ -91,7 +91,7 @@ class ShowCommand(OvirtCommand):
 
         - show <type>
             
-        - show <type> <id> [object identifiers]
+        - show <type> <id> [parent identifiers] [command options]
 
         == Description ==
 
