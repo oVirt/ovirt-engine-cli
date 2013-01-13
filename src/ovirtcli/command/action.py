@@ -26,14 +26,14 @@ class ActionCommand(OvirtCommand):
 
     name = 'action'
     description = 'execute an action on an object'
-    usage = 'action <type> <action> <id> [options]'
+    usage = 'action <type> <id> <action> [parent identifiers] [command options]'
     args_check = 3
     valid_options = [ ('*', str) ]
 
     helptext0 = """\
         == Usage ==
 
-        action <type> <id> <action> [base identifiers] [attribute options]
+        action <type> <id> <action> [parent identifiers] [command options]
 
         == Description ==
 
@@ -86,7 +86,7 @@ class ActionCommand(OvirtCommand):
     helptext1 = """\
         == Usage ==
 
-        action <type> <id> <action> [object identifiers] [attribute options]
+        action <type> <id> <action> [parent identifiers] [command options]
 
         == Description ==
 

@@ -17,7 +17,7 @@
 
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
-#from ovirtsdk.infrastructure import brokers
+# from ovirtsdk.infrastructure import brokers
 from ovirtcli.command.show import ShowCommand
 
 class ListCommand(OvirtCommand):
@@ -33,7 +33,7 @@ class ListCommand(OvirtCommand):
     helptext = """\
         == Usage ==
     
-        list <type> [search]... [object identifiers]
+        list <type> [parent identifiers] [command options]
 
         == Description ==
 

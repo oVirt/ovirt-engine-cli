@@ -31,7 +31,7 @@ class RemoveCommand(OvirtCommand):
     helptext = """\
         == Usage ==
     
-        remove <type> <id> [object identifiers] [attribute options]
+        remove <type> <id> [parent identifiers] [command options]
 
         == Description ==
 

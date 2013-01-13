@@ -30,7 +30,7 @@ class ShowCommand(OvirtCommand):
     helptext = """\
         == Usage ==
     
-        show <type> <id> [object identifiers]
+        show <type> <id> [parent identifiers] [command options]
 
         == Description ==
 
@@ -117,10 +117,10 @@ class ShowCommand(OvirtCommand):
         args = self.arguments
         opts = self.options
 
-        #Raise an error if object identifier xxx is not specified #855750
-        #e.g:
-        #show vm xxx
-        #show disk xxx --vm-identifier yyy
+        # Raise an error if object identifier xxx is not specified #855750
+        # e.g:
+        # show vm xxx
+        # show disk xxx --vm-identifier yyy
         if len(args) < 2 and (len(opts) == 0 or
                               (len(opts) == 1
                                and

@@ -29,7 +29,7 @@ class AddCommand(OvirtCommand):
     helptext0 = """\
         == Usage ==
 
-        add <type> [base identifiers] [attribute options]
+        add <type> [parent identifiers] [command options]
 
         == Description ==
 
@@ -96,7 +96,7 @@ class AddCommand(OvirtCommand):
     helptext1 = """\
         == Usage ==
 
-        add <type> [base identifiers] [attribute options]
+        add <type> [parent identifiers] [command options]
 
         == Description ==
 

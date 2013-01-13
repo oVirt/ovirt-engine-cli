@@ -31,7 +31,7 @@ class HelpCommand(OvirtCommand):
         == Usage ==
 
         help
-        help <command> [arguments] [options]
+        help <command> <command attributes> [command options]
 
         == Description ==
 
@@ -58,7 +58,7 @@ class HelpCommand(OvirtCommand):
 
         The general format for each command is:
 
-          <command> [arguments] [options]
+          help <command> <command attributes> [command options]
 
         If arguments contain spaces or other reserved characters, you need to
         quote them. You can use single (') and double (") quotes for this. The

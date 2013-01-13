@@ -30,7 +30,7 @@ class UpdateCommand(OvirtCommand):
     helptext = """\
         == Usage ==
 
-        update <type> <id> [base identifiers] [attribute options]
+        update <type> <id> [parent identifiers] [command options]
 
         == Description ==
 

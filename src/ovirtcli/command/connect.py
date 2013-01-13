@@ -33,7 +33,7 @@ class ConnectCommand(OvirtCommand):
         == Usage ==
 
         connect
-        connect <url> <username> <password>
+        connect <url> <username> <password> [command options]
 
         == Description ==
 
