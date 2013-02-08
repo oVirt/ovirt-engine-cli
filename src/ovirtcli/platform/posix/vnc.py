@@ -19,6 +19,7 @@ import os
 from cli.error import Error
 from ovirtcli.platform import util
 from cli.messages import Messages
+from subprocess import Popen, PIPE
 
 
 def launch_vnc_viewer(host, port, ticket, debug=False):
@@ -29,7 +30,12 @@ def launch_vnc_viewer(host, port, ticket, debug=False):
     cmd = util.which('vncviewer')
     if cmd is None:
         raise Error, Messages.Error.NO_CONSOLE_FOUND % ('vnc', 'vnc')
-    args = ['vncviewer', '%s::%s' % (host, port), '-passwdInput' ]
+    cmd_passwd = util.which('vncpasswd')
+    if cmd_passwd is None:
+        raise Error, Messages.Error.NO_SUCH_COMMAND % 'vncpasswd'
+    p = Popen([cmd_passwd, "-f"], shell=False, stdin=PIPE, stdout=PIPE)
+    password = p.communicate(input=ticket)[0]
+    args = [cmd, '%s::%s' % (host, port), '-passwordFile', '/dev/stdin' ]
     pid, pstdin = util.spawn(cmd, args, debug)
-    os.write(pstdin, ticket)
+    os.write(pstdin, password)
     os.close(pstdin)
