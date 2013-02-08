@@ -30,6 +30,7 @@ class Messages():
         NO_ID = '"--id" argument is not available for this type of %s.'
         NO_NAME = '"--name" argument is not available for this type of show.'
         NO_CONSOLE_FOUND = '%s viewer was not found, please install %s first.'
+        NO_SUCH_COMMAND = '%s command was not found, please install it first.'
         NOT_CONNECTED = OvirtCliSettings.PRODUCT.lower() + '-shell is not connected.'
         NO_SUCH_COLLECTION = 'no such collection "%s" or given arguments not valid.'
         NO_CERTIFICATES = 'server CA certificate file must be specified for SSL secured connection.'
