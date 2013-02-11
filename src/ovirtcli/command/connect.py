@@ -39,8 +39,8 @@ class ConnectCommand(OvirtCommand):
 
         Connect to a oVirt manager. This command has two forms. In the first
         form, no arguments are provided, and the connection details are read
-        from their respective configuration variables (see 'show'). In
-        the second form, the connection details are provided as arguments.
+        from their respective configuration variables. In the second form,
+        the connection details are provided as arguments.
 
         The arguments are:
 
