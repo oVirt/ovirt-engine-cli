@@ -325,7 +325,7 @@ class OvirtCommand(Command):
                 if name:
                     return coll.get(name=name)
                 if kwargs and kwargs.has_key('id'):
-                    return coll.get(id=kwargs['id'])
+                    return coll.get(id=str(kwargs['id']))
                 else:
                     identifier = self.__produce_identifier(obj_id)
                     if identifier:
