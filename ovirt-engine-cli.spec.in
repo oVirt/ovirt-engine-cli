@@ -53,6 +53,10 @@ popd
 %doc LICENSE
 
 %changelog
+* Tue Feb  19 2013 Michael Pasternak <mpastern@redhat.com> - 3.2.0.10-1
+ - use vncviewer passwordFile instead of passwdInput #909365
+ - ovirt-cli DistributionNotFound exception on f18 #881011
+
 * Sun Jan  13 2013 Michael Pasternak <mpastern@redhat.com> - 3.2.0.9-1
 - ovirt-cli DistributionNotFound exception on f18 #881011
 - adding to help message ovirt-shell configuration details #890800
