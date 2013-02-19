@@ -306,6 +306,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             self.do_connect(s)
             if opts.file:
                 self.do_file(opts.file)
+                self.do_exit('')
             elif opts.execute_command:
                 self.__execute_command(opts.execute_command)
                 self.do_exit('')
