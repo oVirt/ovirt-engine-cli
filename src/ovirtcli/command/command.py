@@ -119,6 +119,9 @@ class OvirtCommand(Command):
 
                         for param in val.split(','):
                             obj_params_set_cand = root_obj_params_set_cand
+                            if not param.startswith(props[i] + '.'):
+                               self.error(Messages.Error.INVALID_OPTION_SEGMENT % \
+                                                       (param, prop))
                             param_data = param.replace(props[i] + '.', '').split('=')
                             if len(param_data) == 2:
                                 spplited_param_data = param_data[0].split('.')
