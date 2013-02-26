@@ -117,7 +117,7 @@ class OvirtCommand(Command):
                         if not val:
                             self.error(Messages.Error.INVALID_COLLECTION_BASED_OPTION_SYNTAX % prop)
 
-                        for param in val.split(','):
+                        for param in str(val).split(','):
                             obj_params_set_cand = root_obj_params_set_cand
                             if not param.startswith(props[i] + '.'):
                                self.error(Messages.Error.INVALID_OPTION_SEGMENT % \
