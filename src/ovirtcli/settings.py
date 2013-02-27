@@ -54,6 +54,7 @@ class OvirtCliSettings(Settings):
         ('ovirt-shell:cert_file', str, None),
         ('ovirt-shell:ca_file', str, None),
         ('ovirt-shell:insecure', boolean, False),
+        ('ovirt-shell:dont_validate_cert_chain', boolean, False),
         ('ovirt-shell:filter', boolean, False),
         ('ovirt-shell:port', int, -1),
         ('ovirt-shell:timeout', int, -1),
@@ -73,7 +74,7 @@ class OvirtCliSettings(Settings):
         ('ovirt-shell:no_paging', boolean, False),
     ]
 
-    #config file white list
+    # config file white list
     config_items = [
         'ovirt-shell:url',
         'ovirt-shell:username',
@@ -82,6 +83,7 @@ class OvirtCliSettings(Settings):
         'ovirt-shell:cert_file',
         'ovirt-shell:ca_file',
         'ovirt-shell:insecure',
+        'ovirt-shell:dont_validate_cert_chain',
         'ovirt-shell:filter',
         'ovirt-shell:timeout',
         'ovirt-shell:no_paging'

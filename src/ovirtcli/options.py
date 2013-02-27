@@ -40,7 +40,9 @@ class OvirtCliOptionParser(OptionParser):
         self.add_option('-K', '--key-file', help='specify client PEM key-file')
         self.add_option('-C', '--cert-file', help='specify client PEM cert-file')
         self.add_option('-A', '--ca-file', help='specify server CA cert-file')
-        self.add_option('-I', '--insecure', help='allow connecting to SSL sites without certificates',
+        self.add_option('-I', '--insecure', help='allow connecting to SSL sites without CA certificate',
+                        action='store_true')
+        self.add_option('-D', '--dont-validate-cert-chain', help='do not validate server CA certificate',
                         action='store_true')
         self.add_option('-F', '--filter', help='enables user permission based filtering',
                         action='store_true')
