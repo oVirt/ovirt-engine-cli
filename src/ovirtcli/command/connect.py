@@ -71,6 +71,7 @@ class ConnectCommand(OvirtCommand):
         timeout = settings.get('ovirt-shell:timeout')
         debug = settings.get('cli:debug')
         insecure = settings.get('ovirt-shell:insecure')
+        dont_validate_cert_chain = settings.get('ovirt-shell:dont_validate_cert_chain')
         filter_ = settings.get('ovirt-shell:filter')
 
         if self.context.connection is not None and \
@@ -99,6 +100,7 @@ class ConnectCommand(OvirtCommand):
                                              cert_file=cert_file,
                                              ca_file=ca_file,
                                              insecure=insecure,
+                                             validate_cert_chain=not dont_validate_cert_chain,
                                              filter=filter_,
                                              port=port if port != -1 else None,
                                              timeout=timeout if timeout != -1 else None,
