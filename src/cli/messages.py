@@ -62,7 +62,7 @@ class Messages():
         STATUS = '\nlast command status: %s'
         PRODUCT_VERSION = "\n%s version: %s.\n"
         NOT_CONNECTED = 'not connected.'
-        SUCESS_CONNECT_TO_BACKEND = '\nsuccess: oVirt manager could be reached OK.\n\n'
+        SUCESS_CONNECT_TO_BACKEND = '\nsuccess: ' + OvirtCliSettings.PRODUCT + ' manager could be reached OK.\n\n'
         SDK_VERSION = 'sdk version    : %s'
         CLI_VERSION = 'cli version    : %s'
         BACKEND_VERSION = 'backend version: %s'
