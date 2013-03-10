@@ -15,7 +15,7 @@ BuildRequires: python-kitchen
 BuildArch: noarch
 
 Requires: python
-Requires: ovirt-engine-sdk >= 3.2.0.3
+Requires: ovirt-engine-sdk >= 3.2.0.10
 Requires: pexpect
 Requires: python-setuptools
 Requires: python-ply
@@ -53,6 +53,10 @@ popd
 %doc LICENSE
 
 %changelog
+* Sun Mar  10 2013 Michael Pasternak <mpastern@redhat.com> - 3.2.0.11-1
+ - fix broken pipe at script execution
+ - add flag --dont-validate-cert-chain #915231
+
 * Tue Feb  19 2013 Michael Pasternak <mpastern@redhat.com> - 3.2.0.10-1
  - use vncviewer passwordFile instead of passwdInput #909365
  - ovirt-cli DistributionNotFound exception on f18 #881011
