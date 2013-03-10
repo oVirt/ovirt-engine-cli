@@ -134,8 +134,6 @@ class ExecutionContext(object):
             self.__collect_connection_data()
         self.settings.add_callback('cli:debug', self._set_debug)
         self._set_debug('cli:debug', self.settings['cli:debug'])
-        if self.settings['ovirt-shell:no_paging']:
-            self.mode = ExecutionMode.NOPAGING
 
     def _set_debug(self, key, value):
         """Enable or disable debugging (callback)."""
@@ -304,10 +302,10 @@ class ExecutionContext(object):
 
     def _setup_pipeline(self, pipeline):
         """INTERNAL: set up the pipeline, if any."""
-        if not pipeline or self.mode == ExecutionMode.SCRIPT or \
-                self.mode == ExecutionMode.NOPAGING:
+        if not pipeline:
             self._pipeline = None
             return
+
         self._pipeline = Popen(pipeline, stdin=PIPE, stderr=PIPE, shell=True)
         self._pipeinput = codecs.getwriter("utf8")(cStringIO.StringIO())
         self.terminal.stdout = self._pipeinput
