@@ -26,6 +26,7 @@ from ovirtcli.object import create
 import pkg_resources
 from ovirtcli.command.info import InfoCommand
 from ovirtcli.historymanager import HistoryManager
+from ovirtcli.command.summary import SummaryCommand
 
 
 class OvirtCliExecutionContext(ExecutionContext):
@@ -110,6 +111,7 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.add_command(UpdateCommand)
         self.add_command(InfoCommand)
         self.add_command(HistoryCommand)
+        self.add_command(SummaryCommand)
 
     def __update_backend_metadata(self):
         """Return a dict with prompt variables."""

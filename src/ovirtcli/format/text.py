@@ -23,6 +23,7 @@ from ovirtsdk.xml import params
 from ovirtsdk.infrastructure.common import Base
 from ovirtsdk.infrastructure import brokers
 import types
+from ovirtsdk.xml.params import ApiSummary
 
 
 class FormatMode():
@@ -223,8 +224,11 @@ class TextFormatter(Formatter):
             stdout.write('\n')
 
     def format(self, context, result, show_all=False):
+        RESOURCE_EXCEPTIONS = [ApiSummary]
+        COLLECTION_EXCEPTIONS = []
         self.context = context
-        if isinstance(result, params.BaseResource):
+
+        if isinstance(result, params.BaseResource) or type(result) in RESOURCE_EXCEPTIONS:
             if isinstance(result, Base):
                 context.terminal.stdout.write('\n')
                 self._format_resource(result.superclass, show_empty=show_all)
@@ -233,7 +237,7 @@ class TextFormatter(Formatter):
                 context.terminal.stdout.write('\n')
                 self._format_resource(resource=result, show_empty=show_all)
                 context.terminal.stdout.write('\n')
-        elif isinstance(result, list):
+        elif isinstance(result, list) or type(result) in COLLECTION_EXCEPTIONS:
             context.terminal.stdout.write('\n')
             self._format_collection(collection=result, show_empty=show_all)
 #            context.terminal.stdout.write('\n')
