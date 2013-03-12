@@ -29,7 +29,7 @@ class Parser(PLYParser):
     multi-line inputs.
     """
 
-    tokens = ('UUID', 'WORD', 'STRING', 'NUMBER', 'OPTION', 'LT', 'LTLT', 'GT', 'GTGT',
+    tokens = ('IPADDR', 'UUID', 'WORD', 'STRING', 'NUMBER', 'OPTION', 'LT', 'LTLT', 'GT', 'GTGT',
               'BANG', 'PIPE', 'NEWLINE', 'MARKER', 'HEREDOC', 'SHELL')
     literals = ('=', ';')
     states = [('heredoc1', 'inclusive'), ('heredoc2', 'exclusive'),
@@ -46,6 +46,13 @@ class Parser(PLYParser):
     t_ignore_quoted_newline = r'\\\n'
     t_heredoc2_ignore = ' \t'
     t_shell_ignore = ' \t'
+
+    def t_IPADDR(self, t):
+        # ip validity check performed on the server side,
+        # this pattern only recognizes the IP address form
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
+        t.value = str(t.value)
+        return t
 
     def t_UUID(self, t):
         r'[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
@@ -166,7 +173,8 @@ class Parser(PLYParser):
             p[0] = p[1] + [p[2]]
 
     def p_argument(self, p):
-        """argument : UUID
+        """argument : IPADDR
+                    | UUID
                     | WORD
                     | STRING
                     | NUMBER
@@ -197,7 +205,8 @@ class Parser(PLYParser):
             p[0] = (p[1], p[3])
 
     def p_option_value(self, p):
-        """option_value : UUID
+        """option_value : IPADDR
+                        | UUID
                         | WORD
                         | STRING
                         | NUMBER
