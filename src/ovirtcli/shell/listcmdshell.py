@@ -56,3 +56,15 @@ class ListCmdShell(CmdShell):
                                              args=args,
                                              common_options=ListCmdShell.OPTIONS,
                                              specific_options=specific_options)
+
+    def is_list_argument(self, line, key):
+        args = TypeHelper.get_types_by_method(True, ListCmdShell.NAME, expendNestedTypes=True)
+        if key in args:
+            return True
+        specific_options = self.get_resource_specific_options(args,
+                                                              line,
+                                                              callback=self.__add_resource_specific_options)
+        for arg_key in specific_options.keys():
+             if key in specific_options[arg_key]:
+                 return True
+        return False

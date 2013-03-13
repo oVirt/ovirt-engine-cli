@@ -39,3 +39,9 @@ class ShowCmdShell(CmdShell):
                                              text=text,
                                              args=args,
                                              common_options=ShowCmdShell.OPTIONS)
+    def is_show_argument(self, line, key):
+        args = TypeHelper.get_types_by_method(False, ShowCmdShell.ALIAS, expendNestedTypes=True)
+        if key in args:
+            return True
+
+        return key in ShowCmdShell.OPTIONS

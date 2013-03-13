@@ -50,3 +50,15 @@ class UpdateCmdShell(CmdShell):
                                                               callback=self.__add_resource_specific_options)
 
         return AutoCompletionHelper.complete(line, text, args, specific_options=specific_options)
+
+    def is_update_argument(self, line, key):
+        args = TypeHelper.get_types_containing_method(UpdateCmdShell.NAME, expendNestedTypes=True)
+        if key in args:
+            return True
+        specific_options = self.get_resource_specific_options(args,
+                                                              line,
+                                                              callback=self.__add_resource_specific_options)
+        for arg_key in specific_options.keys():
+             if key in specific_options[arg_key]:
+                 return True
+        return False

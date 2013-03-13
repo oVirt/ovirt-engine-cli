@@ -64,3 +64,6 @@ class ConnectCmdShell(CmdShell):
         return AutoCompletionHelper.complete(line=line, text=text,
                                              args={}.fromkeys(ConnectCmdShell.OPTIONS),
                                              all_options=True)
+
+    def is_connect_argument(self, line, key):
+        return key in ConnectCmdShell.OPTIONS

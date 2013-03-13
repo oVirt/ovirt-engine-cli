@@ -35,3 +35,6 @@ class CapabilitiesCmdShell(CmdShell):
         return AutoCompletionHelper.complete(line=line, text=text,
                                              args={}.fromkeys(CapabilitiesCmdShell.OPTIONS),
                                              all_options=True)
+
+    def is_capabilities_argument(self, line, key):
+        return key in CapabilitiesCmdShell.OPTIONS

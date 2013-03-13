@@ -255,3 +255,16 @@ class ActionCmdShell(CmdShell):
                                              args,
                                              specific_options=specific_options,
                                              specific_arguments=specific_arguments)
+
+    def is_action_argument(self, line, key):
+        args = self.__get_action_args(line)
+        if key in args:
+            return True
+        specific_options = self.get_resource_specific_options(args,
+                                                              line,
+                                                              callback=self.__add_resource_specific_options)
+        for arg_key in specific_options.keys():
+             if key in specific_options[arg_key]:
+                 return True
+        return False
+

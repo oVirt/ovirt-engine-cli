@@ -405,7 +405,12 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
     def __do_complete(self, text, state, content=[]):
         """Return the next possible completion for 'text'"""
+        if text.startswith('--'):
+            text = text.strip()[2:]
         if state == 0:
+            self.current_cmd = None
+            self.cmd_line = None
+            self.has_cmd_and_entity = False
             if self.__input_buffer != '':
                 if not self.__input_buffer.endswith(readline.get_line_buffer()):
                     origline = self.__input_buffer + (' ' + readline.get_line_buffer()) \
@@ -426,11 +431,14 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
             if begidx > 0:
                 cmd, args, foo = self.parseline(line)
-                del args, foo
                 if cmd == '':
                     compfunc = self.completedefault
                 else:
+                    entity, args, foo = self.parseline(args)
+                    if entity != None and args != None and args != '':
+                        self.has_cmd_and_entity = True
                     try:
+                        self.current_cmd = cmd
                         compfunc = getattr(self, 'complete_' + cmd)
                     except AttributeError:
                         compfunc = self.completedefault
@@ -441,8 +449,18 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             elif content == None:
                 self.completion_matches = []
             else:
+                self.cmd_line = line
                 self.completion_matches = compfunc(text, line, begidx, endidx)
         try:
+            if self.has_cmd_and_entity and text != '' and len(self.completion_matches) == 1:
+                retval =  self.completion_matches[state]
+                is_parameter = False
+                if retval != None and self.current_cmd != None and self.cmd_line != None:
+                    evalfunc = getattr(self, 'is_' + self.current_cmd + '_argument')
+                    if evalfunc:
+                        is_parameter = evalfunc(self.cmd_line, retval)
+                if retval != None and is_parameter == True and not retval.startswith('--'):
+                    return '--' + retval
             return self.completion_matches[state]
         except IndexError:
             return None

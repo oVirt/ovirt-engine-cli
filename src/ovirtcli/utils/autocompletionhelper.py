@@ -74,7 +74,8 @@ class AutoCompletionHelper(object):
     def _get_verb_replecations(container, text):
         times = 0
         for f in container:
-            if text and f.startswith(text):
+            if text and f.startswith(text if not text.startswith('--')
+                                                       else text.strip()[2:]):
                 times += 1
                 if times > 2: break
         return times
@@ -108,7 +109,8 @@ class AutoCompletionHelper(object):
                     repl = AutoCompletionHelper._get_verb_replecations(mp.keys(), s_text)
                     i_completions = [ f + ' ' if text in mp.keys() or repl == 1 else f
                                     for f in mp.keys()
-                                    if f.startswith(s_text)
+                                    if f.startswith(s_text if not s_text.startswith('--')
+                                                       else text.strip()[2:])
                                     ]
                 else:
                     obj = spl[1].strip()
@@ -119,7 +121,8 @@ class AutoCompletionHelper(object):
                                                                      or (len(mp[obj]) == 2 and 'None' in mp[obj]) == 1
                                      else f
                                     for f in mp[obj]
-                                    if f != 'None' and f.startswith(s_text)
+                                    if f != 'None' and f.startswith(s_text  if not s_text.startswith('--')
+                                                       else text.strip()[2:])
                                     ]
 
                 return i_completions
