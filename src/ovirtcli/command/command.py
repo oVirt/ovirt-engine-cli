@@ -125,6 +125,10 @@ class OvirtCommand(Command):
                                 for param_period in spplited_param_data:
                                     if spplited_param_data[-1] == param_period:
                                         if hasattr(obj_params_set_cand, param_period):
+                                            if getattr(obj_params_set_cand, param_period) != None:
+                                                getattr(obj, props[i]).append(obj_params_set_cand)
+                                                obj_params_set_cand = params_set_cand.factory()
+                                                root_obj_params_set_cand = obj_params_set_cand
                                             setattr(obj_params_set_cand, param_period,
                                                     self.__try_parse(param_data[1].strip()))
                                         else:
