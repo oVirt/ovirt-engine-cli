@@ -22,7 +22,7 @@ from cli.messages import Messages
 class StatusCommand(OvirtCommand):
 
     name = 'status'
-    description = 'shows status and connection info'
+    description = 'shows last command status'
     helptext = """\
         == Usage ==
 
@@ -30,8 +30,7 @@ class StatusCommand(OvirtCommand):
 
         == Description ==
 
-        Show the exist status of the last command and the status of the
-        connection to oVirt manager (including version).
+        Shows the exist status of the last command.
         """
 
     def execute(self):
