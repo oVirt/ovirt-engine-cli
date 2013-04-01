@@ -20,6 +20,7 @@ import os
 import cmd
 import signal
 import readline
+import re
 
 from ovirtcli.shell.actioncmdshell import ActionCmdShell
 from ovirtcli.shell.connectcmdshell import ConnectCmdShell
@@ -163,7 +164,15 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             self.cmdloop()
 
     def precmd(self, line):
-        return cmd.Cmd.precmd(self, line.lstrip())
+        return cmd.Cmd.precmd(self, self.normalize(line))
+
+    def normalize(self, line):
+        normalized = line.lstrip()
+        rg = re.compile('((?:[a-z][a-z]+))( )(-)(-)(help)',re.IGNORECASE|re.DOTALL)
+        m = rg.search(normalized)
+        if m:
+            normalized = 'help ' + m.group(1)
+        return normalized
 
     def parseline(self, line):
         ret = cmd.Cmd.parseline(self, line)
