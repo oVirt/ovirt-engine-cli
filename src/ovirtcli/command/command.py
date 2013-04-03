@@ -423,7 +423,7 @@ class OvirtCommand(Command):
                 err_str = Messages.Error.NO_SUCH_CONTEXT
                 if context_variants:
                     err_str = err_str + (Messages.Info.POSSIBALE_ARGUMENTS_COMBINATIONS
-                                         + str(context_variants))
+                                         % str(context_variants))
                 self.error(err_str % resource)
 
         elif isinstance(resource, brokers.Base):
