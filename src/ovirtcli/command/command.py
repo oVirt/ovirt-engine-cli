@@ -101,10 +101,9 @@ class OvirtCommand(Command):
 
     def __do_set_data(self, obj, prop, fq_prop, val):
         """INTERNAL: set data in to object based on 'prop' map segmentation"""
-        if prop.find('-') != -1:
-            props = prop.split('-')
-            props_len = len(props)
-
+        props = prop.split('-')
+        props_len = len(props)
+        if props_len > 1 or (props_len == 1 and hasattr(obj, prop)):
             for i in range(props_len):
                 if props[i] == 'type': props[i] = 'type_'
                 if i == (props_len - 1) and hasattr(obj, props[i]) and type(getattr(obj, props[i])) != list:
