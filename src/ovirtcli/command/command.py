@@ -112,7 +112,7 @@ class OvirtCommand(Command):
                             obj_params_set_cand = params_set_cand.factory()
                             root_obj_params_set_cand = obj_params_set_cand
                         else:
-                            self.error(Messages.Error.NO_SUCH_TYPE) % props[i]
+                            self.error(Messages.Error.NO_SUCH_TYPE % props[i])
 
                         if not val:
                             self.error(Messages.Error.INVALID_COLLECTION_BASED_OPTION_SYNTAX % prop)
