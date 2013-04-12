@@ -150,7 +150,7 @@ class UpdateCommand(OvirtCommand):
             self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
         elif hasattr(resource, 'update'):
             obj = self.update_object_data(resource, opts)
-            result = obj.update()
+            result = self.execute_method(obj, 'update', opts)
         else:
             self.error(Messages.Error.OBJECT_IS_IMMUTABLE % (args[0], args[1]))
 
