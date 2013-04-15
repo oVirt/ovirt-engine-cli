@@ -161,7 +161,7 @@ class ActionCommand(OvirtCommand):
         args = self.arguments
         opts = self.options
 
-        if not (TypeHelper.isKnownType(args[0])):
+        if not (TypeHelper.isKnownType(args[0])) and ParseHelper.getXmlType(args[0]) == None:
             self.error(Messages.Error.NO_SUCH_TYPE % args[0])
 
         scope = '%s:%s' % (ParseHelper.getXmlWrapperType(args[0]), args[2])
