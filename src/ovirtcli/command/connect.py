@@ -44,16 +44,17 @@ class ConnectCommand(OvirtCommand):
 
         The arguments are:
 
-         * url          - The URL to connect to (http[s]://server[:port]/api).
-         * username     - The user to connect as. (user@domain).
-         * password     - The password to use.
-         * [key-file]   - The client PEM key file to use.
-         * [cert-file]  - The client PEM certificate file to use.
-         * [ca-file]    - The server CA certificate file to use.
-         * [filter]     - Enables user permission based filtering.
-         * [insecure]   - Allow connecting to SSL sites without certificates.
-         * [port]       - The port to use (if not specified in url).
-         * [timeout]    - The request timeout.
+         * url               - The URL to connect to (http[s]://server[:port]/api).
+         * username          - The user to connect as. (user@domain).
+         * password          - The password to use.
+         * [key-file]        - The client PEM key file to use.
+         * [cert-file]       - The client PEM certificate file to use.
+         * [ca-file]         - The server CA certificate file to use.
+         * [filter]          - Enables user permission based filtering.
+         * [insecure]        - Allow connecting to SSL sites without certificates.
+         * [port]            - The port to use (if not specified in url).
+         * [timeout]         - The request timeout.
+         * [session-timeout] - The authentication session timeout (0 disables session expiry).
         """
 
     def execute(self):
@@ -69,6 +70,7 @@ class ConnectCommand(OvirtCommand):
         ca_file = self.xNoneType(settings.get('ovirt-shell:ca_file'))
         port = settings.get('ovirt-shell:port')
         timeout = settings.get('ovirt-shell:timeout')
+        session_timeout = settings.get('ovirt-shell:session_timeout')
         debug = settings.get('cli:debug')
         insecure = settings.get('ovirt-shell:insecure')
         dont_validate_cert_chain = settings.get('ovirt-shell:dont_validate_cert_chain')
@@ -104,6 +106,7 @@ class ConnectCommand(OvirtCommand):
                                              filter=filter_,
                                              port=port if port != -1 else None,
                                              timeout=timeout if timeout != -1 else None,
+                                             session_timeout=session_timeout if session_timeout != -1 else None,
                                              debug=debug),
                                          url=url)
 

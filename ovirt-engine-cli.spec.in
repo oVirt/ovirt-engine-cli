@@ -15,7 +15,7 @@ BuildRequires: python-kitchen
 BuildArch: noarch
 
 Requires: python
-Requires: ovirt-engine-sdk >= 3.2.0.10
+Requires: ovirt-engine-sdk >= 3.2.0.11
 Requires: pexpect
 Requires: python-setuptools
 Requires: python-ply
