@@ -58,6 +58,7 @@ class OvirtCliSettings(Settings):
         ('ovirt-shell:filter', boolean, False),
         ('ovirt-shell:port', int, -1),
         ('ovirt-shell:timeout', int, -1),
+        ('ovirt-shell:session_timeout', int, -1),
         ('ovirt-shell:input_format', enum('xml'), 'xml'),
         ('ovirt-shell:output_format', enum('xml', 'text'), 'text'),
         ('ovirt-shell:wide', boolean, False),
@@ -85,5 +86,6 @@ class OvirtCliSettings(Settings):
         'ovirt-shell:insecure',
         'ovirt-shell:dont_validate_cert_chain',
         'ovirt-shell:filter',
-        'ovirt-shell:timeout'
+        'ovirt-shell:timeout',
+        'ovirt-shell:session_timeout'
     ]

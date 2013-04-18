@@ -145,4 +145,8 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.settings['ovirt-shell:insecure'] = False
         self.settings['ovirt-shell:port'] = -1
         self.settings['ovirt-shell:timeout'] = -1
-        self.settings['cli:debug'] = False
+        self.settings['ovirt-shell:session_timeout'] = -1
+        # do not reset 'debug' on /disconnect as it loaded
+        # from the .rc config file and not set-able via /connect
+        # command
+        # self.settings['cli:debug'] = False

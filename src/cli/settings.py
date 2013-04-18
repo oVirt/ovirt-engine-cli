@@ -153,10 +153,10 @@ class Settings(dict):
         os.rename(ftmp, fname)
 
     def set_file_permissions(self, f):
-        #Set UID bit
-        #Owner has read permission
-        #Owner has write permission
-        #Do not dump the file.
+        # Set UID bit
+        # Owner has read permission
+        # Owner has write permission
+        # Do not dump the file.
         os.chmod(f,
                  stat.S_ISGID |
                  stat.S_IRUSR |
