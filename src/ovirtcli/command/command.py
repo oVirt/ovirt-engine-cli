@@ -95,6 +95,10 @@ class OvirtCommand(Command):
         except:
             return param
 
+    def __do_set_primitive_list_data(self, obj, prop, val):
+        for param in str(val).split(','):
+            getattr(obj, prop).append(param)
+
     def __do_set_data(self, obj, prop, fq_prop, val):
         """INTERNAL: set data in to object based on 'prop' map segmentation"""
         if prop.find('-') != -1:
@@ -112,7 +116,8 @@ class OvirtCommand(Command):
                             obj_params_set_cand = params_set_cand.factory()
                             root_obj_params_set_cand = obj_params_set_cand
                         else:
-                            self.error(Messages.Error.NO_SUCH_TYPE % props[i])
+                            self.__do_set_primitive_list_data(obj, props[i], val)
+                            return
 
                         if not val:
                             self.error(Messages.Error.INVALID_COLLECTION_BASED_OPTION_SYNTAX % prop)
@@ -120,8 +125,10 @@ class OvirtCommand(Command):
                         for param in str(val).split(','):
                             obj_params_set_cand = root_obj_params_set_cand
                             if not param.startswith(props[i] + '.'):
-                               self.error(Messages.Error.INVALID_OPTION_SEGMENT % \
-                                                       (param, prop))
+                                self.error(
+                                       Messages.Error.INVALID_OPTION_SEGMENT % \
+                                       (param, prop)
+                                )
                             param_data = param.replace(props[i] + '.', '').split('=')
                             if len(param_data) == 2:
                                 spplited_param_data = param_data[0].split('.')
