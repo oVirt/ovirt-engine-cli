@@ -57,8 +57,11 @@ class MethodHelper():
         if not groupOptions:
             if args:
                 if len(args) == 3:
-                    cand = expender(args[1], module, method) if expendNestedTypes\
-                                                             else args[1]
+                    if expendNestedTypes:
+                        cand = expender(args[1], module, method, [])
+                    else:
+                        cand = args[1]
+
                     cand = ", ".join(cand) if type(cand) == list else cand
 
                     if not holder.has_key(args[2]):
@@ -82,8 +85,10 @@ class MethodHelper():
         else:
             if args:
                 if len(args) == 3:
-                    cand = expender(args[1], module, method) if expendNestedTypes\
-                                                             else args[1]
+                    if expendNestedTypes:
+                        cand = expender(args[1], module, method, [])
+                    else:
+                        cand = args[1]
                     cand = cand if type(cand) == list else [cand]
 
                     if not holder.has_key(args[2]):
@@ -115,12 +120,24 @@ class MethodHelper():
                 holder[k] = ", ".join(sorted(new_val))
 
     @staticmethod
-    def __expend_nested_type(type_name, module, method):
+    def __expend_nested_type(type_name, module, method, expended_types):
+        """Recursive method's args types resolution"""
+        getMethodArgs = MethodHelper.getMethodArgs
+        expend_nested_type = MethodHelper.__expend_nested_type
+
         from ovirtcli.utils.typehelper import TypeHelper
         typ = TypeHelper.getDecoratorType(type_name)
+
         if typ:
-            return MethodHelper.getMethodArgs(module, typ, method, drop_self=True)
-        return type_name
+            expended_types_tmp = getMethodArgs(module, typ, method, drop_self=True)
+            if len(expended_types_tmp) > 1:
+                for item in expended_types_tmp:
+                    expend_nested_type(item, module, method, expended_types)
+            elif len(expended_types_tmp) > 0:
+                expended_types.append(expended_types_tmp[0])
+        else:
+            expended_types.append(type_name)
+        return expended_types
 
     @staticmethod
     def get_documented_arguments(method_ref, as_params_collection=False, spilt_or=False):

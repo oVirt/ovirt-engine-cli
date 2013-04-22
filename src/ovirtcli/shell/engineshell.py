@@ -33,16 +33,17 @@ from ovirtcli.shell.disconnectcmdshell import DisconnectCmdShell
 from ovirtcli.shell.consolecmdshell import ConsoleCmdShell
 from ovirtcli.shell.pingcmdshell import PingCmdShell
 from ovirtcli.shell.statuscmdshell import StatusCmdShell
-from ovirtcli.settings import OvirtCliSettings
 from ovirtcli.shell.clearcmdshell import ClearCmdShell
-
-from cli.command.help import HelpCommand
-from ovirtcli.prompt import PromptMode
+from ovirtcli.shell.summarycmdshell import SummaryCmdShell
 from ovirtcli.shell.filecmdshell import FileCmdShell
 from ovirtcli.shell.historycmdshell import HistoryCmdShell
-from cli.messages import Messages
 from ovirtcli.shell.infocmdshell import InfoCmdShell
-from ovirtcli.shell.summarycmdshell import SummaryCmdShell
+
+from ovirtcli.settings import OvirtCliSettings
+from ovirtcli.prompt import PromptMode
+
+from cli.command.help import HelpCommand
+from cli.messages import Messages
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
@@ -168,7 +169,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
     def normalize(self, line):
         normalized = line.lstrip()
-        rg = re.compile('((?:[a-z][a-z]+))( )(-)(-)(help)',re.IGNORECASE|re.DOTALL)
+        rg = re.compile('((?:[a-z][a-z]+))( )(-)(-)(help)', re.IGNORECASE | re.DOTALL)
         m = rg.search(normalized)
         if m:
             normalized = 'help ' + m.group(1)
@@ -177,6 +178,13 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
     def parseline(self, line):
         ret = cmd.Cmd.parseline(self, line)
         return ret
+
+    def completenames(self, text, *ignored):
+        dotext = 'do_' + text
+        res = [a[3:] for a in self.get_names() if a.startswith(dotext)]
+        if res and len(res) == 1:
+            res[0] = res[0] + ' '
+        return res
 
     def complete(self, text, state):
         content = []
