@@ -62,6 +62,9 @@ def launch_spice_client(host, host_subject, port, secport, ticket, certurl, titl
         args.extend(['-p', str(port)])
         if secport:
             args.extend([ '-s', str(secport) ])
+            args.extend(['--ca-file', certfile])
+            if host_subject and host_subject != '':
+                args.extend(['--host-subject', host_subject])
         args.extend(['-w', ticket])
         args.extend(['-t', title])
     pid, pstdin = util.spawn(cmd, args, debug)
