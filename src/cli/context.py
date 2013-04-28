@@ -19,6 +19,11 @@ import sys
 import logging
 import traceback
 
+import codecs
+import cStringIO
+from kitchen.text.converters import getwriter
+import getpass
+
 from StringIO import StringIO
 from subprocess import Popen, PIPE
 
@@ -28,12 +33,10 @@ from cli.settings import Settings
 from cli.parser import Parser
 from cli.platform import Terminal
 from cli import platform
-import codecs
-import cStringIO
-from kitchen.text.converters import getwriter
 from cli.executionmode import ExecutionMode
-import getpass
 
+from ovirtsdk.infrastructure.errors import \
+    RequestError, ConnectionError, AmbiguousQueryError
 
 class ExecutionContext(object):
     """A CLI execution context."""
@@ -190,15 +193,22 @@ class ExecutionContext(object):
             else:
                 self.status = self.OK
 
+
+    def __error_to_string(self, err):
+        """Converts an exception to string and normalizing it."""
+        if err:
+            return str(err).replace("[ERROR]::", "")
+        return err
+
     def _handle_exception(self, e):
-        from ovirtsdk.infrastructure.errors import RequestError, ConnectionError
         """Handle an exception. Can be overruled in a subclass."""
         if isinstance(e, KeyboardInterrupt):
             self.status = self.INTERRUPTED
             sys.stdout.write('\n')
-        elif isinstance(e, CommandError) or isinstance(e, RequestError):
+        elif isinstance(e, CommandError) or isinstance(e, RequestError) \
+            or isinstance(e, AmbiguousQueryError):
             self.status = getattr(e, 'status', self.COMMAND_ERROR)
-            sys.stderr.write('\nerror: %s\n\n' % str(e))
+            sys.stderr.write('\nerror: %s\n\n' % self.__error_to_string(e))
             if hasattr(e, 'help'):
                 sys.stderr.write('%s\n' % e.help)
         elif isinstance(e, SyntaxError):
