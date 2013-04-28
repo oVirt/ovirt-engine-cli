@@ -196,9 +196,19 @@ class ExecutionContext(object):
 
     def __error_to_string(self, err):
         """Converts an exception to string and normalizing it."""
-        if err:
-            return str(err).replace("[ERROR]::", "")
-        return err
+        err_patterns = [
+            "[ERROR]::",
+            "oVirt API connection failure, "
+        ]
+
+        err_str = str(err)
+        for err_pattern in err_patterns:
+            if err_str.find(err_pattern) <> -1:
+                err_str = err_str.replace(
+                              err_pattern, ""
+                          )
+
+        return err_str
 
     def _handle_exception(self, e):
         """Handle an exception. Can be overruled in a subclass."""
@@ -213,13 +223,12 @@ class ExecutionContext(object):
                 sys.stderr.write('%s\n' % e.help)
         elif isinstance(e, SyntaxError):
             self.status = getattr(e, 'status', self.SYNTAX_ERROR)
-            sys.stderr.write('\nerror: %s\n\n' % str(e))
+            sys.stderr.write('\nerror: %s\n\n' % self.__error_to_string(e))
             if hasattr(e, 'help'):
                 sys.stderr.write('%s\n' % e.help)
         elif isinstance(e, ConnectionError):
             self.status = getattr(e, 'status', self.COMMUNICATION_ERROR)
-            sys.stderr.write('\nerror: %s\n\n' % str(e)\
-                 .replace("[ERROR]::oVirt API connection failure, ", ""))
+            sys.stderr.write('\nerror: %s\n\n' % self.__error_to_string(e))
             if hasattr(e, 'help'):
                 sys.stderr.write('%s\n' % e.help)
         else:
@@ -227,7 +236,7 @@ class ExecutionContext(object):
             if self.settings['cli:debug']:
                 sys.stderr.write(traceback.format_exc())
             else:
-                sys.stderr.write('\nunknown error: %s\n\n' % str(e))
+                sys.stderr.write('\nunknown error: %s\n\n' % self.__error_to_string(e))
 
     def _read_command(self):
         """Parse input until we can parse at least one full command, and
