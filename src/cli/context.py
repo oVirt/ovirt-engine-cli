@@ -331,14 +331,14 @@ class ExecutionContext(object):
 
     def _setup_io_streams(self, redirections=[]):
         """INTERNAL: set up standard input/output/error."""
-        for type, arg in redirections:
-            if type == '<':
+        for type_, arg in redirections:
+            if type_ == '<':
                 self.terminal.stdin = file(arg)
-            elif type == '<<':
+            elif type_ == '<<':
                 self.terminal.stdin = StringIO(arg)
-            elif type == '>':
+            elif type_ == '>':
                 self.terminal.stdout = file(arg, 'w')
-            elif type == '>>':
+            elif type_ == '>>':
                 self.terminal.stdout = file(arg, 'a')
 
     def _restore_io_streams(self):
