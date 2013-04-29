@@ -46,6 +46,11 @@ class TextFormatter(Formatter):
 
     name = 'text'
 
+    # list of complex types that should be treated as
+    # primitives (e.g should be wrapped to string at runtime)
+    complex_type_exceptions = [params.datetime]
+
+
     def _get_fields(self, typ):
         assert typ is not None
         return typ.__dict__.keys()
@@ -89,7 +94,11 @@ class TextFormatter(Formatter):
                         new_field = field if resource_context is None else resource_context.lower() + '.' + field
                         width0 = max(width0, len(new_field))
                 else:
-                    if hasattr(params, type(value).__name__) or hasattr(brokers, type(value).__name__):
+                    value_type = type(value)
+                    if (hasattr(params, value_type.__name__) \
+                        and value_type not in TextFormatter.complex_type_exceptions) \
+                        or hasattr(brokers, value_type.__name__):
+
                         if resource_context is not None:
                             width0 = max(width0, self.__get_max_field_width(resource=value,
                                                                             fields_exceptions=fields_exceptions,
@@ -165,7 +174,11 @@ class TextFormatter(Formatter):
 
         for field in fields:
             if field not in fields_exceptions:
-                value = resource.__dict__[field]
+
+                value = getattr(resource, field)
+                if type(value) in TextFormatter.complex_type_exceptions:
+                    value = str(value)
+
                 if isinstance(value, list):
                     value_list = value
                     for item in value_list:
