@@ -35,8 +35,6 @@ from cli.platform import Terminal
 from cli import platform
 from cli.executionmode import ExecutionMode
 
-from ovirtsdk.infrastructure.errors import \
-    RequestError, ConnectionError, AmbiguousQueryError
 
 class ExecutionContext(object):
     """A CLI execution context."""
@@ -211,6 +209,9 @@ class ExecutionContext(object):
         return err_str
 
     def _handle_exception(self, e):
+        from ovirtsdk.infrastructure.errors import \
+            RequestError, ConnectionError, AmbiguousQueryError
+
         """Handle an exception. Can be overruled in a subclass."""
         if isinstance(e, KeyboardInterrupt):
             self.status = self.INTERRUPTED
