@@ -149,12 +149,20 @@ class UpdateCommand(OvirtCommand):
         if resource is None:
             self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
         elif hasattr(resource, 'update'):
-            obj = self.update_object_data(resource, opts)
+            obj = self.update_object_data(self.__create_set_superclass(resource), opts)
             result = self.execute_method(obj, 'update', opts)
         else:
             self.error(Messages.Error.OBJECT_IS_IMMUTABLE % (args[0], args[1]))
 
         self.context.formatter.format(self.context, result)
+
+    def __create_set_superclass(self, resource):
+        """Create an instance of param object."""
+        param_obj = type(resource.superclass).factory()
+        if hasattr(param_obj, 'id'):
+            setattr(param_obj, 'id', getattr(resource, 'id'))
+        resource.superclass = param_obj
+        return resource
 
     def show_help(self):
         """Show help for "update"."""
