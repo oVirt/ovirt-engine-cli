@@ -50,6 +50,7 @@ class Messages():
         INVALID_KWARGS_FORMAT = '"%s" is invalid --kwargs argument, valid format is "x=y;z=q;...".'
         INVALID_KWARGS_CONTENT = '--kwargs constraint cannot be empty.'
         MISSING_CONFIGURATION_VARIABLE = 'missing configuration variable: %s.'
+        UNSUPPORTED_ATTRIBUTE = 'object construction failure, this could happen if you using unsupported option, please see help for the given command for more details.'
     class Warning():
         CANNOT_FETCH_HOST_CERT_SUBJECT = 'could not fetch host certificate info.'
         CANNOT_FETCH_HOST_CERT_SUBJECT_LEGACY_SDK = 'could not fetch host certificate info cause used backend/sdk does not support it.'

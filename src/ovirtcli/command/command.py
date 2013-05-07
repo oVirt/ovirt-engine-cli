@@ -473,7 +473,10 @@ class OvirtCommand(Command):
                         # TODO: throw error if param is mandatory
                         pass
 
-                result = method(**method_args)
+                try:
+                    result = method(**method_args)
+                except AttributeError:
+                    self.error(Messages.Error.UNSUPPORTED_ATTRIBUTE)
             else:
                 result = method()
             return result
