@@ -53,6 +53,20 @@ popd
 %doc LICENSE
 
 %changelog
+* Sun May  8 2013 Michael Pasternak <mpastern@redhat.com> - 3.2.0.12-1
+ - fail nicely on AttributeError #959740
+ - datetime.datetime object has no attribute __dict__ #957519
+ - error in "update network --cluster-identifier --usages-usage" #950993
+ - spicec does not pass cert_file #953582
+ - list/Show suggests parent+child as single param #950398
+ - error type "brick" does not exist." on replace brick
+ - unclear error message when using unsupported 2 levels attribute(#949642)
+ - correlation_id is not attached to update command(#950441)
+ - implement Session-TTL header support #928314
+ - connect --help will log the user out of the disconnected cli #890340
+ - "help add" fails to format the error when number of provided args in incorrect #922018
+ - --vm-os-boot doesn't send the order of devices #921464
+
 * Sun Mar  10 2013 Michael Pasternak <mpastern@redhat.com> - 3.2.0.11-1
  - fix broken pipe at script execution
  - add flag --dont-validate-cert-chain #915231
