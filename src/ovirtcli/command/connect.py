@@ -127,6 +127,15 @@ class ConnectCommand(OvirtCommand):
             self.__cleanContext()
             self.context._clean_settings()
             self.error(str(e))
+        except TypeError, e:
+            self.__cleanContext()
+            option, value, expected = self.__normalize_typeerror(e)
+            self.error(
+                   Messages.Error.INVALID_ARGUMENT_TYPE % (
+                               option,
+                               value,
+                               expected)
+            )
         except Exception, e:
             self.__cleanContext()
             self.error(str(e))
@@ -134,6 +143,19 @@ class ConnectCommand(OvirtCommand):
             # do not log connect command details as it may be
             # a subject for password stealing or DOS attack
             self.__remove_history_entry()
+
+    def __normalize_typeerror(self, exception):
+            err = str(exception)
+            error = err[1:len(err) - 1]
+            error = error.replace("\"", "")
+            error = error.replace("'", "")
+            splitted = error.split(', ')
+            option_value = splitted[0].split('=')
+            option = option_value[0].upper()
+            value = option_value[1]
+            expected = splitted[1]
+
+            return option, value, expected
 
     def __test_connectivity(self):
         return self.context.connection.test(throw_exception=True)
