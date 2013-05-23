@@ -72,6 +72,7 @@ class ExecutionContext(object):
         self._setup_logging()
         self._load_settings()
         self.setup_commands()
+        self.__setup_pager()
 
     def _setup_logging(self):
         """Configure logging."""
@@ -275,6 +276,12 @@ class ExecutionContext(object):
                 break
         return command
 
+    def __setup_pager(self):
+        pager = self.settings.get('cli:pager')
+        if not pager:
+            pager = platform.get_pager()
+        self.__pager = pager
+
     def _execute_command(self, parsed):
         """INTERNAL: execute a command."""
 #        if parsed[0] == '!':
@@ -282,11 +289,10 @@ class ExecutionContext(object):
 #            return
         name, args, opts, redirections, pipeline = parsed
         if self.settings.get('cli:autopage'):
-            pager = self.settings.get('cli:pager', platform.get_pager())
             if pipeline:
-                pipeline += '| %s' % pager
+                pipeline += '| %s' % self.__pager
             else:
-                pipeline = pager
+                pipeline = self.__pager
         command = self._create_command(name, args, opts)
         self.command = command
         self._setup_pipeline(pipeline)

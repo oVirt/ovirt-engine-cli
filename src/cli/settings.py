@@ -22,6 +22,8 @@ import stat
 from fnmatch import fnmatch
 from ConfigParser import ConfigParser
 from cli import platform
+import types
+import sys
 
 
 class enum(object):
@@ -85,7 +87,13 @@ class Settings(dict):
         for pattern, validator, default in self.settings:
             if not fnmatch(key, pattern):
                 continue
-            value = validator(value)
+            value = self.__normalazie_value(value)
+            if value:
+                try:
+                    value = validator(value)
+                except ValueError:
+                    # delegate type related errors handling to SDK
+                    pass
             found = True
         if not found:
             raise KeyError, 'unknown setting: %s' % key
@@ -95,10 +103,17 @@ class Settings(dict):
             callback(key, value)
         super(Settings, self).__setitem__(key, value)
 
+    def __normalazie_value(self, value):
+        """Converts string value to python type """
+        if value:
+            if type(value) == types.StringType and value == 'None':
+                return None
+        return value
+
     def get_defaults(self):
         """Return a dictionary with the default settings."""
         return dict(((p, d) for p, t, d in self.settings
-                     if d is not None and '*' not in p))
+                     if '*' not in p))
 
     def load_config_file(self):
         """
