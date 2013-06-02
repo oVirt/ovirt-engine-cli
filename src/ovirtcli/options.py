@@ -53,6 +53,8 @@ class OvirtCliOptionParser(OptionParser):
                         help='automatically connect')
         self.add_option('-f', '--file', metavar='FILE',
                         help='read commands from FILE instead of stdin')
+        self.add_option('-e', '--extended-prompt', action='store_true',
+                        help='display extra information in the prompt')
         self.disable_interspersed_args()
 
         # list of hidden app. options (long format)

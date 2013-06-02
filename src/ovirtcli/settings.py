@@ -67,11 +67,13 @@ class OvirtCliSettings(Settings):
         ('ovirt-shell:fields.*', str, None),
         ('ovirt-shell:ps1.connected', str, '[' + PRODUCT + ' shell %(version)s (connected)]# '),
         ('ovirt-shell:ps2.connected', str, '[' + PRODUCT + ' shell (connected)]# '),
+        ('ovirt-shell:ps3.connected', str, '[' + PRODUCT + ' shell (connected@%(host)s)]# '),
         ('ovirt-shell:ps1.disconnected', str, '[%s shell (disconnected)]# ' % PRODUCT),
         ('ovirt-shell:commands', str, '%s shell commands:' % PRODUCT),
         ('ovirt-shell:misc_commands', str, '%s shell commands:' % PRODUCT),
         ('ovirt-shell:version', str, ''),
-        ('ovirt-shell:prompt', str, '')
+        ('ovirt-shell:prompt', str, ''),
+        ('ovirt-shell:extended_prompt', boolean, False)
     ]
 
     # config file white list
@@ -87,5 +89,6 @@ class OvirtCliSettings(Settings):
         'ovirt-shell:dont_validate_cert_chain',
         'ovirt-shell:filter',
         'ovirt-shell:timeout',
-        'ovirt-shell:session_timeout'
+        'ovirt-shell:session_timeout',
+        'ovirt-shell:extended_prompt'
     ]

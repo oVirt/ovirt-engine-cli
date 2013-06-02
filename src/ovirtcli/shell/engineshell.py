@@ -45,6 +45,9 @@ from ovirtcli.prompt import PromptMode
 from cli.command.help import HelpCommand
 from cli.messages import Messages
 
+from urlparse import urlparse
+
+
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
                   RemoveCmdShell, AddCmdShell, DisconnectCmdShell, \
@@ -150,7 +153,19 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                 self.__org_prompt = self.prompt
             self.prompt = self.context.settings.get('ovirt-shell:ps1.disconnected')
         elif mode == PromptMode.Connected:
-            self.prompt = self.context.settings.get('ovirt-shell:ps2.connected')
+            self.prompt = self.__get_connected_prompt()
+
+    def __get_connected_prompt(self):
+        if self.context.settings.get('ovirt-shell:extended_prompt'):
+            url = self.context.settings.get('ovirt-shell:url')
+            url_obj = urlparse(url)
+            if url_obj and hasattr(url_obj, 'hostname'):
+                return self.context.settings.get(
+                       'ovirt-shell:ps3.connected'
+                       ) % {
+                          'host':url_obj.hostname
+                       }
+        return self.context.settings.get('ovirt-shell:ps2.connected')
 
     def onecmd_loop(self, s):
         opts, args = self.parser.parse_args()
