@@ -106,7 +106,8 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             command = s.split(' ')[0]
             if command == '' and not self.__input_buffer:
                 pass
-            elif self.context.connection == None and command not in EngineShell.OFF_LINE_CONTENT:
+            elif self.context.connection == None and \
+                    command.strip() not in EngineShell.OFF_LINE_CONTENT:
                 self._error(Messages.Error.INVALID_COMMAND % command)
             else:
                 if s.endswith('\\') and s != 'EOF':
