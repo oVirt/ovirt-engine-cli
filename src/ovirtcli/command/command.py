@@ -294,7 +294,7 @@ class OvirtCommand(Command):
 
         err_str = Messages.Error.NO_SUCH_COLLECTION
         if context_variants:
-            err_str = err_str + (Messages.Info.POSSIBALE_ARGUMENTS_COMBINATIONS +
+            err_str = err_str + (Messages.Info.POSSIBALE_ARGUMENTS_COMBINATIONS %
                                  str(context_variants))
         self.error(err_str % typ)
 
@@ -349,7 +349,7 @@ class OvirtCommand(Command):
             err_str = Messages.Error.NO_SUCH_TYPE_OR_ARS_NOT_VALID
             if context_variants:
                 err_str = err_str + (Messages.Info.POSSIBALE_ARGUMENTS_COMBINATIONS
-                                      + str(context_variants))
+                                      % str(context_variants))
             self.error(err_str % candidate)
 
         return None
