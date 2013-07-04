@@ -85,8 +85,6 @@ class ExecutionContext(object):
         self._logger = logger
 
     def __collect_connection_data(self):
-        self.__exclude_app_options()
-
         try:
             if self.settings['ovirt-shell:url'] == '' and \
             not self.__is_option_specified_in_cli_args('--url')  and \
@@ -134,6 +132,7 @@ class ExecutionContext(object):
             self.settings.write_example_config_file()
         elif old_format:
             self.settings.write_config_file()
+        self.__exclude_app_options()
         if self.__is_auto_connect():
             self.__collect_connection_data()
         self.settings.add_callback('cli:debug', self._set_debug)
