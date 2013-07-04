@@ -123,7 +123,9 @@ class ExecutionContext(object):
         return False
 
     def __is_auto_connect(self):
-        return self.args and ('-c' in self.args or '--connect' in self.args)
+        return (self.args and \
+            ('-c' in self.args or '--connect' in self.args)) or \
+        self.settings.get('cli:autoconnect')
 
     def _load_settings(self):
         """Load settings."""

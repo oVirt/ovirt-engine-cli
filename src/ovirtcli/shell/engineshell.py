@@ -168,9 +168,25 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                        }
         return self.context.settings.get('ovirt-shell:ps2.connected')
 
+
+    def __persistCmdOptions(self, opts):
+        """
+        Overrides config file options with cmdline's.
+        """
+        if opts:
+            for k, v in opts.__dict__.items():
+                if v:
+                    if self.context.settings.has_key('ovirt-shell:' + k):
+                        self.context.settings['ovirt-shell:' + k] = v
+                    elif self.context.settings.has_key('cli:' + k):
+                        self.context.settings['cli:' + k] = v
+
+
     def onecmd_loop(self, s):
         opts, args = self.parser.parse_args()
-        if opts.connect or len(args) == 0:
+        del args
+        self.__persistCmdOptions(opts)
+        if opts.connect or self.context.settings.get('cli:autoconnect'):
             self.do_clear('')
             self.do_connect(s)
             if opts.file:
@@ -254,6 +270,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
             if begidx > 0:
                 cmd, args, foo = self.parseline(line)
+                del args, foo
                 if cmd == '':
                     compfunc = self.completedefault
                 else:

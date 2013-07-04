@@ -37,7 +37,7 @@ def main():
             args = ' '.join(sys.argv[1:])
         shell.onecmd_loop(args)
     else:
-        shell.cmdloop()
+        shell.onecmd_loop('')
     ########################### __main__ #################################
 if __name__ == '__main__':
     main()

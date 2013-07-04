@@ -79,6 +79,7 @@ class OvirtCliSettings(Settings):
     # config file white list
     config_items = [
         'cli:autopage',
+        'cli:autoconnect',
         'ovirt-shell:url',
         'ovirt-shell:username',
         'ovirt-shell:password',

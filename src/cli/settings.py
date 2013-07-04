@@ -72,6 +72,7 @@ class Settings(dict):
         ('cli:debug', boolean, False),
         ('cli:verbosity', int, 0),
         ('cli:autopage', boolean, True),
+        ('cli:autoconnect', boolean, True),
         ('cli:pager', str, None)
     ]
 
