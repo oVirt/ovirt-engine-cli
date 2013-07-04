@@ -32,8 +32,7 @@ class ConnectCommand(OvirtCommand):
     helptext = """\
         == Usage ==
 
-        connect
-        connect <url> <username> <password> [command options]
+        connect [command options]
 
         == Description ==
 
@@ -42,7 +41,7 @@ class ConnectCommand(OvirtCommand):
         from their respective configuration variables. In the second form,
         the connection details are provided as arguments.
 
-        The arguments are:
+        == Arguments ==
 
          * url               - The URL to connect to (http[s]://server[:port]/api).
          * username          - The user to connect as. (user@domain).
