@@ -170,11 +170,11 @@ class MethodHelper():
                         param = splitted_line[1].replace('**', '')
 
                         if len(splitted_line) > 3 and splitted_line[3].startswith('('):
-                            typ = ''.join(splitted_line[2:3])
+                            typ = ' '.join(splitted_line[2:3])
                             if prefix.startswith('['):
                                 typ = typ + ']'
                         else:
-                            typ = ''.join(splitted_line[2:])
+                            typ = ' '.join(splitted_line[2:])
 
                         if param.find('.') != -1:
                             splitted_param = param.split('.')
