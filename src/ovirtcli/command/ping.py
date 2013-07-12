@@ -31,11 +31,11 @@ class PingCommand(OvirtCommand):
 
         == Description ==
 
-        Test the connection to the oVirt manager. This command will go out to
+        Test the connection to the %s manager. This command will go out to
         the %s manager and retrieve a remote resource. If it succeeds, you
         know that the URL, username and password are OK (note: there are few 
         optional parameters that might be needed for establishing connection).
-        """ % OvirtCliSettings.PRODUCT
+        """ % (OvirtCliSettings.PRODUCT , OvirtCliSettings.PRODUCT)
 
     def execute(self):
         connection = self.check_connection()
