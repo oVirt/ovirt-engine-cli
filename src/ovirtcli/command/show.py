@@ -138,10 +138,16 @@ class ShowCommand(OvirtCommand):
         if not (obj):
             self.error(Messages.Error.NO_SUCH_OBJECT %
                        (args[0], args[1] if len(args) > 1
-                                         else opts.values()
+                                         else self.get_object_id(opts.values())
                                               if opts else ''))
 
         self.context.formatter.format(self.context, obj)
+
+    def get_object_id(self, opts_values):
+        """Get Object Identifier."""
+        if len(opts_values) == 1:
+           return opts_values[0]
+        return opts_values
 
     def show_help(self):
         """Show help for "show"."""
