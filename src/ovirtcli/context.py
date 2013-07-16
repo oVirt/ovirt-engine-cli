@@ -38,7 +38,7 @@ class OvirtCliExecutionContext(ExecutionContext):
     REMOTE_ERROR = 10
     NOT_FOUND = 11
 
-    SDK_MODULE_NAME = "ovirt-engine-sdk"
+    SDK_MODULE_NAME = "ovirt-engine-sdk-python"
     CLI_MODULE_NAME = "ovirt-shell"
     DEFAULT_VERSION = (0, 0, 0, 0)
 
