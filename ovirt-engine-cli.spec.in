@@ -144,7 +144,7 @@ popd
 - do not write to file i/o during script execution
 - shell does not exit when using /exit/ command in script
 
-* Tue Jul 21 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.8-1
+* Sun Jul 22 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.8-1
 - implement insecure flag #848046
 - implement server identity check
 - collection-based-options definition doesnt look like cli format #833788
