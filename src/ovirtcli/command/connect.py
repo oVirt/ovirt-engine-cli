@@ -15,13 +15,15 @@
 #
 
 
+import re
+
 from ovirtcli.command.command import OvirtCommand
 from ovirtsdk.api import API
 from ovirtcli.settings import OvirtCliSettings
 from ovirtsdk.infrastructure.errors import RequestError, NoCertificatesError, \
     ConnectionError
 from cli.messages import Messages
-
+from urlparse import urlparse
 
 class ConnectCommand(OvirtCommand):
 
@@ -93,6 +95,9 @@ class ConnectCommand(OvirtCommand):
             if not password:
                 self.error(Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'password')
 
+        if not self.is_valid_url(url):
+            self.error(Messages.Error.INVALID_URL_SEGMENT % url)
+
         try:
             self.context.set_connection (API(url=url,
                                              username=username,
@@ -142,6 +147,37 @@ class ConnectCommand(OvirtCommand):
             # do not log connect command details as it may be
             # a subject for password stealing or DOS attack
             self.__remove_history_entry()
+
+    def is_valid_url(self, url):
+        if url is None:
+            return False;
+        regex = re.compile(
+            r'^(?:http)s?://' # http:// or https://
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' # domain...
+            r'localhost|' # localhost...
+            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|' # ...or ipv4
+            r'\[?[A-F0-9]*:[A-F0-9:]+\]?)' # ...or ipv6
+            r'(?::\d+)?' # optional port
+            r'(/api)' # /api
+           , re.IGNORECASE)
+        if not regex.search(url):
+            return False
+        hostname = self.get_hostname(url)
+        if not self.hostname_is_ip(hostname):
+            return True
+        return self.is_valid_ip(hostname)
+
+    def get_hostname(self, url):
+        url_obj = urlparse(url)
+        return getattr(url_obj, 'hostname')
+
+    def hostname_is_ip(self, hostname):
+        regex = re.compile(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', re.IGNORECASE)
+        return regex.search(hostname)
+
+    def is_valid_ip(self, hostip):
+        regex = re.compile(r'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$', re.IGNORECASE)
+        return regex.search(hostip)
 
     def __normalize_typeerror(self, exception):
             err = str(exception)
