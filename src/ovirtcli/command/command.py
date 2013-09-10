@@ -28,6 +28,8 @@ import itertools
 from cli.messages import Messages
 import types
 import re
+import keyword
+import __builtin__
 
 
 class OvirtCommand(Command):
@@ -133,6 +135,7 @@ class OvirtCommand(Command):
                                 spplited_param_data = param_data[0].split('.')
                                 for param_period in spplited_param_data:
                                     if spplited_param_data[-1] == param_period:
+                                        param_period = self.fixParamNameIfParamIsKeyword(param_period)
                                         if hasattr(obj_params_set_cand, param_period):
                                             if getattr(obj_params_set_cand, param_period) != None:
                                                 getattr(obj, props[i]).append(obj_params_set_cand)
@@ -186,6 +189,11 @@ class OvirtCommand(Command):
                         self.error(Messages.Error.INVALID_ARGUMENT_SEGMENT % props[i])
         else:
             self.__set_property(obj, prop, val, fq_prop)
+
+    def fixParamNameIfParamIsKeyword(self, param):
+        if param in dir(__builtin__) or keyword.iskeyword(param):
+            return param + '_'
+        return param
 
     def __set_property(self, obj, prop, val, fq_prop):
         """INTERNAL: set data in to property"""
