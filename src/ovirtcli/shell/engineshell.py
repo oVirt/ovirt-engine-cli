@@ -93,6 +93,8 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         try:
             if clear: self.do_clear('')
             return cmd.Cmd.cmdloop(self, intro)
+        except KeyboardInterrupt:
+            return self.cmdloop(intro="^C", clear=False)
         except Exception, e:
             self._error(str(e))
             return self.cmdloop(intro, clear=False)
@@ -409,5 +411,4 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         else: print self.prompt
     ############################## COMMON ################################
     def handler(self, signum, frame):
-        self.emptyline(no_prompt=True)
-        sys.exit()
+        raise KeyboardInterrupt
