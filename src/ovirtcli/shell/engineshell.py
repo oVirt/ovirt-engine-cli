@@ -38,6 +38,7 @@ from ovirtcli.shell.summarycmdshell import SummaryCmdShell
 from ovirtcli.shell.filecmdshell import FileCmdShell
 from ovirtcli.shell.historycmdshell import HistoryCmdShell
 from ovirtcli.shell.infocmdshell import InfoCmdShell
+from ovirtcli.shell.capabilitiescmdshell import CapabilitiesCmdShell
 
 from ovirtcli.settings import OvirtCliSettings
 from ovirtcli.prompt import PromptMode
@@ -53,7 +54,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   RemoveCmdShell, AddCmdShell, DisconnectCmdShell, \
                   ConsoleCmdShell, PingCmdShell, StatusCmdShell, \
                   ClearCmdShell, FileCmdShell, HistoryCmdShell, \
-                  InfoCmdShell, SummaryCmdShell):
+                  InfoCmdShell, SummaryCmdShell, CapabilitiesCmdShell):
     OFF_LINE_CONTENT = [ConnectCmdShell.NAME, HelpCommand.name, 'exit', "EOF"]
     ############################# INIT #################################
     def __init__(self, context, parser, completekey='tab', stdin=None, stdout=None):
@@ -74,6 +75,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         HistoryCmdShell.__init__(self, context, parser)
         InfoCmdShell.__init__(self, context, parser)
         SummaryCmdShell.__init__(self, context, parser)
+        CapabilitiesCmdShell.__init__(self, context, parser)
 
         self.last_output = ''
         self.__input_buffer = ''

@@ -27,6 +27,7 @@ import pkg_resources
 from ovirtcli.command.info import InfoCommand
 from ovirtcli.historymanager import HistoryManager
 from ovirtcli.command.summary import SummaryCommand
+from ovirtcli.command.capabilities import CapabilitiesCommand
 
 
 class OvirtCliExecutionContext(ExecutionContext):
@@ -52,11 +53,26 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.product_info = None
         self.sdk_version, self.cli_version, self.backend_version = self.__get_version_info()
         self.history = HistoryManager()
+        self.__capabilities = None
 
     def set_connection(self, connection, url=None):
         self.connection = connection
         self.url = url
         self.__update_backend_metadata()
+
+    def get_capabilities(self):
+        """
+        Fetches system capabilities
+
+        @return: Capabilities
+        """
+
+        # cache capabilities cause it won't change
+        # during application lifetime and deserializing
+        # this object is pretty expensive.
+        if not self.__capabilities:
+            self.__capabilities = self.connection.capabilities.list()
+        return self.__capabilities
 
     def __get_version_info(self):
         SNAPSHOT_SUFFIX = '-SNAPSHOT'
@@ -111,6 +127,7 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.add_command(InfoCommand)
         self.add_command(HistoryCommand)
         self.add_command(SummaryCommand)
+        self.add_command(CapabilitiesCommand)
 
     def __update_backend_metadata(self):
         """Return a dict with prompt variables."""
