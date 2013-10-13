@@ -20,6 +20,7 @@ from cli.error import CommandError
 from ovirtcli.format.help import Help
 from ovirtcli.utils.methodhelper import MethodHelper
 from ovirtcli.utils.multivaluedict import MultiValueDict
+from cli.warning import GenericWarning
 
 
 class Command(object):
@@ -102,8 +103,8 @@ class Command(object):
     def execute(self, context):
         """Override this method in a subclass."""
 
-    def warning(self, message):
-        self.context.terminal.stdout.write('warning: ' + message + '\n')
+    def warning(self, message, **kwargs):
+        raise GenericWarning(message, **kwargs)
 
     def write(self, message):
         self.context.terminal.stdout.write(message + '\n')

@@ -47,6 +47,8 @@ from cli.command.help import HelpCommand
 from cli.messages import Messages
 
 from urlparse import urlparse
+from ovirtcli.utils.colorhelper import ColorHelper
+from cli.executionmode import ExecutionMode
 
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
@@ -156,21 +158,55 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         elif mode == PromptMode.Disconnected or mode == PromptMode.Default:
             if not self.__org_prompt and self.prompt != "(Cmd) ":
                 self.__org_prompt = self.prompt
-            self.prompt = self.context.settings.get('ovirt-shell:ps1.disconnected')
+            self.prompt = self.__get_disconnected_prompt()
         elif mode == PromptMode.Connected:
             self.prompt = self.__get_connected_prompt()
+
+    def __get_disconnected_prompt(self):
+        dprompt = self.context.settings.get('ovirt-shell:ps1.disconnected')
+        if self.context.mode != ExecutionMode.SCRIPT \
+           and self.context.interactive:
+            dprompt = dprompt.replace(
+                          "disconnected",
+                          ColorHelper.color(
+                                "disconnected",
+                                color_=ColorHelper.RED
+                          )
+            )
+        return dprompt
 
     def __get_connected_prompt(self):
         if self.context.settings.get('ovirt-shell:extended_prompt'):
             url = self.context.settings.get('ovirt-shell:url')
             url_obj = urlparse(url)
             if url_obj and hasattr(url_obj, 'hostname'):
-                return self.context.settings.get(
-                       'ovirt-shell:ps3.connected'
-                       ) % {
-                          'host':url_obj.hostname
-                       }
-        return self.context.settings.get('ovirt-shell:ps2.connected')
+                cprompt = self.context.settings.get(
+                               'ovirt-shell:ps3.connected'
+                          ) % {
+                               'host':url_obj.hostname
+                }
+                if self.context.mode != ExecutionMode.SCRIPT \
+                   and self.context.interactive:
+                    cprompt = cprompt.replace(
+                              "connected@" + url_obj.hostname,
+                              ColorHelper.color(
+                                    'connected@' + url_obj.hostname,
+                                    color_=ColorHelper.GREEN
+                              )
+                )
+                return cprompt
+
+        cprompt = self.context.settings.get('ovirt-shell:ps2.connected')
+        if self.context.mode != ExecutionMode.SCRIPT \
+           and self.context.interactive:
+            cprompt = cprompt.replace(
+                              "connected",
+                              ColorHelper.color(
+                                 "connected",
+                                 color_=ColorHelper.GREEN
+                               )
+        )
+        return cprompt
 
 
     def __persistCmdOptions(self, opts):
@@ -296,12 +332,10 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             return None
 
     def _error(self, msg):
-        sys.stderr.write("\nerror: " + msg + "\n")
-        sys.stdout.write("\n")
+        self.context._handle_exception(SyntaxError(msg))
 
     def _print(self, msg):
-        sys.stdout.write("\n" + msg + "\n")
-        sys.stdout.write("\n")
+        self.context._pint_text(msg)
 
     def do_EOF(self, line):
         """\

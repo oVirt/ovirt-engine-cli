@@ -41,7 +41,7 @@ class Messages():
         CANNOT_CONNECT_TO_BACKEND = 'could NOT reach %s manager\n.'
         CANNOT_CONSTRUCT_COLLECTION_MEMBER_VIEW = 'cannot construct collection/member view, checked variants are:\n%s.\n'
         INVALID_DISPLAY_PROTOCOL = 'display protocol "%s" is not supported.'
-        INVALID_COMMAND = 'command "%s" not valid or not available while not connected.'
+        INVALID_COMMAND = 'command "%s" is not valid or not available while not connected.'
         INVALID_ENV_MODE_FOR_CONSOLE = 'not running in a GUI, cannot start a %s viewer.'
         INVALID_OPTION = 'option %s cannot be empty.'
         INVALID_COLLECTION_BASED_OPTION_SYNTAX = 'invalid syntax at "--%s", see help on collection based arguments for more details.'

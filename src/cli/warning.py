@@ -18,25 +18,18 @@
 from cli import compat
 
 
-class Error(Exception):
-    """Base class for python-cli errors."""
+class Warning(Exception):  # @ReservedAssignment
+    """Base class for python-cli warnings."""
 
     def __init__(self, message=None, **kwargs):
-        if message is None:
-            message = self.__doc__
+        if message is None: message = self.__doc__
         message = message + '\n' if not message.endswith('\n') \
                                  else message
-        compat.super(Error, self).__init__(message)
+        compat.super(Warning, self).__init__(message)
+
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
+class GenericWarning(Warning):
+    """Generic warning."""
 
-class ParseError(Error):
-    """Error parsing command line."""
-
-
-class CommandError(Error):
-    """Illegal command."""
-
-class SyntaxError(Error):  # @ReservedAssignment
-    """Illegal syntax."""

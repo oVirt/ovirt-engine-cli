@@ -34,6 +34,7 @@ from cli.parser import Parser
 from cli.platform import Terminal
 from cli import platform
 from cli.executionmode import ExecutionMode
+from ovirtcli.utils.colorhelper import ColorHelper
 
 
 class ExecutionContext(object):
@@ -202,6 +203,15 @@ class ExecutionContext(object):
         ]
 
         err_str = str(err)
+        err_str = (
+           "\n" if not (
+                    err_str.startswith("\n")
+                    or
+                    err_str.startswith("\r\n")
+                )
+                else ""
+        ) + err_str
+
         for err_pattern in err_patterns:
             if err_str.find(err_pattern) <> -1:
                 err_str = err_str.replace(
@@ -221,25 +231,73 @@ class ExecutionContext(object):
         elif isinstance(e, CommandError) or isinstance(e, RequestError) \
             or isinstance(e, AmbiguousQueryError):
             self.status = getattr(e, 'status', self.COMMAND_ERROR)
-            sys.stderr.write('\nerror: %s\n\n' % self.__error_to_string(e))
+            self.__pint_error(e)
             if hasattr(e, 'help'):
                 sys.stderr.write('%s\n' % e.help)
         elif isinstance(e, SyntaxError):
             self.status = getattr(e, 'status', self.SYNTAX_ERROR)
-            sys.stderr.write('\nerror: %s\n\n' % self.__error_to_string(e))
+            self.__pint_error(e)
             if hasattr(e, 'help'):
                 sys.stderr.write('%s\n' % e.help)
         elif isinstance(e, ConnectionError):
             self.status = getattr(e, 'status', self.COMMUNICATION_ERROR)
-            sys.stderr.write('\nerror: %s\n\n' % self.__error_to_string(e))
+            self.__pint_error(e)
             if hasattr(e, 'help'):
                 sys.stderr.write('%s\n' % e.help)
+        elif isinstance(e, Warning):
+            self.__pint_warning(e)
         else:
             self.status = self.UNKNOWN_ERROR
             if self.settings['cli:debug']:
                 sys.stderr.write(traceback.format_exc())
             else:
-                sys.stderr.write('\nunknown error: %s\n\n' % self.__error_to_string(e))
+                self.__pint_error(e, header='UNKNOWN ERROR')
+
+    def __pint_error(self, e, header='ERROR'):
+        """
+        prints error to stderr
+
+        @param e: exception
+        @param header: the error header
+        """
+        sys.stderr.write(
+             ColorHelper.color(
+                 '\n++++++++++++++++++ %s ++++++++++++++++++\n%s\n\n'
+                  %
+                  (
+                   header,
+                   self.__error_to_string(e)
+                  ),
+                  ColorHelper.RED if self.mode != ExecutionMode.SCRIPT
+                                     and self.interactive
+                                  else None
+              )
+        )
+
+    def __pint_warning(self, e):
+        """
+        prints warning to stdout
+
+        @param e: exception
+        """
+        sys.stdout.write(
+             ColorHelper.color(
+                 '\n+++++++++++++++++ WARNING +++++++++++++++++\n%s\n\n'
+                  %
+                  self.__error_to_string(e),
+                  ColorHelper.YELLOW if self.mode != ExecutionMode.SCRIPT
+                                        and self.interactive
+                                     else None
+              )
+        )
+
+    def _pint_text(self, text):
+        """
+        prints text to stdout
+
+        @param text: text
+        """
+        sys.stdout.write("\n" + text + "\n")
 
     def _read_command(self):
         """Parse input until we can parse at least one full command, and
@@ -265,7 +323,7 @@ class ExecutionContext(object):
                 return
             command += line
             try:
-                parsed = self.parser.parse(command)
+                parsed = self.parser.parse(command)  # @UnusedVariable
             except EOFError:
                 prompt = self.settings['cli:ps2']
                 continue
