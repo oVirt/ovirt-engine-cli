@@ -24,12 +24,18 @@ from ovirtsdk.infrastructure.errors import RequestError, NoCertificatesError, \
     ConnectionError
 from cli.messages import Messages
 from urlparse import urlparse
+from ovirtcli.shell.connectcmdshell import ConnectCmdShell
 
 class ConnectCommand(OvirtCommand):
 
     name = 'connect'
     description = 'connect to a oVirt manager'
-    args_check = (0, 3)
+    args_check = (0, len(ConnectCmdShell.OPTIONS))
+    valid_options = [ (
+          '--' + item, str
+         )
+         for item in ConnectCmdShell.OPTIONS
+    ]
 
     helptext = """\
         == Usage ==
@@ -152,13 +158,13 @@ class ConnectCommand(OvirtCommand):
         if url is None:
             return False;
         regex = re.compile(
-            r'^(?:http)s?://' # http:// or https://
-            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' # domain...
-            r'localhost|' # localhost...
-            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|' # ...or ipv4
-            r'\[?[A-F0-9]*:[A-F0-9:]+\]?)' # ...or ipv6
-            r'(?::\d+)?' # optional port
-            r'(/api)' # /api
+            r'^(?:http)s?://'  # http:// or https://
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
+            r'localhost|'  # localhost...
+            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|'  # ...or ipv4
+            r'\[?[A-F0-9]*:[A-F0-9:]+\]?)'  # ...or ipv6
+            r'(?::\d+)?'  # optional port
+            r'(/api)'  # /api
            , re.IGNORECASE)
         if not regex.search(url):
             return False
