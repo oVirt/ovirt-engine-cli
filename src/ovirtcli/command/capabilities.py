@@ -20,8 +20,6 @@ import pkg_resources
 from ovirtcli.shell.capabilitiescmdshell import CapabilitiesCmdShell
 from ovirtcli.command.command import OvirtCommand
 
-from ovirtsdk.xml.params import VersionCaps
-
 class CapabilitiesCommand(OvirtCommand):
 
     name = 'capabilities'
@@ -70,7 +68,8 @@ class CapabilitiesCommand(OvirtCommand):
                 if '--features' in opts:
                     self.context.formatter.format(
                               self.context,
-                              VersionCaps(features=capabilities.features)
+                              capabilities.features.feature,
+                              show_all=True
                     )
                 else:
                     # backup and restore unrelevant data to this context
