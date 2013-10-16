@@ -69,6 +69,7 @@ class OvirtCliSettings(Settings):
         ('ovirt-shell:ps2.connected', str, '[' + PRODUCT + ' shell (connected)]# '),
         ('ovirt-shell:ps3.connected', str, '[' + PRODUCT + ' shell (connected@%(host)s)]# '),
         ('ovirt-shell:ps1.disconnected', str, '[%s shell (disconnected)]# ' % PRODUCT),
+        ('ovirt-shell:ps1.unauthorized', str, '[%s shell (unauthorized)]# ' % PRODUCT),
         ('ovirt-shell:commands', str, '%s shell commands:' % PRODUCT),
         ('ovirt-shell:misc_commands', str, '%s shell commands:' % PRODUCT),
         ('ovirt-shell:version', str, ''),

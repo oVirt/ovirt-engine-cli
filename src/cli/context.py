@@ -48,6 +48,7 @@ class ExecutionContext(object):
     INTERRUPTED = 3
     UNKNOWN_ERROR = 4
     COMMUNICATION_ERROR = 5
+    AUTHENTICATION_ERROR = 6
 
     Parser = Parser
     Terminal = Terminal
@@ -228,8 +229,15 @@ class ExecutionContext(object):
         if isinstance(e, KeyboardInterrupt):
             self.status = self.INTERRUPTED
             sys.stdout.write('\n')
-        elif isinstance(e, CommandError) or isinstance(e, RequestError) \
-            or isinstance(e, AmbiguousQueryError):
+        elif isinstance(e, RequestError):
+            if hasattr(e, 'status') and e.status == 401:
+                self.status = self.AUTHENTICATION_ERROR
+            else:
+                self.status = getattr(e, 'status', self.COMMAND_ERROR)
+            self.__pint_error(e)
+            if hasattr(e, 'help'):
+                sys.stderr.write('%s\n' % e.help)
+        elif isinstance(e, CommandError) or isinstance(e, AmbiguousQueryError):
             self.status = getattr(e, 'status', self.COMMAND_ERROR)
             self.__pint_error(e)
             if hasattr(e, 'help'):

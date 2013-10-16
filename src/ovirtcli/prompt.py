@@ -16,7 +16,7 @@
 
 
 class PromptMode():
-    Original, Multiline, Disconnected, Connected, Default = range(5)
+    Original, Multiline, Disconnected, Connected, Unauthorized, Default = range(6)
 
     def __init__(self, Type):
         self.value = Type
@@ -30,6 +30,8 @@ class PromptMode():
             return 'Disconnected'
         if self.value == PromptMode.Connected:
             return 'Connected'
+        if self.value == PromptMode.Unauthorized:
+            return 'Unauthorized'
         if self.value == PromptMode.Default:
             return 'Default'
 

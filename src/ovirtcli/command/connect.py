@@ -84,8 +84,9 @@ class ConnectCommand(OvirtCommand):
         filter_ = settings.get('ovirt-shell:filter')
 
         if self.context.connection is not None and \
-                self.__test_connectivity() and \
-                self.context.status != self.context.COMMUNICATION_ERROR:
+           self.context.status != self.context.COMMUNICATION_ERROR and \
+           self.context.status != self.context.AUTHENTICATION_ERROR and \
+           self.__test_connectivity():
             stdout.write(Messages.Warning.ALREADY_CONNECTED)
             return
         if len(args) == 3:

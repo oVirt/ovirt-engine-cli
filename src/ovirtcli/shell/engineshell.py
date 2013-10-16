@@ -121,30 +121,31 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                     command.strip() not in EngineShell.OFF_LINE_CONTENT:
                 self._error(Messages.Error.INVALID_COMMAND % command)
             else:
-                if s.endswith('\\') and s != 'EOF':
-                    self._set_prompt(mode=PromptMode.Multiline)
-                    self.__input_buffer += ' ' + s.replace('\\', '') \
-                    if not s.startswith(' ') and self.__input_buffer != ''\
-                    else s.replace('\\', '')
-                    return
-                elif self.__input_buffer != '' and s != 'EOF':
-                    self.__input_buffer += ' ' + s \
-                    if not s.startswith(' ') else s
-                    s = self.__input_buffer
-                    self.__input_buffer = ''
-                    self._set_prompt(mode=PromptMode.Original)
-
-                result = cmd.Cmd.onecmd(self, s)
-
-                # if communication error occurred, change prompt state
-                if self.context.status == self.context.COMMUNICATION_ERROR:
-                    self.__last_status = self.context.COMMUNICATION_ERROR
-                    self.owner._set_prompt(mode=PromptMode.Disconnected)
-                elif self.__last_status == self.context.COMMUNICATION_ERROR:
-                    self.__last_status = -1
-                    self.owner._set_prompt(mode=PromptMode.Original)
-
-                return result
+                try:
+                    if s.endswith('\\') and s != 'EOF':
+                        self._set_prompt(mode=PromptMode.Multiline)
+                        self.__input_buffer += ' ' + s.replace('\\', '') \
+                        if not s.startswith(' ') and self.__input_buffer != ''\
+                        else s.replace('\\', '')
+                        return
+                    elif self.__input_buffer != '' and s != 'EOF':
+                        self.__input_buffer += ' ' + s \
+                        if not s.startswith(' ') else s
+                        s = self.__input_buffer
+                        self.__input_buffer = ''
+                        self._set_prompt(mode=PromptMode.Original)
+                    return cmd.Cmd.onecmd(self, s)
+                finally:  # if communication error occurred, change prompt state
+                    if self.context.status == self.context.COMMUNICATION_ERROR:
+                        self.__last_status = self.context.status
+                        self.owner._set_prompt(mode=PromptMode.Disconnected)
+                    elif self.context.status == self.context.AUTHENTICATION_ERROR:
+                        self.__last_status = self.context.status
+                        self.owner._set_prompt(mode=PromptMode.Unauthorized)
+                    elif self.__last_status == self.context.COMMUNICATION_ERROR or \
+                         self.__last_status == self.context.AUTHENTICATION_ERROR:
+                        self.__last_status = -1
+                        self.owner._set_prompt(mode=PromptMode.Original)
 
     def _set_prompt(self, mode=PromptMode.Default):
         if mode == PromptMode.Multiline:
@@ -161,6 +162,21 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             self.prompt = self.__get_disconnected_prompt()
         elif mode == PromptMode.Connected:
             self.prompt = self.__get_connected_prompt()
+        elif mode == PromptMode.Unauthorized:
+            self.prompt = self.__get_unauthorized_prompt()
+
+    def __get_unauthorized_prompt(self):
+        dprompt = self.context.settings.get('ovirt-shell:ps1.unauthorized')
+        if self.context.mode != ExecutionMode.SCRIPT \
+           and self.context.interactive:
+            dprompt = dprompt.replace(
+                          "unauthorized",
+                          ColorHelper.color(
+                                "unauthorized",
+                                color_=ColorHelper.RED
+                          )
+            )
+        return dprompt
 
     def __get_disconnected_prompt(self):
         dprompt = self.context.settings.get('ovirt-shell:ps1.disconnected')
