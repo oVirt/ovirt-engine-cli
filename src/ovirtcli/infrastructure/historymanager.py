@@ -56,6 +56,14 @@ class HistoryManager(code.InteractiveConsole):
                 if i > 0: buff.append(self.get(i))
         return buff
 
+    def listBetweenIndexes(self, from_indx, to_indx):
+        buff = []
+        ln = self.length()
+        if ln > 0:
+            for i in range(from_indx, to_indx):
+                if i > 0 and i < ln: buff.append(self.get(i))
+        return buff
+
     def export(self, filename):
         readline.write_history_file(filename)
 
@@ -95,3 +103,4 @@ class HistoryManager(code.InteractiveConsole):
 
     def __dump_callback(self, histfile):
         readline.write_history_file(histfile)
+

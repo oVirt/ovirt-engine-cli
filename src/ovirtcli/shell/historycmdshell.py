@@ -16,13 +16,22 @@
 
 
 from ovirtcli.shell.cmdshell import CmdShell
+from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
 
 
 class HistoryCmdShell(CmdShell):
     NAME = 'history'
+    OPTIONS = [
+       'last', 'first'
+    ]
 
     def __init__(self, context, parser):
         CmdShell.__init__(self, context, parser)
 
     def do_history(self, args):
         return self.context.execute_string(HistoryCmdShell.NAME + ' ' + args + '\n')
+
+    def complete_history(self, text, line, begidx, endidx):
+        return AutoCompletionHelper.complete(line=line, text=text,
+                                             args={}.fromkeys(HistoryCmdShell.OPTIONS),
+                                             all_options=True)
