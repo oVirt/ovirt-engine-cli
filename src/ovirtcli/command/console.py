@@ -46,18 +46,25 @@ class ConsoleCommand(OvirtCommand):
 
         vm = self.get_object('vm', args[0])
         if vm is None:
-            self.error(Messages.Error.NO_SUCH_OBJECT % ('vm', args[0]))
+            self.error(
+               Messages.Error.NO_SUCH_OBJECT % ('vm', args[0])
+            )
         if vm.status.state not in CONSOLE_STATES:
-            self.error(Messages.Error.CANNOT_CONNECT_TO_VM_DUE_TO_INVALID_STATE +
-                       Messages.Info.POSSIBLE_VM_STATES_FOR_CONSOLE % str(CONSOLE_STATES))
+            self.error(
+               Messages.Error.CANNOT_CONNECT_TO_VM_DUE_TO_INVALID_STATE +
+               Messages.Info.POSSIBLE_VM_STATES_FOR_CONSOLE % str(CONSOLE_STATES)
+           )
 
         host_addr = vm.display.address
         proto = vm.display.type_
         port = vm.display.port
         secport = vm.display.secure_port
         action = vm.ticket()
+
         if action.status.state != 'complete':
-            self.error(Messages.Error.CANNOT_SET_VM_TICKET)
+            self.error(
+               Messages.Error.CANNOT_SET_VM_TICKET
+            )
         ticket = action.ticket.value
         debug = self.context.settings['cli:debug']
 
@@ -73,12 +80,27 @@ class ConsoleCommand(OvirtCommand):
                         if host.certificate.subject:
                             host_subject = host.certificate.subject
                         else:
-                            self.warning(Messages.Warning.CANNOT_FETCH_HOST_CERT_SUBJECT)
+                            self.warning(
+                                 Messages.Warning.CANNOT_FETCH_HOST_CERT_SUBJECT
+                            )
                     else:
-                        self.warning(Messages.Warning.CANNOT_FETCH_HOST_CERT_SUBJECT_LEGACY_SDK)
+                        self.warning(
+                             Messages.Warning.CANNOT_FETCH_HOST_CERT_SUBJECT_LEGACY_SDK
+                        )
             if host_subject == '':
-                    self.warning(Messages.Warning.HOST_IDENTITY_WILL_NOT_BE_VALIDATED)
-
-            spice.launch_spice_client(host_addr, host_subject, port, secport, ticket, certurl, vm.name, debug)
+                    self.warning(
+                         Messages.Warning.HOST_IDENTITY_WILL_NOT_BE_VALIDATED
+                    )
+            spice.launch_spice_client(
+                          host_addr,
+                          host_subject,
+                          port, secport,
+                          ticket,
+                          certurl,
+                          vm.name,
+                          debug
+            )
         else:
-            self.error(Messages.Error.INVALID_DISPLAY_PROTOCOL % proto)
+            self.error(
+                   Messages.Error.INVALID_DISPLAY_PROTOCOL % proto
+            )

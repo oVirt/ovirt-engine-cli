@@ -67,7 +67,6 @@ class ConnectCommand(OvirtCommand):
     def execute(self):
         args = self.arguments
         settings = self.context.settings
-        stdout = self.context.terminal.stdout
         context = self.context
 
         MIN_FORCE_CREDENTIALS_CHECK_VERSION = ('00000003', '00000001', '00000000', '00000004')
@@ -87,46 +86,62 @@ class ConnectCommand(OvirtCommand):
            self.context.status != self.context.COMMUNICATION_ERROR and \
            self.context.status != self.context.AUTHENTICATION_ERROR and \
            self.__test_connectivity():
-            stdout.write(Messages.Warning.ALREADY_CONNECTED)
+            self.write(
+                   Messages.Warning.ALREADY_CONNECTED
+            )
             return
         if len(args) == 3:
             url, username, password = args
         else:
             url = settings.get('ovirt-shell:url')
             if not url:
-                self.error(Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'url')
+                self.error(
+                       Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'url'
+                )
             username = settings.get('ovirt-shell:username')
             if not username:
-                self.error(Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'username')
+                self.error(
+                       Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'username'
+                )
             password = settings.get('ovirt-shell:password')
             if not password:
-                self.error(Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'password')
+                self.error(
+                   Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'password'
+                )
 
         if not self.is_valid_url(url):
-            self.error(Messages.Error.INVALID_URL_SEGMENT % url)
+            self.error(
+               Messages.Error.INVALID_URL_SEGMENT % url
+            )
 
         try:
-            self.context.set_connection (API(url=url,
-                                             username=username,
-                                             password=password,
-                                             key_file=key_file,
-                                             cert_file=cert_file,
-                                             ca_file=ca_file,
-                                             insecure=insecure,
-                                             validate_cert_chain=not dont_validate_cert_chain,
-                                             filter=filter_,
-                                             port=port if port != -1 else None,
-                                             timeout=timeout if timeout != -1 else None,
-                                             session_timeout=session_timeout if session_timeout != -1 else None,
-                                             debug=debug),
-                                         url=url)
+            self.context.set_connection (
+                     API(
+                         url=url,
+                         username=username,
+                         password=password,
+                         key_file=key_file,
+                         cert_file=cert_file,
+                         ca_file=ca_file,
+                         insecure=insecure,
+                         validate_cert_chain=not dont_validate_cert_chain,
+                         filter=filter_,
+                         port=port if port != -1 else None,
+                         timeout=timeout if timeout != -1 else None,
+                         session_timeout=session_timeout if session_timeout != -1 else None,
+                         debug=debug
+                     ),
+                     url=url
+             )
 
             if context.sdk_version < MIN_FORCE_CREDENTIALS_CHECK_VERSION:
                 self.__test_connectivity()
 
             self.context.history.enable()
-            stdout.write(OvirtCliSettings.CONNECTED_TEMPLATE % \
-                         self.context.settings.get('ovirt-shell:version'))
+            self.write(
+                   OvirtCliSettings.CONNECTED_TEMPLATE % \
+                   self.context.settings.get('ovirt-shell:version')
+            )
 
         except RequestError, e:
             self.__cleanContext()
@@ -179,11 +194,17 @@ class ConnectCommand(OvirtCommand):
         return getattr(url_obj, 'hostname')
 
     def hostname_is_ip(self, hostname):
-        regex = re.compile(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', re.IGNORECASE)
+        regex = re.compile(
+                   r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}',
+                   re.IGNORECASE
+        )
         return regex.search(hostname)
 
     def is_valid_ip(self, hostip):
-        regex = re.compile(r'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$', re.IGNORECASE)
+        regex = re.compile(
+                   r'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$',
+                   re.IGNORECASE
+        )
         return regex.search(hostip)
 
     def __normalize_typeerror(self, exception):
@@ -214,7 +235,8 @@ class ConnectCommand(OvirtCommand):
                 self.context.connection.disconnect()
             except Exception, e:
                 self.error(e.strerror.lower())
-        self.context.connection = None
+            finally:
+                self.context.connection = None
 
     def xNoneType(self, s):
         return None if s == 'None' else s

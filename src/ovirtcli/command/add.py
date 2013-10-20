@@ -142,6 +142,7 @@ class AddCommand(OvirtCommand):
 
         if base:
             collection = getattr(base, typ)
+
         else:
             connection = self.check_connection()
             if hasattr(connection, typ):
@@ -155,14 +156,15 @@ class AddCommand(OvirtCommand):
             if typs:
                 err_str = err_str + \
                 (Messages.Info.POSSIBALE_ARGUMENTS_COMBINATIONS % str(typs))
-            self.error(err_str % (args[0], typ))
+            self.error(
+                   err_str % (args[0], typ)
+            )
 
 
     def show_help(self):
         """Show help for "add"."""
         args = self.arguments
         opts = self.options
-        stdout = self.context.terminal.stdout
         types = self.get_singular_types(method='add')
         subst = {}
         if len(args) == 0:
@@ -171,13 +173,15 @@ class AddCommand(OvirtCommand):
         elif len(args) == 1:
             if self.is_supported_type(types.keys(), args[0]):
                 helptext = self.helptext1
-                params_list = self.get_options(method='add',
-                                               resource=args[0],
-                                               sub_resource=self.resolve_base(opts),
-                                               context_variants=types[args[0]])
+                params_list = self.get_options(
+                       method='add',
+                       resource=args[0],
+                       sub_resource=self.resolve_base(opts),
+                       context_variants=types[args[0]]
+                )
                 subst['options'] = self.format_list(params_list, sort=False)
                 subst['type'] = args[0]
         statuses = self.get_statuses()
         subst['statuses'] = self.format_list(statuses)
         helptext = self.format_help(helptext, subst)
-        stdout.write(helptext)
+        self.write(helptext)

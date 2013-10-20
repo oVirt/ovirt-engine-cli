@@ -39,11 +39,16 @@ class PingCommand(OvirtCommand):
 
     def execute(self):
         connection = self.check_connection()
-        stdout = self.context.terminal.stdout
         try:
             connection.test(throw_exception=True)
         except Exception, e:
-            stdout.write('\n' + str(e) + '\n')
-            self.error(Messages.Error.CANNOT_CONNECT_TO_BACKEND % OvirtCliSettings.PRODUCT)
+            self.write('\n' + str(e) + '\n')
+            self.error(
+                   Messages.Error.CANNOT_CONNECT_TO_BACKEND
+                   %
+                   OvirtCliSettings.PRODUCT
+            )
         else:
-            stdout.write(Messages.Info.SUCESS_CONNECT_TO_BACKEND)
+            self.write(
+                   Messages.Info.SUCESS_CONNECT_TO_BACKEND
+            )

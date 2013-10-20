@@ -161,34 +161,53 @@ class ActionCommand(OvirtCommand):
         args = self.arguments
         opts = self.options
 
-        if not (TypeHelper.isKnownType(args[0])) and ParseHelper.getXmlType(args[0]) == None:
-            self.error(Messages.Error.NO_SUCH_TYPE % args[0])
+        if not (TypeHelper.isKnownType(args[0])) and \
+           ParseHelper.getXmlType(args[0]) == None:
+            self.error(
+                       Messages.Error.NO_SUCH_TYPE % args[0]
+            )
 
-        scope = '%s:%s' % (ParseHelper.getXmlWrapperType(args[0]), args[2])
-        actionable_types = TypeHelper.get_actionable_types(expendNestedTypes=True, groupOptions=True)
+        # scope = '%s:%s' % (ParseHelper.getXmlWrapperType(args[0]), args[2])
+        actionable_types = TypeHelper.get_actionable_types(
+                       expendNestedTypes=True,
+                       groupOptions=True
+        )
 
-        resource = self.get_object(args[0], args[1],
-                                   self.resolve_base(opts),
-                                   context_variants=actionable_types[args[0]])
+        resource = self.get_object(
+                       args[0],
+                       args[1],
+                       self.resolve_base(opts),
+                       context_variants=actionable_types[args[0]]
+        )
+
         if resource is None:
-            self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
-        elif hasattr(resource, args[2]) and type(getattr(resource, args[2])) == types.MethodType:
+            self.error(
+                   Messages.Error.NO_SUCH_OBJECT % (args[0], args[1])
+            )
+        elif hasattr(resource, args[2]) and \
+             type(getattr(resource, args[2])) == types.MethodType:
             try:
                 result = self.execute_method(resource, args[2], opts)
             except Exception, e:
                 self.error(str(e))
             if result.status.state == 'failed':
-                self.error(Messages.Info.ACTION_STATUS % result.status.state)
+                self.error(
+                       Messages.Info.ACTION_STATUS % result.status.state
+                )
         else:
-            self.error(Messages.Error.NO_SUCH_ACTION % args[2])
+            self.error(
+                   Messages.Error.NO_SUCH_ACTION % args[2]
+            )
         self.context.formatter.format(self.context, result)
 
     def show_help(self):
         """Show help for the action command."""
         args = self.arguments
         opts = self.options
-        stdout = self.context.terminal.stdout
-        types = TypeHelper.get_actionable_types(expendNestedTypes=True, groupOptions=True)
+        types = TypeHelper.get_actionable_types(
+                                expendNestedTypes=True,
+                                groupOptions=True
+        )
         subst = {}
 
         if not args or self.is_supported_type(types.keys(), args[0]):
@@ -199,12 +218,19 @@ class ActionCommand(OvirtCommand):
                 subst['id'] = args[1]
 
                 base = self.resolve_base(self.options)
-                obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
+                obj = self.get_object(
+                              args[0],
+                              args[1],
+                              base,
+                              context_variants=types[args[0]]
+                )
                 if obj is None:
-                    self.error(Messages.Error.NO_SUCH_OBJECT % (args[1], args[1]))
-
+                    self.error(
+                           Messages.Error.NO_SUCH_OBJECT % (args[1], args[1])
+                    )
                 actions = self._get_action_methods(obj)
                 subst['actions'] = self.format_list(actions)
+
             if len(args) == 3 and len(opts) == 2:
                 helptext = self.helptext1
 
@@ -213,19 +239,31 @@ class ActionCommand(OvirtCommand):
                 subst['action'] = args[0]
 
                 base = self.resolve_base(self.options)
-                obj = self.get_object(args[1], args[2], base, context_variants=types[args[0]])
+                obj = self.get_object(
+                              args[1],
+                              args[2],
+                              base,
+                              context_variants=types[args[0]]
+                )
                 if obj is None:
-                    self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
+                    self.error(
+                       Messages.Error.NO_SUCH_OBJECT % (args[0], args[1])
+                    )
 
                 actions = self._get_action_methods(obj)
                 if args[0] not in actions:
-                    self.error(Messages.Error.NO_SUCH_ACTION % args[2])
+                    self.error(
+                           Messages.Error.NO_SUCH_ACTION % args[2]
+                    )
 
-                options = self.get_options(method=args[0],
-                                           resource=obj,
-                                           context_variants=types[args[0]])
+                options = self.get_options(
+                           method=args[0],
+                           resource=obj,
+                           context_variants=types[args[0]]
+                )
                 subst['actions'] = self.format_list(actions)
                 subst['options'] = self.format_list(options, bullet='', sort=False)
+
             elif len(args) == 1:
                 helptext = self.helptext0
                 subst['types'] = self.format_map({args[0]:types[args[0]]})
@@ -237,9 +275,16 @@ class ActionCommand(OvirtCommand):
                 subst['type'] = args[0]
                 subst['id'] = args[1]
                 base = self.resolve_base(opts)
-                obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
+                obj = self.get_object(
+                              args[0],
+                              args[1],
+                              base,
+                              context_variants=types[args[0]]
+                )
                 if obj is None:
-                    self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
+                    self.error(
+                       Messages.Error.NO_SUCH_OBJECT % (args[0], args[1])
+                )
                 actions = self._get_action_methods(obj)
                 subst['actions'] = self.format_list(actions)
 
@@ -251,20 +296,30 @@ class ActionCommand(OvirtCommand):
                 subst['action'] = args[2]
 
                 base = self.resolve_base(self.options)
-                obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
+                obj = self.get_object(
+                          args[0],
+                          args[1],
+                          base,
+                          context_variants=types[args[0]]
+                )
                 if obj is None:
-                    self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
+                    self.error(
+                       Messages.Error.NO_SUCH_OBJECT % (args[0], args[1])
+                    )
 
                 actions = self._get_action_methods(obj)
                 if args[2] not in actions:
                     self.error(Messages.Error.NO_SUCH_ACTION % args[2])
 
-                options = self.get_options(method=args[2],
-                                           resource=obj,
-                                           sub_resource=base,
-                                           context_variants=types[args[0]])
+                options = self.get_options(
+                           method=args[2],
+                           resource=obj,
+                           sub_resource=base,
+                           context_variants=types[args[0]]
+                )
                 subst['actions'] = self.format_list(actions)
                 subst['options'] = self.format_list(options, bullet='', sort=False)
+
             else:
                 helptext = self.helptext0
                 subst['types'] = self.format_map(types)
@@ -274,4 +329,4 @@ class ActionCommand(OvirtCommand):
             statuses = self.get_statuses()
             subst['statuses'] = self.format_list(statuses)
             helptext = self.format_help(helptext, subst)
-            stdout.write(helptext)
+            self.write(helptext)

@@ -121,32 +121,40 @@ class ShowCommand(OvirtCommand):
         # e.g:
         # show vm xxx
         # show disk xxx --vm-identifier yyy
-        if len(args) < 2 and (len(opts) == 0 or
-                              (len(opts) == 1
-                               and
-                               opts.keys()[0].endswith('-identifier'))):
-            self.error(Messages.Error.NO_IDENTIFIER % args[0])
+        if len(args) < 2 and (
+                          len(opts) == 0 or
+                          (
+                           len(opts) == 1
+                           and
+                           opts.keys()[0].endswith('-identifier')
+                          )):
+            self.error(
+              Messages.Error.NO_IDENTIFIER % args[0]
+            )
 
         types = self.get_singular_types(method='get')
-        obj = self.get_object(typ=args[0],
-                              obj_id=args[1] if len(args) > 1
-                                             else None,
-                              base=self.resolve_base(opts),
-                              opts=opts,
-                              context_variants=types[args[0]])
+        obj = self.get_object(
+              typ=args[0],
+              obj_id=args[1] if len(args) > 1
+                             else None,
+              base=self.resolve_base(opts),
+              opts=opts,
+              context_variants=types[args[0]]
+        )
 
         if not (obj):
-            self.error(Messages.Error.NO_SUCH_OBJECT %
-                       (args[0], args[1] if len(args) > 1
-                                         else self.get_object_id(opts.values())
-                                              if opts else ''))
-
+            self.error(
+               Messages.Error.NO_SUCH_OBJECT %
+               (args[0], args[1] if len(args) > 1
+                                 else self.get_object_id(opts.values())
+                                      if opts else '')
+            )
         self.context.formatter.format(self.context, obj)
 
     def get_object_id(self, opts_values):
         """Get Object Identifier."""
         if len(opts_values) == 1:
-           return opts_values[0]
+            return opts_values[0]
         return opts_values
 
     def show_help(self):
@@ -167,10 +175,12 @@ class ShowCommand(OvirtCommand):
 
             if len(args) == 1:
                 helptext = self.helptext1
-                params_list = self.get_options(method='get',
-                                               resource=TypeHelper.to_singular(args[0]),
-                                               sub_resource=self.resolve_base(opts),
-                                               context_variants=types[args[0]])
+                params_list = self.get_options(
+                       method='get',
+                       resource=TypeHelper.to_singular(args[0]),
+                       sub_resource=self.resolve_base(opts),
+                       context_variants=types[args[0]]
+                )
                 subst['options'] = self.format_list(params_list)
                 subst['type'] = args[0]
             elif len(args) == 2:
@@ -181,17 +191,20 @@ class ShowCommand(OvirtCommand):
                 base = self.resolve_base(opts)
                 obj = self.get_object(args[0], args[1], base)
                 if obj is None:
-                    self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
+                    self.error(
+                       Messages.Error.NO_SUCH_OBJECT % (args[0], args[1])
+                    )
 
-                params_list = self.get_options(method='get',
-                                               resource=obj,
-                                               sub_resource=base,
-                                               context_variants=types[args[0]])
+                params_list = self.get_options(
+                       method='get',
+                       resource=obj,
+                       sub_resource=base,
+                       context_variants=types[args[0]]
+                )
                 subst['options'] = self.format_list(params_list)
 
             else:
                 helptext = self.helptext
 
             helptext = self.format_help(helptext, subst)
-            stdout = self.context.terminal.stdout
-            stdout.write(helptext)
+            self.write(helptext)

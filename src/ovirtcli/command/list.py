@@ -17,8 +17,6 @@
 
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
-# from ovirtsdk.infrastructure import brokers
-from ovirtcli.command.show import ShowCommand
 
 class ListCommand(OvirtCommand):
 
@@ -147,12 +145,19 @@ class ListCommand(OvirtCommand):
         opts = self.options
 
         typs = self.get_plural_types(method='list', typ=args[0])
-        self.context.formatter.format(self.context,
-                                      self.get_collection(typ=args[0],
-                                                          opts=opts,
-                                                          base=self.resolve_base(opts),
-                                                          context_variants=typs),
-                                      show_all=True if opts and opts.has_key(ListCommand.SHOW_ALL_KEY) else False)
+        self.context.formatter.format(
+                      self.context,
+                      self.get_collection(
+                          typ=args[0],
+                          opts=opts,
+                          base=self.resolve_base(opts),
+                          context_variants=typs
+                      ),
+                      show_all=True if opts and opts.has_key(
+                                                  ListCommand.SHOW_ALL_KEY
+                                                )
+                                    else False
+        )
 
     def show_help(self):
         """Show help for "list"."""
@@ -171,19 +176,23 @@ class ListCommand(OvirtCommand):
 
             if len(args) == 1 and len(opts) == 1:
                 helptext = self.helptext
-                subst['types'] = self.format_map({args[0]:types[args[0]]})
+                subst['types'] = self.format_map({
+                                  args[0]:types[args[0]]
+                                 }
+                )
                 subst['type'] = args[0]
             elif len(args) == 1 and len(opts) > 1:
                 helptext = self.helptext1
-                params_list = self.get_options(method='list',
-                                               resource=TypeHelper.to_singular(args[0]),
-                                               sub_resource=self.resolve_base(opts),
-                                               context_variants=types[args[0]])
+                params_list = self.get_options(
+                               method='list',
+                               resource=TypeHelper.to_singular(args[0]),
+                               sub_resource=self.resolve_base(opts),
+                               context_variants=types[args[0]]
+                )
                 subst['options'] = self.format_list(params_list)
                 subst['type'] = args[0]
             else:
                 helptext = self.helptext
 
             helptext = self.format_help(helptext, subst)
-            stdout = self.context.terminal.stdout
-            stdout.write(helptext)
+            self.write(helptext)

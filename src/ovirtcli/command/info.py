@@ -39,12 +39,33 @@ class InfoCommand(OvirtCommand):
     def execute(self):
         context = self.context
 
-        self.write('')
-        self.write(Messages.Info.BACKEND_VERSION % VersionHelper.to_string(context.backend_version))
-        self.write(Messages.Info.SDK_VERSION % VersionHelper.to_string(context.sdk_version))
-        self.write(Messages.Info.CLI_VERSION % VersionHelper.to_string(context.cli_version))
-        self.write(Messages.Info.PYTHON_VERSION % VersionHelper.to_string((sys.version_info)))
-
-        self.write('')
-        self.write(Messages.Info.BACKEND_ENTRY_POINT % self.context.url)
+        self.write(
+               '\n'
+               +
+               Messages.Info.BACKEND_VERSION
+               %
+               VersionHelper.to_string(context.backend_version)
+        )
+        self.write(
+               Messages.Info.SDK_VERSION
+               %
+               VersionHelper.to_string(context.sdk_version)
+        )
+        self.write(
+               Messages.Info.CLI_VERSION
+               %
+               VersionHelper.to_string(context.cli_version)
+        )
+        self.write(
+               Messages.Info.PYTHON_VERSION
+               %
+               VersionHelper.to_string((sys.version_info))
+               +
+               '\n'
+        )
+        self.write(
+               Messages.Info.BACKEND_ENTRY_POINT
+               %
+               context.url
+        )
         self.write('')

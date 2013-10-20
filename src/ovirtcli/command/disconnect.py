@@ -40,7 +40,9 @@ class DisconnectCommand(OvirtCommand):
     def execute(self):
         connection = self.context.connection
         if connection is None:
-            self.error(Messages.Error.NOT_CONNECTED)
+            self.error(
+               Messages.Error.NOT_CONNECTED
+            )
             return
         try:
             self.context._clean_settings()

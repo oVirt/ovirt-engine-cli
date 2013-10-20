@@ -136,20 +136,31 @@ class RemoveCommand(OvirtCommand):
         args = self.arguments
         opts = self.options
 
-        typs = TypeHelper.get_types_containing_method(RemoveCommand.aliases[0],
-                                                      expendNestedTypes=True,
-                                                      groupOptions=True)
+        typs = TypeHelper.get_types_containing_method(
+            RemoveCommand.aliases[0],
+            expendNestedTypes=True,
+            groupOptions=True
+        )
 
-        resource = self.get_object(args[0],
-                                   args[1],
-                                   self.resolve_base(opts),
-                                   context_variants=typs[args[0]])
+        resource = self.get_object(
+            args[0],
+            args[1],
+            self.resolve_base(opts),
+            context_variants=typs[args[0]]
+        )
+
         if resource is None:
-            self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
+            self.error(
+               Messages.Error.NO_SUCH_OBJECT % (args[0], args[1])
+            )
         elif hasattr(resource, RemoveCommand.aliases[0]):
-            result = self.execute_method(resource, RemoveCommand.aliases[0], opts)
+            result = self.execute_method(
+               resource, RemoveCommand.aliases[0], opts
+            )
         else:
-            self.error(Messages.Error.OBJECT_IS_IMMUTABLE % (args[0], args[1]))
+            self.error(
+               Messages.Error.OBJECT_IS_IMMUTABLE % (args[0], args[1])
+            )
 
         if not result:
             self.write(Messages.Info.ACCEPTED)
@@ -163,9 +174,11 @@ class RemoveCommand(OvirtCommand):
         opts = self.options
 
         subst = {}
-        types = TypeHelper.get_types_containing_method(RemoveCommand.aliases[0],
-                                                       expendNestedTypes=True,
-                                                       groupOptions=True)
+        types = TypeHelper.get_types_containing_method(
+               RemoveCommand.aliases[0],
+               expendNestedTypes=True,
+               groupOptions=True
+        )
 
         if not args or self.is_supported_type(types.keys(), args[0]):
             subst['types'] = self.format_map(types)
@@ -174,15 +187,24 @@ class RemoveCommand(OvirtCommand):
 
             if len(args) == 2:
                 base = self.resolve_base(self.options)
-                obj = self.get_object(args[0], args[1], base, context_variants=types[args[0]])
+                obj = self.get_object(
+                          args[0],
+                          args[1],
+                          base,
+                          context_variants=types[args[0]]
+                )
                 if obj is None:
-                    self.error(Messages.Error.NO_SUCH_OBJECT % (args[0], args[1]))
+                    self.error(
+                          Messages.Error.NO_SUCH_OBJECT % (args[0], args[1])
+                    )
 
                 helptext = self.helptext1
-                params_list = self.get_options(method=RemoveCommand.aliases[0],
-                                               resource=obj,
-                                               sub_resource=base,
-                                               context_variants=types[args[0]])
+                params_list = self.get_options(
+                           method=RemoveCommand.aliases[0],
+                           resource=obj,
+                           sub_resource=base,
+                           context_variants=types[args[0]]
+                )
                 subst['options'] = self.format_list(params_list)
                 subst['type'] = args[0]
 
@@ -190,10 +212,12 @@ class RemoveCommand(OvirtCommand):
                 helptext = self.helptext1
                 subst['type'] = args[0]
 
-                options = self.get_options(method=RemoveCommand.aliases[0],
-                                           resource=args[0],
-                                           sub_resource=self.resolve_base(self.options),
-                                           context_variants=types[args[0]])
+                options = self.get_options(
+                           method=RemoveCommand.aliases[0],
+                           resource=args[0],
+                           sub_resource=self.resolve_base(self.options),
+                           context_variants=types[args[0]]
+                )
                 subst['options'] = self.format_list(options)
                 subst['type'] = args[0]
             elif len(args) == 1:
@@ -204,5 +228,4 @@ class RemoveCommand(OvirtCommand):
                 helptext = self.helptext
 
             helptext = self.format_help(helptext, subst)
-            stdout = self.context.terminal.stdout
-            stdout.write(helptext)
+            self.write(helptext)
