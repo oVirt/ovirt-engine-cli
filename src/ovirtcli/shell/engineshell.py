@@ -51,6 +51,7 @@ from ovirtcli.events.event import Event
 from ovirtcli.listeners.errorlistener import ErrorListener
 from ovirtcli.settings import OvirtCliSettings
 from ovirtcli.prompt import PromptMode
+from ovirtcli.listeners.exitlistener import ExitListener
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
@@ -182,6 +183,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
     def __register_sys_listeners(self):
         self.onError += ErrorListener(self)
+        self.onExit += ExitListener(self)
 
     def __init_promt(self):
         self._set_prompt(mode=PromptMode.Disconnected)
@@ -419,8 +421,8 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
         Ctrl+D
         """
+        self._print("")
         self.onExit.fire()
-        self.emptyline(no_prompt=True)
         return True
 
     def do_exit(self, args):

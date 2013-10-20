@@ -38,7 +38,6 @@ class DisconnectCommand(OvirtCommand):
         """
 
     def execute(self):
-        stdout = self.context.terminal.stdout
         connection = self.context.connection
         if connection is None:
             self.error(Messages.Error.NOT_CONNECTED)
@@ -51,5 +50,5 @@ class DisconnectCommand(OvirtCommand):
             self.context.status = ExecutionContext.COMMAND_ERROR
         finally:
             self.context.history.disable()
-        stdout.write(OvirtCliSettings.DISCONNECTED_TEMPLATE)
-        self.context.connection = None
+            self.write(OvirtCliSettings.DISCONNECTED_TEMPLATE)
+            self.context.connection = None
