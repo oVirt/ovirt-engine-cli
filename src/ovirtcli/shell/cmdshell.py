@@ -15,9 +15,10 @@
 #
 import sys
 import os
-from ovirtcli.utils.typehelper import TypeHelper
-from ovirtsdk.infrastructure import brokers
+
 import itertools
+
+from ovirtcli.utils.typehelper import TypeHelper
 from ovirtcli.settings import OvirtCliSettings
 
 

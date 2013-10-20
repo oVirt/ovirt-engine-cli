@@ -40,16 +40,17 @@ from ovirtcli.shell.historycmdshell import HistoryCmdShell
 from ovirtcli.shell.infocmdshell import InfoCmdShell
 from ovirtcli.shell.capabilitiescmdshell import CapabilitiesCmdShell
 
-from ovirtcli.settings import OvirtCliSettings
-from ovirtcli.prompt import PromptMode
-
 from cli.command.help import HelpCommand
 from cli.messages import Messages
+from cli.executionmode import ExecutionMode
 
 from urlparse import urlparse
 from ovirtcli.utils.colorhelper import ColorHelper
-from cli.executionmode import ExecutionMode
 
+from ovirtcli.events.event import Event
+from ovirtcli.listeners.errorlistener import ErrorListener
+from ovirtcli.settings import OvirtCliSettings
+from ovirtcli.prompt import PromptMode
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
@@ -79,20 +80,31 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         SummaryCmdShell.__init__(self, context, parser)
         CapabilitiesCmdShell.__init__(self, context, parser)
 
-        self.last_output = ''
+        self.onError = Event()
+        self.onInit = Event()
+        self.onExit = Event()
+        self.onPromptChange = Event()
+        self.onSigInt = Event()
+
+        self.__last_output = ''
         self.__input_buffer = ''
         self.__org_prompt = ''
         self.__last_status = -1
 
-        self._set_prompt(mode=PromptMode.Disconnected)
+        self.__register_sys_listeners()
+        self.__init_promt()
+
         cmd.Cmd.doc_header = self.context.settings.get('ovirt-shell:commands')
         cmd.Cmd.undoc_header = self.context.settings.get('ovirt-shell:misc_commands')
         cmd.Cmd.intro = OvirtCliSettings.INTRO
 
         readline.set_completer_delims(' ')
-        signal.signal(signal.SIGINT, self.handler)
+        signal.signal(signal.SIGINT, self.__handler)
 
-    ########################### SYSTEM #################################
+        self.onInit.fire()
+
+    ############################ SHELL ##################################
+
     def cmdloop(self, intro=None, clear=True):
         try:
             if clear: self.do_clear('')
@@ -135,19 +147,47 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                         self.__input_buffer = ''
                         self._set_prompt(mode=PromptMode.Original)
                     return cmd.Cmd.onecmd(self, s)
-                finally:  # if communication error occurred, change prompt state
-                    if self.context.status == self.context.COMMUNICATION_ERROR:
+                finally:
+                    if self.context.status == \
+                       self.context.SYNTAX_ERROR \
+                       or \
+                       self.context.status == \
+                       self.context.COMMAND_ERROR \
+                       or \
+                       self.context.status == \
+                       self.context.UNKNOWN_ERROR:
+                        self.onError.fire()
+                    elif self.context.status == \
+                       self.context.COMMUNICATION_ERROR:
                         self.__last_status = self.context.status
-                        self.owner._set_prompt(mode=PromptMode.Disconnected)
-                    elif self.context.status == self.context.AUTHENTICATION_ERROR:
+                        self.onError.fire()
+                    elif self.context.status == \
+                       self.context.AUTHENTICATION_ERROR:
                         self.__last_status = self.context.status
-                        self.owner._set_prompt(mode=PromptMode.Unauthorized)
-                    elif self.__last_status == self.context.COMMUNICATION_ERROR or \
-                         self.__last_status == self.context.AUTHENTICATION_ERROR:
+                        self.onError.fire()
+                    elif self.__last_status <> -1 and \
+                         (
+                          self.__last_status == \
+                          self.context.COMMUNICATION_ERROR
+                          or \
+                          self.__last_status == \
+                          self.context.AUTHENTICATION_ERROR
+                         ):
+                        self.owner._set_prompt(
+                          mode=PromptMode.Original
+                        )
                         self.__last_status = -1
-                        self.owner._set_prompt(mode=PromptMode.Original)
+
+    ########################### SYSTEM #################################
+
+    def __register_sys_listeners(self):
+        self.onError += ErrorListener(self)
+
+    def __init_promt(self):
+        self._set_prompt(mode=PromptMode.Disconnected)
 
     def _set_prompt(self, mode=PromptMode.Default):
+        self.onPromptChange.fire()
         if mode == PromptMode.Multiline:
             if not self.__org_prompt:
                 self.__org_prompt = self.prompt
@@ -225,7 +265,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         return cprompt
 
 
-    def __persistCmdOptions(self, opts):
+    def __persist_cmd_options(self, opts):
         """
         Overrides config file options with cmdline's.
         """
@@ -238,10 +278,13 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                         self.context.settings['cli:' + k] = v
 
 
+    def _get_last_status(self):
+        return self.__last_status
+
     def onecmd_loop(self, s):
         opts, args = self.parser.parse_args()
         del args
-        self.__persistCmdOptions(opts)
+        self.__persist_cmd_options(opts)
         if opts.connect or self.context.settings.get('cli:autoconnect'):
             self.do_clear('')
             self.do_connect(s)
@@ -348,10 +391,19 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             return None
 
     def _error(self, msg):
+        # this is a custom error, consumer responsibility
+        # to filter out duplicate calls on event
+        self.onError.fire()
         self.context._handle_exception(SyntaxError(msg))
 
     def _print(self, msg):
         self.context._pint_text(msg)
+
+    def __handler(self, signum, frame):
+        self.onSigInt.fire()
+        raise KeyboardInterrupt
+
+    ############################# COMMANDS #################################
 
     def do_EOF(self, line):
         """\
@@ -367,6 +419,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
         Ctrl+D
         """
+        self.onExit.fire()
         self.emptyline(no_prompt=True)
         return True
 
@@ -384,7 +437,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
         exit
         """
-
+        self.onExit.fire()
         sys.exit(0)
 
     def do_help(self, args):
@@ -401,7 +454,6 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
         help show
         """
-
         if not args:
             self.context.execute_string('help\n')
         else:
@@ -413,7 +465,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                     self.context.terminal.stdout.write('\n' + getattr(self, 'do_' + cmd).__doc__ + '\n')
                 else:
                     return self.context.execute_string('help ' + args + '\n')
-    ############################# SHELL #################################
+
     def do_shell(self, line):
         """\
         == Usage ==
@@ -432,10 +484,9 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
         ! ls -la
         """
-
         output = os.popen(line).read()
         print output
-        self.last_output = output
+        self.__last_output = output
 
     def do_echo(self, line):
         """\
@@ -455,12 +506,8 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
         echo str
         """
-
-        if self.last_output:
-            print line.replace('$out', self.last_output)
+        if self.__last_output:
+            print line.replace('$out', self.__last_output)
         elif line:
             print line
         else: print self.prompt
-    ############################## COMMON ################################
-    def handler(self, signum, frame):
-        raise KeyboardInterrupt
