@@ -52,6 +52,7 @@ from ovirtcli.listeners.errorlistener import ErrorListener
 from ovirtcli.settings import OvirtCliSettings
 from ovirtcli.prompt import PromptMode
 from ovirtcli.listeners.exitlistener import ExitListener
+from cli.error import CommandError
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
@@ -396,7 +397,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         # this is a custom error, consumer responsibility
         # to filter out duplicate calls on event
         self.onError.fire()
-        self.context._handle_exception(SyntaxError(msg))
+        self.context._handle_exception(CommandError(msg))
 
     def _print(self, msg):
         self.context._pint_text(msg)
