@@ -34,6 +34,7 @@ class HistoryManager(code.InteractiveConsole):
                  temp_histfile=os.path.expanduser(TMP_HISTORY_METAFILE),
                  enabled=False):
 
+        readline.set_history_length(3000)
         self.lock = threading.RLock()
         self.enabled = enabled
         self.histfile = histfile
