@@ -16,10 +16,10 @@
 
 
 from ovirtcli.command.command import OvirtCommand
-from cli.context import ExecutionContext
-from ovirtcli.settings import OvirtCliSettings
-from cli.messages import Messages
+from ovirtcli.state.statemachine import StateMachine
 
+from cli.context import ExecutionContext
+from cli.messages import Messages
 
 class DisconnectCommand(OvirtCommand):
 
@@ -45,12 +45,12 @@ class DisconnectCommand(OvirtCommand):
             )
             return
         try:
+            StateMachine.disconnecting()  # @UndefinedVariable
+
             self.context._clean_settings()
             connection.disconnect()
             self.context.status = ExecutionContext.OK
         except Exception:
             self.context.status = ExecutionContext.COMMAND_ERROR
         finally:
-            self.context.history.disable()
-            self.write(OvirtCliSettings.DISCONNECTED_TEMPLATE)
-            self.context.connection = None
+            StateMachine.disconnected()  # @UndefinedVariable

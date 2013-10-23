@@ -19,12 +19,12 @@ import re
 
 from ovirtcli.command.command import OvirtCommand
 from ovirtsdk.api import API
-from ovirtcli.settings import OvirtCliSettings
 from ovirtsdk.infrastructure.errors import RequestError, NoCertificatesError, \
     ConnectionError
 from cli.messages import Messages
 from urlparse import urlparse
 from ovirtcli.shell.connectcmdshell import ConnectCmdShell
+from ovirtcli.state.statemachine import StateMachine
 
 class ConnectCommand(OvirtCommand):
 
@@ -115,6 +115,8 @@ class ConnectCommand(OvirtCommand):
             )
 
         try:
+            StateMachine.connecting()  # @UndefinedVariable
+
             self.context.set_connection (
                      API(
                          url=url,
@@ -137,11 +139,7 @@ class ConnectCommand(OvirtCommand):
             if context.sdk_version < MIN_FORCE_CREDENTIALS_CHECK_VERSION:
                 self.__test_connectivity()
 
-            self.context.history.enable()
-            self.write(
-                   OvirtCliSettings.CONNECTED_TEMPLATE % \
-                   self.context.settings.get('ovirt-shell:version')
-            )
+            StateMachine.connected()  # @UndefinedVariable
 
         except RequestError, e:
             self.__cleanContext()

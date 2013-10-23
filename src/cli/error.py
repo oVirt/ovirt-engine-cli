@@ -16,7 +16,10 @@
 
 
 from cli import compat
+import types
 
+from ovirtcli.annotations.requires import Requires
+from ovirtcli.state.dfsastate import DFSAState
 
 class Error(Exception):
     """Base class for python-cli errors."""
@@ -40,3 +43,46 @@ class CommandError(Error):
 
 class SyntaxError(Error):  # @ReservedAssignment
     """Illegal syntax."""
+
+class StateError(Error):
+    """raised when state change error occurs."""
+#     @Requires([DFSAEvent, types.StringType])
+    def __init__(self, destination, current):
+        """
+        @param destination: the destination DFSAEvent
+        @param current: the current state
+        """
+        super(StateError, self).__init__(
+             message=
+             (
+                '\n\nMoving to the "%s" state is not allowed,\n'
+                %
+                str(DFSAState(destination.get_destination()))
+             )
+             +
+             (
+                'eligible states from the "%s" state are:\n%s'
+                %
+                (
+                    str(DFSAState(current)),
+                    str([ str(DFSAState(src))
+                      for src in destination.get_sources()
+                      ]
+                    )
+                 )
+             )
+        )
+
+class UnknownEventError(Error):
+    """raised when unregistered event is triggered."""
+    @Requires(types.StringType)
+    def __init__(self, name):
+        """
+        @param name: the name of DFSAEvent
+        """
+        super(UnknownEventError, self).__init__(
+             message=(
+                'Event %s, was not properly registered.' % \
+                name
+             )
+        )

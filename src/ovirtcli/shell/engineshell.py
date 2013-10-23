@@ -51,8 +51,9 @@ from ovirtcli.events.event import Event
 from ovirtcli.listeners.errorlistener import ErrorListener
 from ovirtcli.settings import OvirtCliSettings
 from ovirtcli.prompt import PromptMode
-from ovirtcli.listeners.exitlistener import ExitListener
 from cli.error import CommandError
+
+from ovirtcli.state.statemachine import StateMachine
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
@@ -82,11 +83,11 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         SummaryCmdShell.__init__(self, context, parser)
         CapabilitiesCmdShell.__init__(self, context, parser)
 
-        self.onError = Event()
-        self.onInit = Event()
-        self.onExit = Event()
-        self.onPromptChange = Event()
-        self.onSigInt = Event()
+        self.onError = Event()  # triggered when error occurs
+        self.onInit = Event()  # triggered on init()
+        self.onExit = Event()  # triggered on exit
+        self.onPromptChange = Event()  # triggered onPromptChange
+        self.onSigInt = Event()  # triggered on SigInt fault
 
         self.__last_output = ''
         self.__input_buffer = ''
@@ -94,6 +95,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         self.__last_status = -1
 
         self.__register_sys_listeners()
+        self.__register_dfsm_callbacks()
         self.__init_promt()
 
         cmd.Cmd.doc_header = self.context.settings.get('ovirt-shell:commands')
@@ -182,9 +184,43 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
     ########################### SYSTEM #################################
 
+    def __register_dfsm_callbacks(self):
+        """
+        registers StateMachine events callbacks
+        """
+        StateMachine.add_callback("disconnected", self.__on_disconnected_callback)
+        StateMachine.add_callback("connected", self.__on_connected_callback)
+        StateMachine.add_callback("exiting", self.__on_exiting_callback)
+
+    def __on_connected_callback(self, **kwargs):
+        """
+        triggered when StateMachine.CONNECTED state is acquired
+        """
+        self.context.history.enable()
+        self._print(
+           OvirtCliSettings.CONNECTED_TEMPLATE % \
+           self.context.settings.get('ovirt-shell:version')
+        )
+
+    def __on_disconnected_callback(self, **kwargs):
+        """
+        triggered when StateMachine.DISCONNECTED state is acquired
+        """
+        self.context.history.disable()
+        self._print(OvirtCliSettings.DISCONNECTED_TEMPLATE)
+        self.context.connection = None
+
+    def __on_exiting_callback(self, **kwargs):
+        """
+        triggered when StateMachine.EXITING state is acquired
+        """
+        if self.context.connection:
+            self.onecmd(
+                DisconnectCmdShell.NAME + "\n"
+            )
+
     def __register_sys_listeners(self):
         self.onError += ErrorListener(self)
-        self.onExit += ExitListener(self)
 
     def __init_promt(self):
         self._set_prompt(mode=PromptMode.Disconnected)
@@ -422,8 +458,8 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
         Ctrl+D
         """
-        self._print("")
         self.onExit.fire()
+        StateMachine.exiting()  # @UndefinedVariable
         return True
 
     def do_exit(self, args):
@@ -441,6 +477,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         exit
         """
         self.onExit.fire()
+        StateMachine.exiting()  # @UndefinedVariable
         sys.exit(0)
 
     def do_help(self, args):

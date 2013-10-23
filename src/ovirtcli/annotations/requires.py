@@ -13,36 +13,78 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import types
 
 
 class Requires(object):
     """
     Checks that method arg is of a given type
+
+    @note:
+
+    1. checks that method's argument of type DFSAEvent
+
+        @Requires(DFSAEvent)
+        def method1(self, event):
+            ...
+
+    2. checks that method's argument is a List of DFSAEvent
+
+        @Requires([DFSAEvent])
+        def method2(self, events):
+            ...
     """
 
-    def __init__(self, typ):
+    def __init__(self, types_to_check):
         """
         Checks that method arg is of a given type
 
-        @param typ: the type to validate against
+        @param types_to_check: the types to validate against
+        @note:
+
+        1. checks that method's argument of type DFSAEvent
+
+            @Requires(DFSAEvent)
+            def method1(self, event):
+                ...
+
+        2. checks that method's argument is a List of DFSAEvent
+
+            @Requires([DFSAEvent])
+            def method2(self, events):
+                ...
         """
-        assert typ != None
-        self.typ = typ
+        assert types_to_check != None
+        self.__types_to_check = types_to_check
 
     def __call__(self, original_func):
         decorator_self = self
         def wrappee(*args, **kwargs):
             self.__check_list(
-                      args[1],
-                      decorator_self.typ
+                      args[1:],
+                      decorator_self.__types_to_check
             )
             return original_func(*args, **kwargs)
         return wrappee
 
-    def __check_list(self, candidate, typ):
-        if not isinstance(candidate, typ):
-            raise TypeError(
-                    "%s instance is expected."
-                    %
-                    typ.__name__
-            )
+    def __raise_error(self, typ):
+        raise TypeError(
+                "%s instance is expected."
+                %
+                typ.__name__
+        )
+
+    def __check_list(self, candidates, typs):
+        if isinstance(typs, types.ListType):
+            if type(candidates[0]) is types.ListType:
+                # the list of items of a specific type
+                if candidates[0]:
+                    for candidate in candidates[0]:
+                        if not isinstance(candidate, typs[0]):
+                            self.__raise_error(typs[0])
+                else:
+                    self.__raise_error(types.ListType)
+        else:
+            # the items is of a specific type
+            if not isinstance(candidates[0], typs):
+                self.__raise_error(typs)
