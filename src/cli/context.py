@@ -127,6 +127,9 @@ class ExecutionContext(object):
             ('-c' in self.args or '--connect' in self.args)) or \
         self.settings.get('cli:autoconnect')
 
+    def __is_help(self):
+        return '-h' in self.args or '--help' in self.args
+
     def _load_settings(self):
         """Load settings."""
         found, old_format = self.settings.load_config_file()
@@ -135,7 +138,7 @@ class ExecutionContext(object):
         elif old_format:
             self.settings.write_config_file()
         self.__exclude_app_options()
-        if self.__is_auto_connect():
+        if not self.__is_help() and self.__is_auto_connect():
             self.__collect_connection_data()
         self.settings.add_callback('cli:debug', self._set_debug)
         self._set_debug('cli:debug', self.settings['cli:debug'])
