@@ -42,10 +42,6 @@ from ovirtcli.shell.capabilitiescmdshell import CapabilitiesCmdShell
 
 from cli.command.help import HelpCommand
 from cli.messages import Messages
-from cli.executionmode import ExecutionMode
-
-from urlparse import urlparse
-from ovirtcli.utils.colorhelper import ColorHelper
 
 from ovirtcli.events.event import Event
 from ovirtcli.listeners.errorlistener import ErrorListener
@@ -55,6 +51,7 @@ from cli.error import CommandError
 
 from ovirtcli.state.statemachine import StateMachine
 from ovirtcli.state.dfsastate import DFSAState
+from ovirtcli.shell.promptmanager import PromptManager
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
@@ -92,12 +89,12 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
         self.__last_output = ''
         self.__input_buffer = ''
-        self.__org_prompt = ''
         self.__last_status = -1
 
         self.__register_sys_listeners()
         self.__register_dfsm_callbacks()
-        self.__init_promt()
+
+        self.__prompt_manager = PromptManager(self)
 
         cmd.Cmd.doc_header = self.context.settings.get('ovirt-shell:commands')
         cmd.Cmd.undoc_header = self.context.settings.get('ovirt-shell:misc_commands')
@@ -264,87 +261,8 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
     def __register_sys_listeners(self):
         self.onError += ErrorListener(self)
 
-    def __init_promt(self):
-        self.__set_prompt(mode=PromptMode.Disconnected)
-
-    def __set_prompt(self, mode=PromptMode.Default):
-        self.onPromptChange.fire()
-        if mode == PromptMode.Multiline:
-            if not self.__org_prompt:
-                self.__org_prompt = self.prompt
-            self.prompt = '> '
-        elif mode == PromptMode.Original:
-            if self.__org_prompt:
-                self.prompt = self.__org_prompt
-                self.__org_prompt = ''
-        elif mode == PromptMode.Disconnected or mode == PromptMode.Default:
-            if not self.__org_prompt and self.prompt != "(Cmd) ":
-                self.__org_prompt = self.prompt
-            self.prompt = self.__get_disconnected_prompt()
-        elif mode == PromptMode.Connected:
-            self.prompt = self.__get_connected_prompt()
-        elif mode == PromptMode.Unauthorized:
-            self.prompt = self.__get_unauthorized_prompt()
-
-    def __get_unauthorized_prompt(self):
-        dprompt = self.context.settings.get('ovirt-shell:ps1.unauthorized')
-        if self.context.mode != ExecutionMode.SCRIPT \
-           and self.context.interactive:
-            dprompt = dprompt.replace(
-                          "unauthorized",
-                          ColorHelper.color(
-                                "unauthorized",
-                                color_=ColorHelper.RED
-                          )
-            )
-        return dprompt
-
-    def __get_disconnected_prompt(self):
-        dprompt = self.context.settings.get('ovirt-shell:ps1.disconnected')
-        if self.context.mode != ExecutionMode.SCRIPT \
-           and self.context.interactive:
-            dprompt = dprompt.replace(
-                          "disconnected",
-                          ColorHelper.color(
-                                "disconnected",
-                                color_=ColorHelper.RED
-                          )
-            )
-        return dprompt
-
-    def __get_connected_prompt(self):
-        if self.context.settings.get('ovirt-shell:extended_prompt'):
-            url = self.context.settings.get('ovirt-shell:url')
-            url_obj = urlparse(url)
-            if url_obj and hasattr(url_obj, 'hostname'):
-                cprompt = self.context.settings.get(
-                               'ovirt-shell:ps3.connected'
-                          ) % {
-                               'host':url_obj.hostname
-                }
-                if self.context.mode != ExecutionMode.SCRIPT \
-                   and self.context.interactive:
-                    cprompt = cprompt.replace(
-                              "connected@" + url_obj.hostname,
-                              ColorHelper.color(
-                                    'connected@' + url_obj.hostname,
-                                    color_=ColorHelper.GREEN
-                              )
-                )
-                return cprompt
-
-        cprompt = self.context.settings.get('ovirt-shell:ps2.connected')
-        if self.context.mode != ExecutionMode.SCRIPT \
-           and self.context.interactive:
-            cprompt = cprompt.replace(
-                              "connected",
-                              ColorHelper.color(
-                                 "connected",
-                                 color_=ColorHelper.GREEN
-                               )
-        )
-        return cprompt
-
+    def __set_prompt(self, mode):
+        self.__prompt_manager.set_prompt(mode)
 
     def __persist_cmd_options(self, opts):
         """
@@ -357,7 +275,6 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                         self.context.settings['ovirt-shell:' + k] = v
                     elif self.context.settings.has_key('cli:' + k):
                         self.context.settings['cli:' + k] = v
-
 
     def _get_last_status(self):
         return self.__last_status
