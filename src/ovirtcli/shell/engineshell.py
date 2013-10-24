@@ -232,6 +232,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         """
         triggered when StateMachine.CONNECTED state is acquired
         """
+        self.context.history.enable()
         self._print(
            OvirtCliSettings.CONNECTED_TEMPLATE % \
            self.context.settings.get('ovirt-shell:version')
@@ -245,6 +246,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         """
         triggered when StateMachine.DISCONNECTED state is acquired
         """
+        self.context.history.disable()
         self._print(OvirtCliSettings.DISCONNECTED_TEMPLATE)
         self.__set_prompt(
             mode=PromptMode.Disconnected

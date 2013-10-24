@@ -53,6 +53,5 @@ class DisconnectCommand(OvirtCommand):
         except Exception:
             self.context.status = ExecutionContext.COMMAND_ERROR
         finally:
-            self.context.history.disable()
             self.context.connection = None
             StateMachine.disconnected()  # @UndefinedVariable

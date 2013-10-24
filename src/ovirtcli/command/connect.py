@@ -138,7 +138,6 @@ class ConnectCommand(OvirtCommand):
 
             if context.sdk_version < MIN_FORCE_CREDENTIALS_CHECK_VERSION:
                 self.__test_connectivity()
-            self.context.history.enable()
 
             StateMachine.connected()  # @UndefinedVariable
 
