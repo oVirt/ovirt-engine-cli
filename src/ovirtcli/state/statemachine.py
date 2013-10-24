@@ -86,54 +86,64 @@ StateMachine = FiniteStateMachine(
         DFSAEvent(
           name='exiting',
           sources=[
-               DFSAState.Connecting,
-               DFSAState.Connected,
-               DFSAState.Disconnected,
-               DFSAState.Unauthorized,
+               DFSAState.CONNECTING,
+               DFSAState.CONNECTED,
+               DFSAState.DISCONNECTED,
+               DFSAState.UNAUTHORIZED,
+               DFSAState.COMMUNICATION_ERROR
           ],
-          destination=DFSAState.Exiting,
+          destination=DFSAState.EXITING,
           callbacks=[]),
         DFSAEvent(
           name='disconnecting',
           sources=[
-               DFSAState.Connected,
-               DFSAState.Unauthorized,
-               DFSAState.Exiting
+               DFSAState.CONNECTED,
+               DFSAState.UNAUTHORIZED,
+               DFSAState.EXITING
           ],
-          destination=DFSAState.Disconnecting,
+          destination=DFSAState.DISCONNECTING,
           callbacks=[]),
         DFSAEvent(
           name='disconnected',
           sources=[
-               DFSAState.Connected,
-               DFSAState.Unauthorized,
-               DFSAState.Disconnecting
+               DFSAState.DISCONNECTING
           ],
-          destination=DFSAState.Disconnected,
+          destination=DFSAState.DISCONNECTED,
           callbacks=[]),
         DFSAEvent(
           name='connecting',
           sources=[
-               DFSAState.Disconnected,
-               DFSAState.Unauthorized
+               DFSAState.DISCONNECTED,
+               DFSAState.UNAUTHORIZED,
+               DFSAState.COMMUNICATION_ERROR
           ],
-          destination=DFSAState.Connecting,
+          destination=DFSAState.CONNECTING,
           callbacks=[]),
         DFSAEvent(
           name='connected',
           sources=[
-               DFSAState.Disconnected,
-               DFSAState.Unauthorized,
-               DFSAState.Connecting
+               DFSAState.CONNECTING
           ],
-          destination=DFSAState.Connected,
+          destination=DFSAState.CONNECTED,
           callbacks=[]),
         DFSAEvent(
           name='unauthorized',
           sources=[
-               DFSAState.Connected
+               DFSAState.CONNECTED,
+               DFSAState.CONNECTING,
+               DFSAState.DISCONNECTING,
+               DFSAState.COMMUNICATION_ERROR
           ],
-          destination=DFSAState.Unauthorized,
+          destination=DFSAState.UNAUTHORIZED,
           callbacks=[]),
+        DFSAEvent(
+          name='communication_error',
+          sources=[
+               DFSAState.CONNECTED,
+               DFSAState.CONNECTING,
+               DFSAState.DISCONNECTING
+          ],
+          destination=DFSAState.COMMUNICATION_ERROR,
+          callbacks=[])
     ]
 )

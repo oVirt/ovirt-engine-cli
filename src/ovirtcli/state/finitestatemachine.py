@@ -23,8 +23,6 @@ from ovirtcli.meta.singleton import Singleton
 
 from cli.error import StateError, UnknownEventError
 
-import types
-
 class FiniteStateMachine(object):
     '''
     The Deterministic Finite-State Automata (DFSA)
@@ -132,6 +130,7 @@ class FiniteStateMachine(object):
        - All events are provided with 'event' argument to maintain the state
          between the events, in some case extra data can be provided such as
          [source, destination, result, ...] depending on event's context.
+       - callbacks can be registered later calling sm.add_callback(DFSAState.X, your_method)
 
     4. trigger events on StateMachine
 
@@ -153,7 +152,7 @@ class FiniteStateMachine(object):
     def __init__(self, events, inital_state=DFSAEvent(
                                       name='init',
                                       sources=[],
-                                      destination=DFSAState.Disconnected
+                                      destination=DFSAState.DISCONNECTED
                                )
         ):
         '''
@@ -180,7 +179,7 @@ class FiniteStateMachine(object):
         self.__register_events(events)
         self.__apply_state(inital_state)
 
-    @Requires(DFSAEvent)
+#     @Requires(DFSAEvent)
     def __apply_state(self, event):
         """
         applying state
@@ -225,7 +224,7 @@ class FiniteStateMachine(object):
         for event in events:
             self.__do_add_event(event)
 
-    @Requires(DFSAEvent)
+#     @Requires(DFSAEvent)
     def __produce_event_method(self, event):
         """
         produces event method
@@ -246,7 +245,7 @@ class FiniteStateMachine(object):
                 return
         return event_method
 
-    @Requires(DFSAEvent)
+#     @Requires(DFSAEvent)
     def __raise_state_error(self, event):
         """
         @raise StateError: when event.destination state is
@@ -263,7 +262,7 @@ class FiniteStateMachine(object):
         """
         raise UnknownEventError(name=name)
 
-    @Requires(DFSAEvent)
+#     @Requires(DFSAEvent)
     def __do_add_event(self, event):
         """
         registers new event in DFSM
@@ -277,8 +276,9 @@ class FiniteStateMachine(object):
             self.__produce_event_method(event)
         )
 
-    @Requires(types.StringType)
-    def __get_event(self, name):
+#     @Requires(types.StringType)
+    def __get_event(self, state):
+        name = str(DFSAState(state)).lower()
         if name in self.__events.keys():
             return self.__events[name]
         self.__raise_unknown_event(name)
@@ -299,15 +299,15 @@ class FiniteStateMachine(object):
         self.__do_add_event(event)
 
     # @Requires(types.StringType, types.MethodType)
-    def add_callback(self, event_name, callback):
+    def add_callback(self, state, callback):
         """
         adds new callback to event
 
-        @param event_name: the name of even to register
-                           callback for
+        @param state: the state to which you would
+                      like to add a callback
         @param callback: the method to register
         """
-        self.__get_event(event_name) \
+        self.__get_event(state) \
             .get_callbacks() \
             .append(callback)
 

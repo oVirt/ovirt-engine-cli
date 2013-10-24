@@ -54,6 +54,7 @@ from ovirtcli.prompt import PromptMode
 from cli.error import CommandError
 
 from ovirtcli.state.statemachine import StateMachine
+from ovirtcli.state.dfsastate import DFSAState
 
 class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ShowCmdShell, ListCmdShell, UpdateCmdShell, \
@@ -139,7 +140,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             else:
                 try:
                     if s.endswith('\\') and s != 'EOF':
-                        self._set_prompt(mode=PromptMode.Multiline)
+                        self.__set_prompt(mode=PromptMode.Multiline)
                         self.__input_buffer += ' ' + s.replace('\\', '') \
                         if not s.startswith(' ') and self.__input_buffer != ''\
                         else s.replace('\\', '')
@@ -149,7 +150,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                         if not s.startswith(' ') else s
                         s = self.__input_buffer
                         self.__input_buffer = ''
-                        self._set_prompt(mode=PromptMode.Original)
+                        self.__set_prompt(mode=PromptMode.Original)
                     return cmd.Cmd.onecmd(self, s)
                 finally:
                     if self.context.status == \
@@ -165,10 +166,12 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                        self.context.COMMUNICATION_ERROR:
                         self.__last_status = self.context.status
                         self.onError.fire()
+                        StateMachine.communication_error()  # @UndefinedVariable
                     elif self.context.status == \
                        self.context.AUTHENTICATION_ERROR:
                         self.__last_status = self.context.status
                         self.onError.fire()
+                        StateMachine.unauthorized()  # @UndefinedVariable
                     elif self.__last_status <> -1 and \
                          (
                           self.__last_status == \
@@ -177,7 +180,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                           self.__last_status == \
                           self.context.AUTHENTICATION_ERROR
                          ):
-                        self.owner._set_prompt(
+                        self.__set_prompt(
                           mode=PromptMode.Original
                         )
                         self.__last_status = -1
@@ -188,27 +191,64 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         """
         registers StateMachine events callbacks
         """
-        StateMachine.add_callback("disconnected", self.__on_disconnected_callback)
-        StateMachine.add_callback("connected", self.__on_connected_callback)
-        StateMachine.add_callback("exiting", self.__on_exiting_callback)
+        StateMachine.add_callback(
+                      DFSAState.UNAUTHORIZED,
+                      self.__on_unauthorized_callback
+        )
+        StateMachine.add_callback(
+                      DFSAState.COMMUNICATION_ERROR,
+                      self.__on_communication_error_callback
+        )
+        StateMachine.add_callback(
+                      DFSAState.DISCONNECTED,
+                      self.__on_disconnected_callback
+        )
+        StateMachine.add_callback(
+                      DFSAState.CONNECTED,
+                      self.__on_connected_callback
+        )
+        StateMachine.add_callback(
+                      DFSAState.EXITING,
+                      self.__on_exiting_callback
+        )
+
+    def __on_unauthorized_callback(self, **kwargs):
+        """
+        triggered when StateMachine.UNAUTHORIZED state is acquired
+        """
+        self.__set_prompt(
+            mode=PromptMode.Unauthorized
+        )
+
+    def __on_communication_error_callback(self, **kwargs):
+        """
+        triggered when StateMachine.COMMUNICATION_ERROR state is acquired
+        """
+        self.__set_prompt(
+            mode=PromptMode.Disconnected
+        )
 
     def __on_connected_callback(self, **kwargs):
         """
         triggered when StateMachine.CONNECTED state is acquired
         """
-        self.context.history.enable()
         self._print(
            OvirtCliSettings.CONNECTED_TEMPLATE % \
            self.context.settings.get('ovirt-shell:version')
+        )
+
+        self.__set_prompt(
+            mode=PromptMode.Connected
         )
 
     def __on_disconnected_callback(self, **kwargs):
         """
         triggered when StateMachine.DISCONNECTED state is acquired
         """
-        self.context.history.disable()
         self._print(OvirtCliSettings.DISCONNECTED_TEMPLATE)
-        self.context.connection = None
+        self.__set_prompt(
+            mode=PromptMode.Disconnected
+        )
 
     def __on_exiting_callback(self, **kwargs):
         """
@@ -223,9 +263,9 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         self.onError += ErrorListener(self)
 
     def __init_promt(self):
-        self._set_prompt(mode=PromptMode.Disconnected)
+        self.__set_prompt(mode=PromptMode.Disconnected)
 
-    def _set_prompt(self, mode=PromptMode.Default):
+    def __set_prompt(self, mode=PromptMode.Default):
         self.onPromptChange.fire()
         if mode == PromptMode.Multiline:
             if not self.__org_prompt:
@@ -458,6 +498,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
         Ctrl+D
         """
+        self.do_echo("\n")  # break shell prompt in to bash shell
         self.onExit.fire()
         StateMachine.exiting()  # @UndefinedVariable
         return True

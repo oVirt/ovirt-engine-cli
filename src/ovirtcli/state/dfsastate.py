@@ -16,25 +16,27 @@
 
 
 class DFSAState(object):
-    Disconnecting, Disconnected, Connecting, \
-    Connected, Unauthorized, Exiting = range(6)
+    DISCONNECTING, DISCONNECTED, CONNECTING, \
+    CONNECTED, UNAUTHORIZED, EXITING, COMMUNICATION_ERROR = range(7)
 
     def __init__(self, Type):
         self.value = Type
 
     def __str__(self):
-        if self.value == DFSAState.Disconnected:
-            return 'Disconnected'
-        if self.value == DFSAState.Connected:
-            return 'Connected'
-        if self.value == DFSAState.Unauthorized:
-            return 'Unauthorized'
-        if self.value == DFSAState.Exiting:
-            return 'Exiting'
-        if self.value == DFSAState.Disconnecting:
-            return 'Disconnecting'
-        if self.value == DFSAState.Connecting:
-            return 'Connecting'
+        if self.value == DFSAState.DISCONNECTED:
+            return 'DISCONNECTED'
+        if self.value == DFSAState.CONNECTED:
+            return 'CONNECTED'
+        if self.value == DFSAState.UNAUTHORIZED:
+            return 'UNAUTHORIZED'
+        if self.value == DFSAState.EXITING:
+            return 'EXITING'
+        if self.value == DFSAState.DISCONNECTING:
+            return 'DISCONNECTING'
+        if self.value == DFSAState.CONNECTING:
+            return 'CONNECTING'
+        if self.value == DFSAState.COMMUNICATION_ERROR:
+            return 'COMMUNICATION_ERROR'
 
     def __eq__(self, y):
         return self.value == y.value

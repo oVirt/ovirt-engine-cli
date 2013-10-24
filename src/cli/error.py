@@ -75,7 +75,7 @@ class StateError(Error):
 
 class UnknownEventError(Error):
     """raised when unregistered event is triggered."""
-    @Requires(types.StringType)
+#     @Requires(types.StringType)
     def __init__(self, name):
         """
         @param name: the name of DFSAEvent

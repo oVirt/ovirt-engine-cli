@@ -16,7 +16,6 @@
 
 
 from ovirtcli.shell.cmdshell import CmdShell
-from ovirtcli.prompt import PromptMode
 
 
 class DisconnectCmdShell(CmdShell):
@@ -26,7 +25,5 @@ class DisconnectCmdShell(CmdShell):
         CmdShell.__init__(self, context, parser)
 
     def do_disconnect(self, args):
-        res = self.context.execute_string(DisconnectCmdShell.NAME + ' ' + args + '\n')
-        self.owner._set_prompt(mode=PromptMode.Disconnected)
-        return res
+        return self.context.execute_string(DisconnectCmdShell.NAME + ' ' + args + '\n')
 

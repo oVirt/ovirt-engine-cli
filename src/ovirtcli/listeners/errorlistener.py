@@ -14,9 +14,6 @@
 # limitations under the License.
 #
 
-from ovirtcli.prompt import PromptMode
-
-from cli.context import ExecutionContext
 
 from ovirtcli.listeners.abstractlistener import AbstractListener
 
@@ -39,14 +36,4 @@ class ErrorListener(AbstractListener):
         @param args: a list o args
         @param kwargs: a list o kwargs
         '''
-
-        if self.__shell.context.status == \
-           ExecutionContext.COMMUNICATION_ERROR:
-            self.__shell.owner._set_prompt(
-                       mode=PromptMode.Disconnected
-            )
-        elif self.__shell.context.status == \
-             ExecutionContext.AUTHENTICATION_ERROR:
-            self.__shell.owner._set_prompt(
-                       mode=PromptMode.Unauthorized
-            )
+        # TODO: log error

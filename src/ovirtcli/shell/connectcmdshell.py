@@ -48,15 +48,9 @@ class ConnectCmdShell(CmdShell):
             sys.exit(1)
         self.context.execute_string(ConnectCmdShell.NAME + '\n')
 
-        if self.context.status == self.context.OK:
-            self.owner._set_prompt(mode=PromptMode.Connected)
-
     def __do_connect(self, args):
         arg = ConnectCmdShell.NAME + ' ' + args.strip() + '\n'
         self.context.execute_string(arg)
-
-        if self.context.status == self.context.OK:
-            self.owner._set_prompt(mode=PromptMode.Connected)
 
     def do_connect(self, args):
         arg = '--connect ' + args.strip() + '\n'
