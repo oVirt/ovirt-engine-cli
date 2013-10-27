@@ -81,20 +81,21 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         SummaryCmdShell.__init__(self, context, parser)
         CapabilitiesCmdShell.__init__(self, context, parser)
 
+        self.__last_output = ''
+        self.__input_buffer = ''
+        self.__last_status = -1
+
         self.onError = Event()  # triggered when error occurs
         self.onInit = Event()  # triggered on init()
         self.onExit = Event()  # triggered on exit
         self.onPromptChange = Event()  # triggered onPromptChange
         self.onSigInt = Event()  # triggered on SigInt fault
 
-        self.__last_output = ''
-        self.__input_buffer = ''
-        self.__last_status = -1
+        self.__prompt_manager = PromptManager(self)
 
         self.__register_sys_listeners()
         self.__register_dfsm_callbacks()
-
-        self.__prompt_manager = PromptManager(self)
+        self.__init_promt()
 
         cmd.Cmd.doc_header = self.context.settings.get('ovirt-shell:commands')
         cmd.Cmd.undoc_header = self.context.settings.get('ovirt-shell:misc_commands')
@@ -183,6 +184,9 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                         self.__last_status = -1
 
     ########################### SYSTEM #################################
+
+    def __init_promt(self):
+        self.__set_prompt(mode=PromptMode.Disconnected)
 
     def __register_dfsm_callbacks(self):
         """
