@@ -16,9 +16,9 @@
 
 import sys
 
-from ovirtcli.options import OvirtCliOptionParser
-from ovirtcli.context import OvirtCliExecutionContext
-from ovirtcli.object import create
+from ovirtcli.infrastructure.options import OvirtCliOptionParser
+from ovirtcli.infrastructure.context import OvirtCliExecutionContext
+from ovirtcli.infrastructure.object import create
 from ovirtcli.shell.engineshell import EngineShell
 
     ############################## MAIN #################################

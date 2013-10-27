@@ -20,7 +20,6 @@ import sys
 
 from ovirtcli.shell.cmdshell import CmdShell
 from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
-from ovirtcli.prompt import PromptMode
 
 class ConnectCmdShell(CmdShell):
     NAME = 'connect'

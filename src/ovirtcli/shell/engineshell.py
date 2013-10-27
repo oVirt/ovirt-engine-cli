@@ -45,8 +45,8 @@ from cli.messages import Messages
 
 from ovirtcli.events.event import Event
 from ovirtcli.listeners.errorlistener import ErrorListener
-from ovirtcli.settings import OvirtCliSettings
-from ovirtcli.prompt import PromptMode
+from ovirtcli.infrastructure.settings import OvirtCliSettings
+from ovirtcli.shell.promptmode import PromptMode
 from cli.error import CommandError
 
 from ovirtcli.state.statemachine import StateMachine
@@ -263,10 +263,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         """
         triggered when StateMachine.EXITING state is acquired
         """
-        if self.context.connection:
-            self.onecmd(
-                DisconnectCmdShell.NAME + "\n"
-            )
+        self.do_disconnect('')
 
     def __register_sys_listeners(self):
         self.onError += ErrorListener(self)

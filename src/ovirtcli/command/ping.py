@@ -16,7 +16,7 @@
 
 
 from ovirtcli.command.command import OvirtCommand
-from ovirtcli.settings import OvirtCliSettings
+from ovirtcli.infrastructure.settings import OvirtCliSettings
 from cli.messages import Messages
 
 

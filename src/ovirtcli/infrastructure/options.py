@@ -18,7 +18,7 @@
 import sys
 import textwrap
 from optparse import OptionParser, BadOptionError, AmbiguousOptionError
-from ovirtcli import settings
+from ovirtcli.infrastructure import settings
 
 
 class OvirtCliOptionParser(OptionParser):

@@ -19,7 +19,7 @@ import os
 import itertools
 
 from ovirtcli.utils.typehelper import TypeHelper
-from ovirtcli.settings import OvirtCliSettings
+from ovirtcli.infrastructure.settings import OvirtCliSettings
 
 
 class CmdShell(object):

@@ -13,7 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from ovirtcli.settings import OvirtCliSettings
+
+
+from ovirtcli.infrastructure.settings import OvirtCliSettings
 
 class Messages():
     class Error():

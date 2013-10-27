@@ -18,7 +18,7 @@ import code
 import readline
 import atexit
 import os
-from ovirtcli.settings import OvirtCliSettings
+from ovirtcli.infrastructure.settings import OvirtCliSettings
 import threading
 
 HISTORY_METAFILE = "~/." + OvirtCliSettings.PRODUCT.lower() + "shellhistory"
@@ -28,7 +28,7 @@ class HistoryManager(code.InteractiveConsole):
     """ Provides history management capabilities """
 
     def __init__(self,
-                 locals=None,
+                 locals=None,  # @ReservedAssignment
                  filename="<console>",
                  histfile=os.path.expanduser(HISTORY_METAFILE),
                  temp_histfile=os.path.expanduser(TMP_HISTORY_METAFILE),

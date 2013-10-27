@@ -18,16 +18,16 @@
 from cli.command import *
 from cli.context import ExecutionContext
 
-from ovirtcli.settings import OvirtCliSettings
+from ovirtcli.infrastructure.settings import OvirtCliSettings
 from ovirtcli.command import *
 from ovirtcli.format import *
 
-from ovirtcli.object import create
+from ovirtcli.infrastructure.object import create
 import pkg_resources
 from ovirtcli.command.info import InfoCommand
-from ovirtcli.historymanager import HistoryManager
 from ovirtcli.command.summary import SummaryCommand
 from ovirtcli.command.capabilities import CapabilitiesCommand
+from ovirtcli.infrastructure.historymanager import HistoryManager
 
 
 class OvirtCliExecutionContext(ExecutionContext):

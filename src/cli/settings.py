@@ -124,7 +124,7 @@ class Settings(dict):
         """
         old_format = False
         fname = platform.local_settings_file(self.name)
-        from ovirtcli.settings import OvirtCliSettings
+        from ovirtcli.infrastructure.settings import OvirtCliSettings
         if fname is None:
             return False, old_format
         cp = ConfigParser()
@@ -151,7 +151,7 @@ class Settings(dict):
         ftmp = '%s.%d-tmp' % (fname, os.getpid())
         fout = file(ftmp, 'w')
         sections = {}
-        from ovirtcli.settings import OvirtCliSettings
+        from ovirtcli.infrastructure.settings import OvirtCliSettings
         for key in settings:
             if key in OvirtCliSettings.config_items:
                 section, name = key.split(':')

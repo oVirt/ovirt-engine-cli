@@ -16,7 +16,7 @@
 from ovirtcli.utils.colorhelper import ColorHelper
 from cli.executionmode import ExecutionMode
 import urlparse
-from ovirtcli.prompt import PromptMode
+from ovirtcli.shell.promptmode import PromptMode
 
 
 class PromptManager(object):
