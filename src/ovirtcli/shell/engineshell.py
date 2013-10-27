@@ -172,11 +172,17 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                         StateMachine.unauthorized()  # @UndefinedVariable
                     elif self.__last_status <> -1 and \
                          (
-                          self.__last_status == \
-                          self.context.COMMUNICATION_ERROR
+                            (
+                                self.__last_status == self.context.COMMUNICATION_ERROR
+                                and
+                                StateMachine.get_current_state() != DFSAState.COMMUNICATION_ERROR
+                            )
                           or \
-                          self.__last_status == \
-                          self.context.AUTHENTICATION_ERROR
+                            (
+                                self.__last_status == self.context.AUTHENTICATION_ERROR
+                                and
+                                StateMachine.get_current_state() != DFSAState.UNAUTHORIZED
+                            )
                          ):
                         self.__set_prompt(
                           mode=PromptMode.Original
