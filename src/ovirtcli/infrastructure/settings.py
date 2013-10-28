@@ -74,7 +74,8 @@ class OvirtCliSettings(Settings):
         ('ovirt-shell:misc_commands', str, '%s shell commands:' % PRODUCT),
         ('ovirt-shell:version', str, ''),
         ('ovirt-shell:prompt', str, ''),
-        ('ovirt-shell:extended_prompt', boolean, False)
+        ('ovirt-shell:extended_prompt', boolean, False),
+        ('ovirt-shell:execute_command', str, None)
     ]
 
     # config file white list

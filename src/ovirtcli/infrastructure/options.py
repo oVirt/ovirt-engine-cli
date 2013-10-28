@@ -55,6 +55,8 @@ class OvirtCliOptionParser(OptionParser):
                         help='read commands from FILE instead of stdin')
         self.add_option('-e', '--extended-prompt', action='store_true',
                         help='display extra information in the prompt')
+        self.add_option('-E', '--execute-command',
+                        help='execute command and print the output to STDIO')
         self.disable_interspersed_args()
 
         # list of hidden app. options (long format)

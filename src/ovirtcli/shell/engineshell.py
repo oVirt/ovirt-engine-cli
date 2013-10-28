@@ -240,10 +240,11 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         triggered when StateMachine.CONNECTED state is acquired
         """
         self.context.history.enable()
-        self._print(
-           OvirtCliSettings.CONNECTED_TEMPLATE % \
-           self.context.settings.get('ovirt-shell:version')
-        )
+        if not self.context.settings.get('ovirt-shell:execute_command'):
+            self._print(
+               OvirtCliSettings.CONNECTED_TEMPLATE % \
+               self.context.settings.get('ovirt-shell:version')
+            )
 
         self.__set_prompt(
             mode=PromptMode.Connected
@@ -254,7 +255,10 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         triggered when StateMachine.DISCONNECTED state is acquired
         """
         self.context.history.disable()
-        self._print(OvirtCliSettings.DISCONNECTED_TEMPLATE)
+        if not self.context.settings.get('ovirt-shell:execute_command'):
+            self._print(
+                OvirtCliSettings.DISCONNECTED_TEMPLATE
+            )
         self.__set_prompt(
             mode=PromptMode.Disconnected
         )
@@ -296,12 +300,17 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         del args
         self.__persist_cmd_options(opts)
         if opts.connect or self.context.settings.get('cli:autoconnect'):
-            self.do_clear('')
+            self.context._collect_connection_data()
+            if not self.context.settings.get('ovirt-shell:execute_command'):
+                self.do_clear('')
             self.do_connect(s)
             if opts.file:
-                cmd.Cmd.intro = None
                 self.do_file(opts.file)
-            self.cmdloop(clear=False)
+            elif opts.execute_command:
+                self.__execute_command(opts.execute_command)
+                self.do_exit('')
+            else:
+                self.cmdloop(clear=False)
         else:
             self.cmdloop()
 
@@ -406,8 +415,27 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         self.onError.fire()
         self.context._handle_exception(CommandError(msg))
 
-    def _print(self, msg):
-        self.context._pint_text(msg)
+    def _print(self, msg, file=sys.stdout):  # @ReservedAssignment
+        """
+        prints message to the output device (default stdout).
+
+        @param msg: text to print
+        @param file: output device
+        """
+        self.context._pint_text(msg, file)
+
+    def __execute_command(self, execute):
+        """
+        executes command from the command line
+        via -E/--execute-command
+
+        @param execute: the command to execute
+        """
+        self.context.settings['cli:autopage'] = False
+        for command in execute.split(';'):
+            line = self.precmd(command)
+            self.print_line(line)
+            self.onecmd(line)
 
     def __handler(self, signum, frame):
         self.onSigInt.fire()

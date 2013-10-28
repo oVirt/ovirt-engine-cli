@@ -75,6 +75,7 @@ class ExecutionContext(object):
         self._load_settings()
         self.setup_commands()
         self.__setup_pager()
+        self.__encoding = None
 
     def _setup_logging(self):
         """Configure logging."""
@@ -86,7 +87,7 @@ class ExecutionContext(object):
         logger.setLevel(logging.INFO)
         self._logger = logger
 
-    def __collect_connection_data(self):
+    def _collect_connection_data(self):
         try:
             if self.settings['ovirt-shell:url'] == '' and \
             not self.__is_option_specified_in_cli_args('--url')  and \
@@ -127,9 +128,6 @@ class ExecutionContext(object):
             ('-c' in self.args or '--connect' in self.args)) or \
         self.settings.get('cli:autoconnect')
 
-    def __is_help(self):
-        return '-h' in self.args or '--help' in self.args
-
     def _load_settings(self):
         """Load settings."""
         found, old_format = self.settings.load_config_file()
@@ -138,8 +136,6 @@ class ExecutionContext(object):
         elif old_format:
             self.settings.write_config_file()
         self.__exclude_app_options()
-        if not self.__is_help() and self.__is_auto_connect():
-            self.__collect_connection_data()
         self.settings.add_callback('cli:debug', self._set_debug)
         self._set_debug('cli:debug', self.settings['cli:debug'])
 
@@ -302,13 +298,32 @@ class ExecutionContext(object):
               )
         )
 
-    def _pint_text(self, text):
+    def _pint_text(self, text, file=sys.stdout):  # @ReservedAssignment
         """
-        prints text to stdout
+        prints text to output device
 
-        @param text: text
+        @param text: text to print
+        @param file: the output device to fetch encoding from
         """
-        sys.stdout.write("\n" + text + "\n")
+        encoding = self.__get_encoding(file)
+        file.write(
+               "\n" +
+               text.encode(encoding, "replace") +
+               "\n"
+        )
+
+    def __get_encoding(self, file):  # @ReservedAssignment
+        """
+        fetches encoding from the file
+
+        @param file: the output device to fetch encoding from
+        """
+        if not self.__encoding:
+            encoding = getattr(file, "encoding", None)
+            if not encoding:
+                encoding = sys.getdefaultencoding()
+            self.__encoding = encoding
+        return self.__encoding
 
     def _read_command(self):
         """Parse input until we can parse at least one full command, and
