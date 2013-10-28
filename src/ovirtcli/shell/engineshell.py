@@ -263,7 +263,12 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         """
         triggered when StateMachine.EXITING state is acquired
         """
-        self.do_disconnect('')
+        if StateMachine.get_origin_state() != DFSAState.DISCONNECTED \
+           and \
+           self.context.connection:
+            self.do_disconnect('')
+        else:
+            self.do_echo("\n")  # break shell prompt in to bash shell
 
     def __register_sys_listeners(self):
         self.onError += ErrorListener(self)
@@ -424,7 +429,6 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
         Ctrl+D
         """
-        self.do_echo("\n")  # break shell prompt in to bash shell
         self.onExit.fire()
         StateMachine.exiting()  # @UndefinedVariable
         return True
