@@ -165,6 +165,7 @@ class FiniteStateMachine(object):
         self.__id = id(self)
         self.__current_state_obj = None
         self.__current_state = None
+        self.__origin_state = None
         self.__events = {}  # future use
 
         self.onBeforeApplyState = Event()
@@ -202,6 +203,7 @@ class FiniteStateMachine(object):
             old_state = self.get_current_state()
 
             self.__current_state_obj = event
+            self.__origin_state = self.__current_state
             self.__current_state = event.get_destination()
 
             self.onAfterApplyState.fire(
@@ -316,6 +318,12 @@ class FiniteStateMachine(object):
         @return: the current State of DFSA
         """
         return self.__current_state
+
+    def get_origin_state(self):
+        """
+        @return: the origin State of DFSA
+        """
+        return self.__origin_state
 
     @Requires(DFSAEvent)
     def can_move(self, event):
