@@ -18,21 +18,21 @@
 class ColorHelper():
     BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 
-    __PREFIX = "\x1b[1;%dm"
-    __SUFFIX = "\x1b[0m"
+    __PREFIX = "\001\033[1;%dm\002"
+    __SUFFIX = "\001\033[1;m\002"
     __OFFSET = 30
 
     @staticmethod
-    def color(text, color_):
+    def colorize(text, color):
         """
         Colors text
 
         @param text: text to color
-        @param color_: color to use (ColorHelper.RED|ColorHelper.BLUE...)
+        @param color: color to use (ColorHelper.RED|ColorHelper.BLUE...)
         """
-        if color_:
+        if color:
             return ColorHelper.__PREFIX % \
-                   (ColorHelper.__OFFSET + color_) + \
+                   (ColorHelper.__OFFSET + color) + \
                    text + \
                    ColorHelper.__SUFFIX
         return text

@@ -268,7 +268,7 @@ class ExecutionContext(object):
         @param header: the error header
         """
         sys.stderr.write(
-             ColorHelper.color(
+             ColorHelper.colorize(
                  '\n++++++++++++++++++ %s ++++++++++++++++++\n%s\n\n'
                   %
                   (
@@ -288,7 +288,7 @@ class ExecutionContext(object):
         @param e: exception
         """
         sys.stdout.write(
-             ColorHelper.color(
+             ColorHelper.colorize(
                  '\n+++++++++++++++++ WARNING +++++++++++++++++\n%s\n\n'
                   %
                   self.__error_to_string(e),

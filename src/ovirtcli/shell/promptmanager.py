@@ -56,9 +56,9 @@ class PromptManager(object):
            and self.__engineshell.context.interactive:
             dprompt = dprompt.replace(
                           "unauthorized",
-                          ColorHelper.color(
+                          ColorHelper.colorize(
                                 "unauthorized",
-                                color_=ColorHelper.RED
+                                color=ColorHelper.RED
                           )
             )
         return dprompt
@@ -69,9 +69,9 @@ class PromptManager(object):
            and self.__engineshell.context.interactive:
             dprompt = dprompt.replace(
                           "disconnected",
-                          ColorHelper.color(
+                          ColorHelper.colorize(
                                 "disconnected",
-                                color_=ColorHelper.RED
+                                color=ColorHelper.RED
                           )
             )
         return dprompt
@@ -90,9 +90,9 @@ class PromptManager(object):
                    and self.__engineshell.context.interactive:
                     cprompt = cprompt.replace(
                               "connected@" + url_obj.hostname,
-                              ColorHelper.color(
+                              ColorHelper.colorize(
                                     'connected@' + url_obj.hostname,
-                                    color_=ColorHelper.GREEN
+                                    color=ColorHelper.GREEN
                               )
                 )
                 return cprompt
@@ -102,9 +102,9 @@ class PromptManager(object):
            and self.__engineshell.context.interactive:
             cprompt = cprompt.replace(
                               "connected",
-                              ColorHelper.color(
+                              ColorHelper.colorize(
                                  "connected",
-                                 color_=ColorHelper.GREEN
+                                 color=ColorHelper.GREEN
                                )
         )
         return cprompt
