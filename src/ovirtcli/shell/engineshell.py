@@ -60,7 +60,9 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                   ClearCmdShell, FileCmdShell, HistoryCmdShell, \
                   InfoCmdShell, SummaryCmdShell, CapabilitiesCmdShell):
     OFF_LINE_CONTENT = [ConnectCmdShell.NAME, HelpCommand.name, 'exit', "EOF"]
+
     ############################# INIT #################################
+
     def __init__(self, context, parser, completekey='tab', stdin=None, stdout=None):
         cmd.Cmd.__init__(self, completekey=completekey, stdin=stdin, stdout=stdout)
         ConnectCmdShell.__init__(self, context, parser)
@@ -99,7 +101,7 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
         cmd.Cmd.doc_header = self.context.settings.get('ovirt-shell:commands')
         cmd.Cmd.undoc_header = self.context.settings.get('ovirt-shell:misc_commands')
-        cmd.Cmd.intro = OvirtCliSettings.INTRO
+        cmd.Cmd.intro = self.__get_intro()
 
         readline.set_completer_delims(' ')
         signal.signal(signal.SIGINT, self.__handler)
@@ -190,6 +192,33 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
                         self.__last_status = -1
 
     ########################### SYSTEM #################################
+    def __get_intro(self):
+        """
+        @return: the shell intro
+        """
+        return self.__produce_screen_adapted_message(
+                                      text=OvirtCliSettings.INTRO,
+                                      border="+"
+        )
+
+    def __produce_screen_adapted_message(self, text, border, newline="\n\n"):
+        """
+        produces (pretty) screen width adapted message
+        
+        @param text: text to prin
+        @param border: border to use (default is '+')
+        @param newline: new line separator
+        """
+        offset = "  "
+        space = " "
+
+        termwidth = self.context.terminal._get_width()
+        introoffset = (termwidth / 2 - (len(text) / 2))
+        borderoffset = (termwidth - 4)
+
+        return offset + borderoffset * border + newline + \
+               introoffset * space + text + newline + \
+               offset + borderoffset * border + newline
 
     def __init_promt(self):
         self.__set_prompt(mode=PromptMode.Disconnected)
@@ -242,7 +271,11 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         self.context.history.enable()
         if not self.context.settings.get('ovirt-shell:execute_command'):
             self._print(
-               OvirtCliSettings.CONNECTED_TEMPLATE % \
+               self.__produce_screen_adapted_message(
+                             text=OvirtCliSettings.CONNECTED_TEMPLATE,
+                             border='=',
+                             newline='\n'
+               ) % \
                self.context.settings.get('ovirt-shell:version')
             )
 
@@ -257,7 +290,12 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         self.context.history.disable()
         if not self.context.settings.get('ovirt-shell:execute_command'):
             self._print(
-                OvirtCliSettings.DISCONNECTED_TEMPLATE
+                "\n" + \
+                self.__produce_screen_adapted_message(
+                             text=OvirtCliSettings.DISCONNECTED_TEMPLATE,
+                             border='=',
+                             newline='\n'
+               )
             )
         self.__set_prompt(
             mode=PromptMode.Disconnected

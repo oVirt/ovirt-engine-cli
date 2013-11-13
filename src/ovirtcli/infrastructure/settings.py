@@ -23,27 +23,13 @@ class OvirtCliSettings(Settings):
     PRODUCT = 'oVirt'
 
     INTRO = \
-    """
-        
- ++++++++++++++++++++++++++++++++++++++++++
- 
-           Welcome to %s shell
- 
- ++++++++++++++++++++++++++++++++++++++++++
-        
-    """ % PRODUCT
+    """Welcome to %s shell""" % PRODUCT
 
     DISCONNECTED_TEMPLATE = \
-"""
-  =======================================
-  >>> disconnected from %s manager <<<
-  =======================================
- """ % PRODUCT
+""">>> disconnected from %s manager <<<""" % PRODUCT
 
     CONNECTED_TEMPLATE = \
-"\n ==========================================\n" + \
-" >>> connected to " + PRODUCT + " manager %s <<<\n" + \
-" ==========================================\n\n"
+">>> connected to " + PRODUCT + " manager %s <<<"
 
     settings = Settings.settings + [
         ('ovirt-shell:name', str, '%s-shell' % PRODUCT),
