@@ -46,12 +46,11 @@ class DisconnectCommand(OvirtCommand):
             return
         try:
             StateMachine.disconnecting()  # @UndefinedVariable
-
-            self.context._clean_settings()
             connection.disconnect()
             self.context.status = ExecutionContext.OK
         except Exception:
             self.context.status = ExecutionContext.COMMAND_ERROR
         finally:
+            self.context._clean_settings()
             self.context.connection = None
             StateMachine.disconnected()  # @UndefinedVariable
