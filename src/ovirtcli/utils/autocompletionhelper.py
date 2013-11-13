@@ -56,8 +56,9 @@ class AutoCompletionHelper(object):
 
     @staticmethod
     def _resolve_value(val, common_options=[], specific_options={}, specific_arguments={}):
+        if val == 'None': return val
         return val + (
-              '-identifier ' if val not in common_options \
+              '-identifier' if val not in common_options \
                                 and (not AutoCompletionHelper._is_verb_in_dict_values(
                                               specific_options, val
                                               )
@@ -113,7 +114,7 @@ class AutoCompletionHelper(object):
                     obj = spl[1].strip()
                     repl = AutoCompletionHelper._get_verb_replecations(mp[obj], s_text)
                     i_completions = [('--' if (not AutoCompletionHelper._is_verb_in_dict_values(specific_arguments, f)) else '')
-                                     + f
+                                     + f + ' '
                                      if text in mp[obj] or repl == 1 or len(mp[obj]) == 1
                                                                      or (len(mp[obj]) == 2 and 'None' in mp[obj]) == 1
                                      else f
