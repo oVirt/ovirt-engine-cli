@@ -18,19 +18,36 @@
 class ColorHelper():
     BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 
-    __PREFIX = "\001\033[1;%dm\002"
-    __SUFFIX = "\001\033[1;m\002"
+    __PROMPT_PREFIX = "\001"
+    __PREFIX = "\033[1;%dm"
+    __SUFFIX = "\033[1;m"
+    ___PROMPT_SUFFIX = "\002"
     __OFFSET = 30
 
     @staticmethod
-    def colorize(text, color):
+    def colorize(text, color, is_prompt=False):
         """
         Colors text
 
         @param text: text to color
         @param color: color to use (ColorHelper.RED|ColorHelper.BLUE...)
+        @param param: is_prompt indicates that should be performed prompt
+                      unique treatment
         """
         if color:
+            if is_prompt:
+                return (
+                       ColorHelper.__PROMPT_PREFIX + \
+                       ColorHelper.__PREFIX + \
+                       ColorHelper.___PROMPT_SUFFIX
+                       ) % \
+                       (ColorHelper.__OFFSET + color) + \
+                       text + \
+                       (
+                       ColorHelper.__PROMPT_PREFIX + \
+                       ColorHelper.__SUFFIX + \
+                       ColorHelper.___PROMPT_SUFFIX
+                       )
             return ColorHelper.__PREFIX % \
                    (ColorHelper.__OFFSET + color) + \
                    text + \

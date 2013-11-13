@@ -58,7 +58,8 @@ class PromptManager(object):
                           "unauthorized",
                           ColorHelper.colorize(
                                 "unauthorized",
-                                color=ColorHelper.RED
+                                color=ColorHelper.RED,
+                                is_prompt=True
                           )
             )
         return dprompt
@@ -71,7 +72,8 @@ class PromptManager(object):
                           "disconnected",
                           ColorHelper.colorize(
                                 "disconnected",
-                                color=ColorHelper.RED
+                                color=ColorHelper.RED,
+                                is_prompt=True
                           )
             )
         return dprompt
@@ -92,7 +94,8 @@ class PromptManager(object):
                               "connected@" + url_obj.hostname,
                               ColorHelper.colorize(
                                     'connected@' + url_obj.hostname,
-                                    color=ColorHelper.GREEN
+                                    color=ColorHelper.GREEN,
+                                    is_prompt=True
                               )
                 )
                 return cprompt
@@ -104,7 +107,8 @@ class PromptManager(object):
                               "connected",
                               ColorHelper.colorize(
                                  "connected",
-                                 color=ColorHelper.GREEN
+                                 color=ColorHelper.GREEN,
+                                 is_prompt=True
                                )
         )
         return cprompt
