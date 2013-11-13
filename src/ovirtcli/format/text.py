@@ -221,19 +221,41 @@ class TextFormatter(Formatter):
                     elif value == None: continue
                     self.__write_context(format0, format1, width1, field, value, resource_context, reduced_mode_fields=reduced_mode_fields, mode=mode)
 
+    def _get_max_field_width_in_collection(self, collection, mode):
+        fields_exceptions = ['link', 'href', 'parentclass', '_Base__context']
+        reduced_mode_fields = ['id', 'name', 'description']
+        width = -1
+        width_static = -1
+
+        if mode != FormatMode.FULL:
+            for item in reduced_mode_fields:
+                width_static = max(width_static, len(item))
+            return width_static
+
+        for resource in collection:
+            width_dynamic = -1
+            width_dynamic = self.__get_max_field_width(
+                            resource,
+                            fields_exceptions,
+                            mode=mode
+            )
+            width = max(width, width_dynamic)
+        return width
+
     def _format_collection(self, collection, show_empty=False):
         context = self.context
         stdout = context.terminal.stdout
-
+        mode = FormatMode.REDUCED if not show_empty else FormatMode.FULL
+        width = self._get_max_field_width_in_collection(collection, mode)
         for resource in collection:
             if isinstance(resource, Base):
                 self._format_resource(resource=resource.superclass,
-                                      mode=FormatMode.REDUCED if not show_empty
-                                                              else FormatMode.FULL)
+                                      width=width,
+                                      mode=mode)
             else:
                 self._format_resource(resource=resource,
-                                      mode=FormatMode.REDUCED if not show_empty
-                                                              else FormatMode.FULL)
+                                      width=width,
+                                      mode=mode)
             stdout.write('\n')
 
     def format(self, context, result, show_all=False):
