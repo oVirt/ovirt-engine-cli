@@ -267,19 +267,23 @@ class ExecutionContext(object):
         @param e: exception
         @param header: the error header
         """
-        sys.stderr.write(
-             ColorHelper.colorize(
-                 '\n++++++++++++++++++ %s ++++++++++++++++++\n%s\n\n'
-                  %
-                  (
-                   header,
-                   self.__error_to_string(e)
-                  ),
+
+        text = self.formatter.format_terminal(
+                          text=self.__error_to_string(e).strip(),
+                          border='=',
+                          termwidth=self.terminal._get_width(),
+                          newline="\n",
+                          header=header.strip()
+        )
+
+        text = ColorHelper.colorize(
+                  text,
                   ColorHelper.RED if self.mode != ExecutionMode.SCRIPT
                                      and self.interactive
                                   else None
-              )
         )
+
+        sys.stderr.write(text + "\n")
 
     def __pint_warning(self, e):
         """

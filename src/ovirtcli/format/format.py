@@ -22,3 +22,31 @@ class Formatter(object):
 
     def format(self, context, result, scope=None):
         raise NotImplementedError
+
+    def format_terminal(self, text, border, termwidth, newline="\n\n", header=None):
+        """
+        formats (pretty) screen width adapted messages with border
+        
+        @param text: text to prin
+        @param border: border to use
+        @param termwidth: terminal width
+        @param newline: new line separator (default is '\n\n')
+        @param header: upper border header (default is None)
+        """
+        offset = "  "
+        space = " "
+
+        introoffset = (termwidth / 2 - (len(text) / 2))
+        borderoffset = (termwidth - 4)
+
+        if (header):
+            headeroffset = (borderoffset / 2 - ((len(header) / 2)))
+            oddoffset = 0 if termwidth & 1 != 0 else 1
+            return offset + headeroffset * border + space + header + space + \
+                   (headeroffset - len(offset) - oddoffset) * border + newline + \
+                   introoffset * space + text + newline + \
+                   offset + borderoffset * border + newline
+        return offset + borderoffset * border + newline + \
+               introoffset * space + text + newline + \
+               offset + borderoffset * border + newline
+

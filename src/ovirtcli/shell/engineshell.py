@@ -209,16 +209,12 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
         @param border: border to use (default is '+')
         @param newline: new line separator
         """
-        offset = "  "
-        space = " "
-
-        termwidth = self.context.terminal._get_width()
-        introoffset = (termwidth / 2 - (len(text) / 2))
-        borderoffset = (termwidth - 4)
-
-        return offset + borderoffset * border + newline + \
-               introoffset * space + text + newline + \
-               offset + borderoffset * border + newline
+        return self.context.formatter.format_terminal(
+                          text=text,
+                          border=border,
+                          termwidth=self.context.terminal._get_width(),
+                          newline=newline
+        )
 
     def __init_promt(self):
         self.__set_prompt(mode=PromptMode.Disconnected)
