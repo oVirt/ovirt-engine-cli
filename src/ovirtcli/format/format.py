@@ -23,7 +23,7 @@ class Formatter(object):
     def format(self, context, result, scope=None):
         raise NotImplementedError
 
-    def format_terminal(self, text, border, termwidth, newline="\n\n", header=None):
+    def format_terminal(self, text, border, termwidth, newline="\n\n", header=None, offsettext=True):
         """
         formats (pretty) screen width adapted messages with border
         
@@ -32,21 +32,28 @@ class Formatter(object):
         @param termwidth: terminal width
         @param newline: new line separator (default is '\n\n')
         @param header: upper border header (default is None)
+        @param offsettext: align the text to middle of the screen (default True)
         """
+
+        linlebreak = '\r\n'
         offset = "  "
         space = " "
-
         introoffset = (termwidth / 2 - (len(text) / 2))
         borderoffset = (termwidth - 4)
+
+        # align multilined output
+        if text.find(linlebreak) <> -1 :
+            offsettext = False
+            text = offset + text.replace(linlebreak, (linlebreak + offset))
 
         if (header):
             headeroffset = (borderoffset / 2 - ((len(header) / 2)))
             oddoffset = 0 if termwidth & 1 != 0 else 1
             return offset + headeroffset * border + space + header + space + \
                    (headeroffset - len(offset) - oddoffset) * border + newline + \
-                   introoffset * space + text + newline + \
+                   ((introoffset * space)  if offsettext else "") + text + newline + \
                    offset + borderoffset * border + newline
         return offset + borderoffset * border + newline + \
-               introoffset * space + text + newline + \
+               ((introoffset * space) if offsettext else "") + text + newline + \
                offset + borderoffset * border + newline
 
