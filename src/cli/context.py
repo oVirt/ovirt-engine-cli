@@ -291,16 +291,23 @@ class ExecutionContext(object):
 
         @param e: exception
         """
-        sys.stdout.write(
-             ColorHelper.colorize(
-                 '\n+++++++++++++++++ WARNING +++++++++++++++++\n%s\n\n'
-                  %
-                  self.__error_to_string(e),
+
+        text = self.formatter.format_terminal(
+                          text=self.__error_to_string(e).strip(),
+                          border='=',
+                          termwidth=self.terminal._get_width(),
+                          newline="\n",
+                          header='WARNING'
+        )
+
+        text = ColorHelper.colorize(
+                  text,
                   ColorHelper.YELLOW if self.mode != ExecutionMode.SCRIPT
                                         and self.interactive
                                      else None
-              )
         )
+
+        sys.stdout.write(text + "\n")
 
     def _pint_text(self, text, file=sys.stdout):  # @ReservedAssignment
         """
