@@ -52,6 +52,9 @@ popd
 %doc LICENSE
 
 %changelog
+* Thu Nov  14 2013 Michael Pasternak <mpastern@redhat.com> - 3.4.0.2-1
+- add missing packages in setup.setup.py
+
 * Thu Nov  14 2013 Michael Pasternak <mpastern@redhat.com> - 3.4.0.1-1
 - implement CLI invocation capabilities #895559
 - expose api capabilities in cli #891227
