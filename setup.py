@@ -29,7 +29,9 @@ setup(
     packages=[ 'ovirtcli', 'ovirtcli.command', 'ovirtcli.format',
                  'ovirtcli.platform', 'ovirtcli.platform.posix',
                  'ovirtcli.platform.windows', 'ovirtcli.shell', 'ovirtcli.utils', 'cli',
-                 'cli.command', 'cli.platform', 'cli.platform.posix'],
+                 'cli.command', 'cli.platform', 'cli.platform.posix', 'ovirtcli.infrastructure',
+                 'ovirtcli.annotations', 'ovirtcli.events', 'ovirtcli.listeners', 'ovirtcli.meta',
+                 'ovirtcli.state'],
     install_requires=[ 'ovirt-engine-sdk-python >= 3.3.0.3', 'ply >= 3.3', 'kitchen >= 1' ],
     entry_points={ 'console_scripts': [ 'ovirt-shell = ovirtcli.main:main' ] },
     **version_info
