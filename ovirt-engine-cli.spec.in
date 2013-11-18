@@ -52,6 +52,11 @@ popd
 %doc LICENSE
 
 %changelog
+* Mon Nov  18 2013 Michael Pasternak <mpastern@redhat.com> - 3.3.0.6-1
+- x-identifier auto-completion doesn't work in permissions #1027281
+- do not ask for credentials when -h--/help in args
+- update on vm --os-boot does not work as expected #1012985
+
 * Wed Oct  9 2013 Michael Pasternak <mpastern@redhat.com> - 3.3.0.5-1
 - incorrect property to python built-in symbol encapsulation #1015975
 - make ctrl-c breaking the command rather than existing shell #869269
