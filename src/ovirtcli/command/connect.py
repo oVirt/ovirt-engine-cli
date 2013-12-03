@@ -77,6 +77,7 @@ class ConnectCommand(OvirtCommand):
         port = settings.get('ovirt-shell:port')
         timeout = settings.get('ovirt-shell:timeout')
         session_timeout = settings.get('ovirt-shell:session_timeout')
+        renew_session = settings.get('ovirt-shell:renew_session')
         debug = settings.get('cli:debug')
         insecure = settings.get('ovirt-shell:insecure')
         dont_validate_cert_chain = settings.get('ovirt-shell:dont_validate_cert_chain')
@@ -131,6 +132,7 @@ class ConnectCommand(OvirtCommand):
                          port=port if port != -1 else None,
                          timeout=timeout if timeout != -1 else None,
                          session_timeout=session_timeout if session_timeout != -1 else None,
+                         renew_session=renew_session,
                          debug=debug
                      ),
                      url=url
