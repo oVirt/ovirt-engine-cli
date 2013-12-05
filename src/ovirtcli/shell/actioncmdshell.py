@@ -20,7 +20,7 @@ from ovirtcli.utils.typehelper import TypeHelper
 from ovirtcli.utils.autocompletionhelper import AutoCompletionHelper
 from ovirtsdk.infrastructure import brokers
 from ovirtcli.utils.methodhelper import MethodHelper
-
+import sys
 
 class ActionCmdShell(CmdShell):
     NAME = 'action'
@@ -31,7 +31,82 @@ class ActionCmdShell(CmdShell):
         self.identifier_template = '--%s-identifier'
 
     def do_action(self, args):
-        return self.context.execute_string(ActionCmdShell.NAME + ' ' + args + '\n')
+        nargs = self.__reformat_args(args)
+        return self.context.execute_string(ActionCmdShell.NAME + ' ' + nargs + '\n')
+
+    def __update_history(self, nargs):
+        """
+        replaces history entry with reformatted content
+
+        @param nargs: new entry to add
+        """
+        if self.context.history.length() >= 1:
+            self.context.history.remove(self.context.history.length() - 1)
+            self.context.history.add(ActionCmdShell.NAME + " " + nargs)
+
+    def __reformat_args(self, args):
+        """
+        1. Replaces current line with new content formated according
+           to command syntax, use-case:
+
+            * action could not be determinated unless object parent/s is/are specified
+
+                from:
+                    action object xxx --parent-identifier yyy action-name
+                to:
+                    action object xxx action-name --parent-identifier yyy
+
+        2. replaces history entry with reformatted content
+
+        @param args: original args
+        @return: reformatted args
+        """
+        cursor_up = '\x1b[1A'
+        erase_line = '\x1b[K'
+        sys.stdout.write(cursor_up + erase_line)
+        nargs = self.__reformat_command(args)
+        self.print_line(
+            ((self.prompt.replace("\001", "")).replace("\002", ""))  # remove escape sequences/behave like a string
+            +
+            ActionCmdShell.NAME
+            +
+            " "
+            +
+            nargs,
+            no_prompt=True
+        )
+        self.__update_history(nargs)
+        return nargs
+
+    def __reformat_command(self, s):
+        """
+        Reformats command according to the default command syntax,
+        use-case:
+
+        * action name could not be determinated unless object parents is specified
+
+            from:
+                action object xxx --parent-identifier yyy action-name
+            to:
+                action object xxx action-name --parent-identifier yyy
+
+        """
+        line = ''
+        arguments = ''
+        tokens = s.split(' ')
+        tokens_len = len(tokens)
+        i = 0
+        while i < tokens_len:
+            if tokens[i].startswith('--'):
+                arguments = arguments + ' ' + tokens[i].strip()
+                i = i + 1
+                if i < tokens_len and not tokens[i].startswith('--'):
+                    arguments = arguments + ' ' + tokens[i].strip()
+                    i = i + 1
+            else:
+                line = line + ' ' + tokens[i].strip()
+                i = i + 1
+        return line.strip() + ' ' + arguments.strip()
 
     def __add_resource_specific_options(self, obj, specific_options, line, key=None):
         obj_type = TypeHelper.getDecoratorType(TypeHelper.to_singular(obj))

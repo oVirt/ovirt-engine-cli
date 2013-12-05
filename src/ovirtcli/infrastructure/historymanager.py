@@ -86,6 +86,10 @@ class HistoryManager(code.InteractiveConsole):
         if self.length() > 0:
             readline.remove_history_item(entry)
 
+    def add(self, entry):
+        if self.enabled:
+            readline.add_history(entry)
+
     def __unregister_dump_callback(self):
         for item in atexit._exithandlers:
             if hasattr(item[0], 'func_name') and \
