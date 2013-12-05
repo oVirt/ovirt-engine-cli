@@ -99,8 +99,11 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
             self._error(str(e))
             return self.cmdloop(intro, clear=False)
 
-    def print_line(self, line):
-        print self.prompt + line
+    def print_line(self, line, no_prompt=False):
+        if no_prompt:
+            print line
+        else:
+            print self.prompt + line
 
     def emptyline(self, no_prompt=False):
         if no_prompt:
