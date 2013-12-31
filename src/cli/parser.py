@@ -22,8 +22,10 @@ from cli.error import ParseError
 class Parser(PLYParser):
     """A parser for CLI commands. The general form of a CLI comand is:
 
-    <command> [arguments] [options] [redirection] [pipeline]
+    <command> [parameter] [redirection] [pipeline]
     ! <command>
+
+    A parameter can be an argument or an option.
 
     This parser supports quoted strings for arguments and options, and
     multi-line inputs.
@@ -139,17 +141,17 @@ class Parser(PLYParser):
             p[0] = p[1] + [p[2]]
 
     def p_command(self, p):
-        """command : name argument_list option_list redirections pipeline heredoc eol
+        """command : name parameter_list redirections pipeline heredoc eol
                    | BANG SHELL eol
                    | eol
         """
-        if len(p) == 8:
-            if p[6]:
-                for i in range(len(p[4])):
-                    if p[4][i][0] == '<<':
-                        p[4][i] = ('<<', p[6])
+        if len(p) == 7:
+            if p[5]:
+                for i in range(len(p[3])):
+                    if p[3][i][0] == '<<':
+                        p[3][i] = ('<<', p[5])
                         break
-            p[0] = (p[1], p[2], p[3], p[4], p[5])
+            p[0] = (p[1], p[2], p[3], p[4])
         elif len(p) == 4:
             p[0] = (p[1], p[2])
         elif len(p) == 2:
@@ -159,18 +161,20 @@ class Parser(PLYParser):
         """name : WORD"""
         p[0] = p[1]
 
-    def p_argument_list(self, p):
-        """argument_list : empty
-                         | argument
-                         | argument_list argument
+    def p_parameter_list(self, p):
+        """parameter_list : empty
+                          | parameter_list parameter
         """
         if len(p) == 2:
-            if p[1] is None:
-                p[0] = []
-            else:
-                p[0] = [p[1]]
+            p[0] = []
         else:
             p[0] = p[1] + [p[2]]
+
+    def p_parameter(self, p):
+        """parameter : argument
+                     | option
+        """
+        p[0] = p[1]
 
     def p_argument(self, p):
         """argument : IPADDR
@@ -180,20 +184,6 @@ class Parser(PLYParser):
                     | NUMBER
         """
         p[0] = p[1]
-
-    def p_option_list(self, p):
-        """option_list : empty
-                       | option
-                       | option_list option
-
-        """
-        if len(p) == 2:
-            if p[1] is None:
-                p[0] = []
-            else:
-                p[0] = [p[1]]
-        else:
-            p[0] = p[1] + [p[2]]
 
     def p_option(self, p):
         """option : OPTION option_value

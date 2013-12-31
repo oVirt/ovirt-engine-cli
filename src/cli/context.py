@@ -383,7 +383,21 @@ class ExecutionContext(object):
 #        if parsed[0] == '!':
 #            self._execute_shell_command(parsed[1])
 #            return
-        name, args, opts, redirections, pipeline = parsed
+
+        # The parser produces a list of parameters that include both the
+        # arguments and the options. We need to move them to separate
+        # lists to ease later processing. Arguments are plain strings and
+        # options are pairs containing the name of the option and the value,
+        # so it is easy to separate them checking their type.
+        name, parameters, redirections, pipeline = parsed
+        args = []
+        opts = []
+        for parameter in parameters:
+            if type(parameter) is str:
+                args.append(parameter)
+            else:
+                opts.append(parameter)
+
         if self.settings.get('cli:autopage'):
             if pipeline:
                 pipeline += '| %s' % self.__pager
