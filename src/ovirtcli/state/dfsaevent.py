@@ -24,7 +24,7 @@ class DFSAEvent(object):
     Finite-State Automata event
     '''
 
-    def __init__(self, name, sources, destination, callbacks=[]):
+    def __init__(self, name, sources, destination, description=None, callbacks=[]):
         '''
         @param name: the state event name
         @param sources: the source states from which destination state is eligible
@@ -35,6 +35,7 @@ class DFSAEvent(object):
         self.__name = name
         self.__sources = sources
         self.__destination = destination
+        self.__description = description
         self.__callbacks = callbacks
 
     def get_name(self):
@@ -54,6 +55,12 @@ class DFSAEvent(object):
         @return: the destination of DFSAEvent
         """
         return self.__destination
+
+    def get_description(self):
+        """
+        @return: the description of DFSAEvent
+        """
+        return self.__description
 
     def get_callbacks(self):
         """

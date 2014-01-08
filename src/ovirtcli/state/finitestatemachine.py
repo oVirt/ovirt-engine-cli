@@ -150,9 +150,10 @@ class FiniteStateMachine(object):
 #   @Requires([DFSAEvent], DFSAEvent)
 #   TODO: support multi-parameters definition ^
     def __init__(self, events, inital_state=DFSAEvent(
-                                      name='init',
+                                      name='disconnected',
                                       sources=[],
-                                      destination=DFSAState.DISCONNECTED
+                                      destination=DFSAState.DISCONNECTED,
+                                      description='init'
                                )
         ):
         '''
@@ -166,6 +167,7 @@ class FiniteStateMachine(object):
         self.__current_state_obj = None
         self.__current_state = None
         self.__origin_state = None
+        self.__origin_state_object = None
         self.__events = {}  # future use
 
         self.onBeforeApplyState = Event()
@@ -178,7 +180,7 @@ class FiniteStateMachine(object):
         self.onCanMove = Event()
 
         self.__register_events(events)
-        self.__apply_state(inital_state)
+        self.__resolve_inital_state(inital_state)
 
 #     @Requires(DFSAEvent)
     def __apply_state(self, event):
@@ -202,6 +204,7 @@ class FiniteStateMachine(object):
 
             old_state = self.get_current_state()
 
+            self.__origin_state_object = self.__current_state_obj
             self.__current_state_obj = event
             self.__origin_state = self.__current_state
             self.__current_state = event.get_destination()
@@ -325,6 +328,12 @@ class FiniteStateMachine(object):
         """
         return self.__origin_state
 
+    def get_origin_state_event(self):
+        """
+        @return: the origin State of DFSA
+        """
+        return self.__origin_state_object
+
     @Requires(DFSAEvent)
     def can_move(self, event):
         """
@@ -346,3 +355,26 @@ class FiniteStateMachine(object):
         )
 
         return result
+
+    def rollback(self):
+        """
+        performs a rollback to the origin state
+        """
+        self.__apply_state(self.get_origin_state_event())
+
+    def __resolve_inital_state(self, inital_state):
+        """
+        resolves initial state of DFSA
+
+        if user has defined same state as default one and DFSA can move to it -
+        it will be used, otherwise default state will be set as a initial.
+        """
+        if self.__events.has_key(inital_state.get_name()) and \
+           self.can_move(inital_state):
+            self.__apply_state(
+                   self.__events.get(
+                         inital_state.get_name()
+                   )
+            )
+        else:
+            self.__apply_state(inital_state)

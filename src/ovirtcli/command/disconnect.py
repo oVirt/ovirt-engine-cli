@@ -49,6 +49,7 @@ class DisconnectCommand(OvirtCommand):
             connection.disconnect()
             self.context.status = ExecutionContext.OK
         except Exception:
+            # TODO: consider rollback on disconnect failure (StateMachine.rollback())
             self.context.status = ExecutionContext.COMMAND_ERROR
         finally:
             self.context._clean_settings()

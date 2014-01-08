@@ -106,7 +106,8 @@ StateMachine = FiniteStateMachine(
         DFSAEvent(
           name='disconnected',
           sources=[
-               DFSAState.DISCONNECTING
+               DFSAState.DISCONNECTING,
+               DFSAState.CONNECTING
           ],
           destination=DFSAState.DISCONNECTED,
           callbacks=[]),

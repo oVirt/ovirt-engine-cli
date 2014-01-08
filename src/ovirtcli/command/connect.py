@@ -144,16 +144,20 @@ class ConnectCommand(OvirtCommand):
             StateMachine.connected()  # @UndefinedVariable
 
         except RequestError, e:
+            StateMachine.rollback()
             self.__cleanContext()
             self.error("[" + str(e.status) + '] - ' + str(e.reason) + ', ' + str(e.detail))
         except NoCertificatesError:
+            StateMachine.rollback()
             self.__cleanContext()
             self.error(Messages.Error.NO_CERTIFICATES)
         except ConnectionError, e:
+            StateMachine.rollback()
             self.__cleanContext()
             self.context._clean_settings()
             self.error(str(e))
         except TypeError, e:
+            StateMachine.rollback()
             self.__cleanContext()
             option, value, expected = self.__normalize_typeerror(e)
             self.error(
@@ -163,6 +167,7 @@ class ConnectCommand(OvirtCommand):
                                expected)
             )
         except Exception, e:
+            StateMachine.rollback()
             self.__cleanContext()
             self.error(str(e))
         finally:
