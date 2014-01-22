@@ -141,8 +141,8 @@ class AddCommand(OvirtCommand):
         typs = self.get_singular_types(method='add', typ=args[0])
 
         if base:
-            collection = getattr(base, typ)
-
+            if hasattr(base, typ):
+                collection = getattr(base, typ)
         else:
             connection = self.check_connection()
             if hasattr(connection, typ):
