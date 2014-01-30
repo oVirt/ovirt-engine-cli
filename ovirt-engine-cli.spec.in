@@ -52,6 +52,13 @@ popd
 %doc LICENSE
 
 %changelog
+* Thu Jan 30 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.4.0.3-1
+- Support automatic session invalidation #1018561.
+- Fix mismatch between restore snapshot syntax and auto completion #1027298.
+- Support auto completion of options prefixed with -- #854473.
+- Accept intermixed argumetns and options #1047513.
+- Check existence of collections before adding #1043500.
+
 * Thu Nov  14 2013 Michael Pasternak <mpastern@redhat.com> - 3.4.0.2-1
 - add missing packages in setup.setup.py
 
