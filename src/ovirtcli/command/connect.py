@@ -146,7 +146,10 @@ class ConnectCommand(OvirtCommand):
         except RequestError, e:
             StateMachine.rollback()
             self.__cleanContext()
-            self.error("[" + str(e.status) + '] - ' + str(e.reason) + ', ' + str(e.detail))
+            if debug:
+                self.error("[" + str(e.status) + '] - ' + str(e.reason) + ', ' + str(e.detail))
+            else:
+                self.error("[" + str(e.status) + '] - ' + str(e.reason))
         except NoCertificatesError:
             StateMachine.rollback()
             self.__cleanContext()
