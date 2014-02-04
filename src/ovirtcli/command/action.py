@@ -35,6 +35,13 @@ class ActionCommand(OvirtCommand):
 
         action <type> <id> <action> [parent identifiers] [command options]
 
+        Note that when using auto-completion it may be necessary to know
+        the parent identifiers of the object in order to determine the
+        available actions, so the following syntax, with the action
+        after the parent identifiers, is also accepted:
+
+        action <type> <id> [parent identifiers] <action> [command options]
+
         == Description ==
 
         Executes the an action on an object. This command requires the
@@ -87,6 +94,13 @@ class ActionCommand(OvirtCommand):
         == Usage ==
 
         action <type> <id> <action> [parent identifiers] [command options]
+
+        Note that when using auto-completion it may be necessary to know
+        the parent identifiers of the object in order to determine the
+        available actions, so the following syntax, with the action
+        after the parent identifiers, is also accepted:
+
+        action <type> <id> [parent identifiers] <action> [command options]
 
         == Description ==
 
