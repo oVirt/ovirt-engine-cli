@@ -345,15 +345,16 @@ class OvirtCommand(Command):
             coll = getattr(base, candidate + 's')
             if coll is not None:
                 if name:
-                    return coll.get(name=name)
+                    return self.__get_by_name(coll, name, kwargs)
                 if kwargs and kwargs.has_key('id'):
-                    return coll.get(id=str(kwargs['id']))
+                    id, kwargs = self._get_query_params(opts, query_arg='--id')
+                    return self.__get_by_id(coll, str(id), kwargs)
                 else:
                     identifier = self.__produce_identifier(obj_id)
                     if identifier:
-                        return coll.get(id=str(obj_id))
+                        return self.__get_by_id(coll, str(obj_id), kwargs)
                     else:
-                        return coll.get(name=obj_id)
+                        return self.__get_by_name(coll, obj_id, kwargs)
         else:
             err_str = Messages.Error.NO_SUCH_TYPE_OR_ARS_NOT_VALID
             if context_variants:
@@ -362,6 +363,18 @@ class OvirtCommand(Command):
             self.error(err_str % candidate)
 
         return None
+
+    def __get_by_name(self, coll, name, kwargs):
+        if kwargs:
+            return coll.get(name=name, **kwargs)
+        else:
+            return coll.get(name=name)
+
+    def __get_by_id(self, coll, id, kwargs):
+        if kwargs:
+            return coll.get(id=id, **kwargs)
+        else:
+            return coll.get(id=id)
 
     def __produce_identifier(self, candidate):
         if type(candidate) == str:
