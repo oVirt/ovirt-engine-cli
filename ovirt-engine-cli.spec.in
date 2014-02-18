@@ -52,6 +52,11 @@ popd
 %doc LICENSE
 
 %changelog
+* Tue Feb 18 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.4.0.4-1
+- Show HTTP error page only in debug mode #869283.
+- Change action help text to match syntax #1047543.
+- Add example of search with quotes #1065945.
+
 * Thu Jan 30 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.4.0.3-1
 - Support automatic session invalidation #1018561.
 - Fix mismatch between restore snapshot syntax and auto completion #1027298.
