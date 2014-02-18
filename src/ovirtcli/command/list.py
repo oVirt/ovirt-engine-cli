@@ -89,6 +89,13 @@ class ListCommand(OvirtCommand):
 
           $ list vms --query "name=myvm*"
 
+        - This example lists all virtual machines that have a given description:
+
+          $ list vms --query 'description="The description"'
+
+          Note that the the syntax of the search queries requires double quotes
+          when the text includes spaces.
+
         - This example list all disks by vm_id in virtual machine 'myvm':
 
           $ list disks --vm-identifier myvm
@@ -104,7 +111,7 @@ class ListCommand(OvirtCommand):
           as oVirt dialect is not available on vm disks collection.          
           
           $ list disks --vm-identifier myvm --kwargs "name=Disk 3"
-          
+
         == Return values ==
 
         This command will exit with one of the following statuses. To see the
