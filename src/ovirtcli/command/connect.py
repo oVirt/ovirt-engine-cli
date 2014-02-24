@@ -51,7 +51,7 @@ class ConnectCommand(OvirtCommand):
 
         == Arguments ==
 
-         * url               - The URL to connect to (http[s]://server[:port]/api).
+         * url               - The URL to connect to (http[s]://server[:port]/ovirt-engine/api).
          * username          - The user to connect as. (user@domain).
          * password          - The password to use.
          * [key-file]        - The client PEM key file to use.
@@ -188,7 +188,6 @@ class ConnectCommand(OvirtCommand):
             r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|'  # ...or ipv4
             r'\[?[A-F0-9]*:[A-F0-9:]+\]?)'  # ...or ipv6
             r'(?::\d+)?'  # optional port
-            r'(/api)'  # /api
            , re.IGNORECASE)
         if not regex.search(url):
             return False

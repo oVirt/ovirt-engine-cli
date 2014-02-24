@@ -35,7 +35,7 @@ class OvirtCliOptionParser(OptionParser):
         self.add_option('-d', '--debug', action='store_true',
                         help='enable debugging')
         self.add_option('-l', '--url',
-                        help='specifies the API entry point URL (http[s]://server[:port]/api)')
+                        help='specifies the API entry point URL (http[s]://server[:port]/ovirt-engine/api)')
         self.add_option('-u', '--username', help='connect as this user')
         self.add_option('-K', '--key-file', help='specify client PEM key-file')
         self.add_option('-C', '--cert-file', help='specify client PEM cert-file')
