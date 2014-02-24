@@ -52,7 +52,7 @@ class Messages():
         INVALID_KWARGS_FORMAT = '"%s" is invalid --kwargs argument, valid format is "x=y;z=q;...".'
         INVALID_KWARGS_CONTENT = '--kwargs constraint cannot be empty.'
         INVALID_ARGUMENT_TYPE = 'value used for the \"%s\" is \"%s\", while %s'
-        INVALID_URL_SEGMENT = '"%s" is invalid url format. valid format is http[s]://server:port/api.'
+        INVALID_URL_SEGMENT = '"%s" is invalid url format, valid format is http[s]://server:port/path, where path is usually "ovirt-engine/api" or, for older versions of the engine, just "api".'
         MISSING_CONFIGURATION_VARIABLE = 'missing configuration variable: %s.'
         UNSUPPORTED_ATTRIBUTE = 'object construction failure, this could happen if you using unsupported option, please see help for the given command for more details.'
     class Warning():
