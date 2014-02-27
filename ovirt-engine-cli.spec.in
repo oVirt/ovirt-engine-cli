@@ -15,7 +15,7 @@ BuildRequires: python-kitchen
 BuildArch: noarch
 
 Requires: python
-Requires: ovirt-engine-sdk-python >= 3.3.0.3
+Requires: ovirt-engine-sdk-python >= 3.4.0.5
 Requires: python-setuptools
 Requires: python-ply
 Requires: python-kitchen
@@ -52,6 +52,10 @@ popd
 %doc LICENSE
 
 %changelog
+* Thu Feb 27 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.4.0.5-1
+- Don't require /api #1069171.
+- Retrieve collection get method parameters dynamically #866448.
+
 * Tue Feb 18 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.4.0.4-1
 - Show HTTP error page only in debug mode #869283.
 - Change action help text to match syntax #1047543.
