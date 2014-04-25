@@ -98,7 +98,7 @@ class OvirtCommand(Command):
             return param
 
     def __do_set_primitive_list_data(self, obj, prop, val):
-        for param in str(val).split(','):
+        for param in self.__split_with_escape(str(val), delimiter=','):
             getattr(obj, prop).append(param)
 
     def __do_set_data(self, obj, prop, fq_prop, val):
@@ -123,7 +123,7 @@ class OvirtCommand(Command):
                         if not val:
                             self.error(Messages.Error.INVALID_COLLECTION_BASED_OPTION_SYNTAX % prop)
 
-                        for param in str(val).split(','):
+                        for param in self.__split_with_escape(str(val), delimiter=','):
                             obj_params_set_cand = root_obj_params_set_cand
                             if not param.startswith(props[i] + '.'):
                                 self.error(
@@ -508,3 +508,45 @@ class OvirtCommand(Command):
         """INTERNAL: return a list of type actions."""
 
         return MethodHelper.get_object_methods(obj, exceptions=['delete', 'update'])
+
+    def __split_with_escape(self, text, delimiter=',', escape='\\'):
+        """
+        Splits a string so that the delimiter is ignored if it is preceded by
+        the escape character.
+        """
+
+        chunks = []
+        chunk = ''
+        escaping = False
+        for c in list(text) + [None]:
+            if not escaping:
+                if c is None:
+                    chunks.append(chunk)
+                    chunk = ''
+                    escaping = False
+                elif c == escape:
+                    escaping = True
+                elif c == delimiter:
+                    chunks.append(chunk)
+                    chunk = ''
+                    escaping = False
+                else:
+                    chunk += c
+                    escaping = False
+            else:
+                if c is None:
+                    chunk += escape
+                    chunks.append(chunk)
+                    chunk = ''
+                    escaping = False
+                elif c == escape:
+                    chunk += escape
+                    escaping = False
+                elif c == delimiter:
+                    chunk += c
+                    escaping = False
+                else:
+                    chunk += escape
+                    chunk += c
+                    escaping = False
+        return chunks
