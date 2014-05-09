@@ -118,9 +118,17 @@ class TextFormatter(Formatter):
                     width0 = max(width0, len(new_field))
         return width0
 
-    def __write_context(self, format0, format1, width1, field, value, resource_context, reduced_mode_fields, mode=FormatMode.FULL):
+    def __write_context(self, format0, format1, width1, field, value, resource_context, reduced_mode_fields, mode=FormatMode.FULL, resource=None, parent=None):
         context = self.context
         stdout = context.terminal.stdout
+
+        # Statistic values are always represented as floating point numbers,
+        # even if they are declared as integers, so in order to render them
+        # correctly we need to do a type conversion:
+        if type(parent) == params.Values and type(resource) == params.Value:
+            if parent.get_type() == "INTEGER":
+                value = long(value)
+
         if type(value) == types.UnicodeType:
             val = value
         else:
@@ -143,7 +151,7 @@ class TextFormatter(Formatter):
                 stdout.write('\n')
                 val = val[width1:]
 
-    def _format_resource(self, resource, width= -1, show_empty=False, resource_context=None, mode=FormatMode.FULL, sort_strategy=['id', 'name', 'description']):
+    def _format_resource(self, resource, width= -1, show_empty=False, resource_context=None, mode=FormatMode.FULL, sort_strategy=['id', 'name', 'description'], parent=None):
         context = self.context
         settings = context.settings
         stdout = context.terminal.stdout
@@ -189,18 +197,20 @@ class TextFormatter(Formatter):
                                                       width=width0,
                                                       show_empty=show_empty,
                                                       resource_context=(resource_context + '.' + field),
-                                                      mode=mode)
+                                                      mode=mode,
+                                                      parent=resource)
                             else:
                                 self._format_resource(resource=value,
                                                       width=width0,
                                                       show_empty=show_empty,
                                                       resource_context=field,
-                                                      mode=mode)
+                                                      mode=mode,
+                                                      parent=resource)
                             continue
                         if value == None and show_empty == True:
                             value = ''
                         elif value == None: continue
-                        self.__write_context(format0, format1, width1, field, value, resource_context, reduced_mode_fields=reduced_mode_fields, mode=mode)
+                        self.__write_context(format0, format1, width1, field, value, resource_context, reduced_mode_fields=reduced_mode_fields, mode=mode, parent=parent, resource=resource)
                 else:
                     if hasattr(params, type(value).__name__) or hasattr(brokers, type(value).__name__):
                         if resource_context is not None:
@@ -208,18 +218,20 @@ class TextFormatter(Formatter):
                                                   width=width0,
                                                   show_empty=show_empty,
                                                   resource_context=(resource_context + '.' + field),
-                                                  mode=mode)
+                                                  mode=mode,
+                                                  parent=parent)
                         else:
                             self._format_resource(resource=value,
                                                   width=width0,
                                                   show_empty=show_empty,
                                                   resource_context=field,
-                                                  mode=mode)
+                                                  mode=mode,
+                                                  parent=parent)
                         continue
                     if value == None and show_empty == True:
                         value = ''
                     elif value == None: continue
-                    self.__write_context(format0, format1, width1, field, value, resource_context, reduced_mode_fields=reduced_mode_fields, mode=mode)
+                    self.__write_context(format0, format1, width1, field, value, resource_context, reduced_mode_fields=reduced_mode_fields, mode=mode, parent=parent, resource=resource)
 
     def _get_max_field_width_in_collection(self, collection, mode):
         fields_exceptions = ['link', 'href', 'parentclass', '_Base__context']
