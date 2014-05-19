@@ -54,7 +54,7 @@ def get_pager():
     """Return the platform specific pager."""
     pager = os.environ.get('PAGER')
     if pager is None and which('less'):
-        pager = 'less -FSRX'
+        pager = 'less -FRX'
     if pager is None and which('more'):
         pager = 'more'
     return pager
