@@ -119,7 +119,7 @@ class TextFormatter(Formatter):
                     width0 = max(width0, len(new_field))
         return width0
 
-    def __write_context(self, format0, format1, width1, field, value, resource_context, reduced_mode_fields, mode=FormatMode.FULL, resource=None, parent=None):
+    def __write_context(self, format0, field, value, resource_context, reduced_mode_fields, mode=FormatMode.FULL, resource=None, parent=None):
         context = self.context
         stdout = context.terminal.stdout
 
@@ -143,14 +143,8 @@ class TextFormatter(Formatter):
         if mode != FormatMode.REDUCED or fil in reduced_mode_fields:
             stdout.write(format0 % fil)
             stdout.write(': ')
-            stdout.write(format1 % val)
+            stdout.write(val)
             stdout.write('\n')
-            val = val[width1:]
-            while len(val) > 0:
-                stdout.write(width1 * ' ')
-                stdout.write(format1 % val)
-                stdout.write('\n')
-                val = val[width1:]
 
     def _format_resource(self, resource, width= -1, show_empty=False, resource_context=None, mode=FormatMode.FULL, sort_strategy=['id', 'name', 'description'], parent=None):
         context = self.context
@@ -174,12 +168,6 @@ class TextFormatter(Formatter):
                     width0 = max(width0, len(item))
 
         format0 = '%%-%ds' % width0
-        if stdout.isatty() and not settings['ovirt-shell:wide']:
-            width1 = context.terminal.width - width0 - 2
-            format1 = '%%-%d.%ds' % (width1, width1)
-        else:
-            width1 = sys.maxint
-            format1 = '%s'
 
         for field in fields:
             if field not in fields_exceptions:
@@ -211,7 +199,7 @@ class TextFormatter(Formatter):
                         if value == None and show_empty == True:
                             value = ''
                         elif value == None: continue
-                        self.__write_context(format0, format1, width1, field, value, resource_context, reduced_mode_fields=reduced_mode_fields, mode=mode, parent=parent, resource=resource)
+                        self.__write_context(format0, field, value, resource_context, reduced_mode_fields=reduced_mode_fields, mode=mode, parent=parent, resource=resource)
                 else:
                     if hasattr(params, type(value).__name__) or hasattr(brokers, type(value).__name__):
                         if resource_context is not None:
@@ -232,7 +220,7 @@ class TextFormatter(Formatter):
                     if value == None and show_empty == True:
                         value = ''
                     elif value == None: continue
-                    self.__write_context(format0, format1, width1, field, value, resource_context, reduced_mode_fields=reduced_mode_fields, mode=mode, parent=parent, resource=resource)
+                    self.__write_context(format0, field, value, resource_context, reduced_mode_fields=reduced_mode_fields, mode=mode, parent=parent, resource=resource)
 
     def _get_max_field_width_in_collection(self, collection, mode):
         fields_exceptions = ['link', 'href', 'parentclass', '_Base__context']
