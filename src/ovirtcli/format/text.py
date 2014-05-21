@@ -15,6 +15,7 @@
 #
 
 
+import datetime
 import sys
 
 from ovirtcli.format.format import Formatter
@@ -48,7 +49,7 @@ class TextFormatter(Formatter):
 
     # list of complex types that should be treated as
     # primitives (e.g should be wrapped to string at runtime)
-    complex_type_exceptions = [params.datetime]
+    complex_type_exceptions = [datetime.datetime]
 
 
     def _get_fields(self, typ):
