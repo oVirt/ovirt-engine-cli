@@ -52,6 +52,27 @@ popd
 %doc LICENSE
 
 %changelog
+* Thu May 22 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.5.0.0-1
+- Update to version 2.12a of generateDS.py #1091688.
+- Don't write integer statistics as float #855724.
+- Escape comma in values #1088914.
+
+* Thu Feb 27 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.4.0.5-1
+- Don't require /api #1069171.
+- Retrieve collection get method parameters dynamically #866448.
+
+* Tue Feb 18 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.4.0.4-1
+- Show HTTP error page only in debug mode #869283.
+- Change action help text to match syntax #1047543.
+- Add example of search with quotes #1065945.
+
+* Thu Jan 30 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.4.0.3-1
+- Support automatic session invalidation #1018561.
+- Fix mismatch between restore snapshot syntax and auto completion #1027298.
+- Support auto completion of options prefixed with -- #854473.
+- Accept intermixed argumetns and options #1047513.
+- Check existence of collections before adding #1043500.
+
 * Thu Nov  14 2013 Michael Pasternak <mpastern@redhat.com> - 3.4.0.2-1
 - add missing packages in setup.setup.py
 
