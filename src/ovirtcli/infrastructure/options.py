@@ -50,7 +50,7 @@ class OvirtCliOptionParser(OptionParser):
                         action='store_true')
         self.add_option('-P', '--port', help='specify port')
         self.add_option('-T', '--timeout', help='specify request timeout')
-        self.add_option('-S', '--session-timeout', help='specify authentication session timeout (positive number)')
+        self.add_option('-S', '--session-timeout', help='specify authentication session timeout in minutes (positive number)')
         self.add_option('-c', '--connect', action='store_true',
                         help='automatically connect')
         self.add_option('-f', '--file', metavar='FILE',
