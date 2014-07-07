@@ -61,7 +61,7 @@ class ConnectCommand(OvirtCommand):
          * [insecure]        - Allow connecting to SSL sites without certificates.
          * [port]            - The port to use (if not specified in url).
          * [timeout]         - The request timeout.
-         * [session-timeout] - The authentication session timeout (positive number).
+         * [session-timeout] - The authentication session timeout in minutes (positive number).
         """
 
     def execute(self):
