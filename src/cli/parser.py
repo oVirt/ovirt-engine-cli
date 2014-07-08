@@ -31,14 +31,12 @@ class Parser(PLYParser):
     multi-line inputs.
     """
 
-    tokens = ('IPADDR', 'UUID', 'WORD', 'STRING', 'NUMBER', 'OPTION', 'LT', 'LTLT', 'GT', 'GTGT',
+    tokens = ('WORD', 'STRING', 'OPTION', 'LT', 'LTLT', 'GT', 'GTGT',
               'BANG', 'PIPE', 'NEWLINE', 'MARKER', 'HEREDOC', 'SHELL')
     literals = ('=', ';')
     states = [('heredoc1', 'inclusive'), ('heredoc2', 'exclusive'),
               ('shell', 'exclusive')]
 
-    t_WORD = r'[^ \n\t"\'<>|!\\#;]+'
-    t_OPTION = r'-(-[a-zA-Z_][a-zA-Z0-9_]*)+'
     t_LT = r'<'
     t_GT = r'>'
     t_GTGT = r'>>'
@@ -49,16 +47,22 @@ class Parser(PLYParser):
     t_heredoc2_ignore = ' \t'
     t_shell_ignore = ' \t'
 
-    def t_IPADDR(self, t):
-        # ip validity check performed on the server side,
-        # this pattern only recognizes the IP address form
-        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
-        t.value = str(t.value)
+    # Note that the expression for options has to be before the
+    # expression for words because the generated parser tries them in
+    # order, and the expression for words is a supperset of the
+    # expression for options. If the expression for words goes first
+    # then options are never matched.
+
+    def t_OPTION(self, t):
+        r'-(-[a-zA-Z_][a-zA-Z0-9_]*)+'
         return t
 
-    def t_UUID(self, t):
-        r'[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
-        t.value = str(t.value)
+    def t_WORD(self, t):
+        r'[^ \n\t"\'<>|!\\#;]+'
+        try:
+            t.value = int(t.value)
+        except ValueError:
+            pass
         return t
 
     def t_STRING(self, t):
@@ -68,11 +72,6 @@ class Parser(PLYParser):
         else:
             t.value = t.value[1:-1]
         t.value = t.value.replace('\\\n', '')
-        return t
-
-    def t_NUMBER(self, t):
-        r'[-+]?\d+'
-        t.value = int(t.value)
         return t
 
     def t_LTLT(self, t):
@@ -177,11 +176,8 @@ class Parser(PLYParser):
         p[0] = p[1]
 
     def p_argument(self, p):
-        """argument : IPADDR
-                    | UUID
-                    | WORD
+        """argument : WORD
                     | STRING
-                    | NUMBER
         """
         p[0] = p[1]
 
@@ -195,11 +191,8 @@ class Parser(PLYParser):
             p[0] = (p[1], p[3])
 
     def p_option_value(self, p):
-        """option_value : IPADDR
-                        | UUID
-                        | WORD
+        """option_value : WORD
                         | STRING
-                        | NUMBER
                         | empty
         """
         p[0] = p[1]
