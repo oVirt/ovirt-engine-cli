@@ -15,7 +15,7 @@ BuildRequires: python-kitchen
 BuildArch: noarch
 
 Requires: python
-Requires: ovirt-engine-sdk-python >= 3.5.0.0
+Requires: ovirt-engine-sdk-python >= 3.5.0.1
 Requires: python-setuptools
 Requires: python-ply
 Requires: python-kitchen
@@ -52,6 +52,9 @@ popd
 %doc LICENSE
 
 %changelog
+* Wed Jul 9 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.5.0.1-1
+- Don't break long lines #1077806.
+
 * Thu May 22 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.5.0.0-1
 - Update to version 2.12a of generateDS.py #1091688.
 - Don't write integer statistics as float #855724.
