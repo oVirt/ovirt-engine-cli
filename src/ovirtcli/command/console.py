@@ -1,11 +1,11 @@
 #
-# Copyright (c) 2010 Red Hat, Inc.
+# Copyright (c) 2014 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#           http://www.apache.org/licenses/LICENSE-2.0
+#   http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -69,10 +69,8 @@ class ConsoleCommand(OvirtCommand):
         debug = self.context.settings['cli:debug']
 
         if proto == 'vnc':
-            vnc.launch_vnc_viewer(host_addr, port, ticket, debug)
+            vnc.launch_vnc_client(host_addr, port, ticket, vm.name, debug)
         elif proto == 'spice':
-            certurl = '%s/ca.crt' % (self.context.url.replace('/api', ''))
-
             if vm.host and vm.host.id:
                 host = self.get_object('host', vm.host.id)
                 if host:
@@ -96,7 +94,7 @@ class ConsoleCommand(OvirtCommand):
                           host_subject,
                           port, secport,
                           ticket,
-                          certurl,
+                          self.context.url,
                           vm.name,
                           debug
             )
