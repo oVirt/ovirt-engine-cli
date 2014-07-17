@@ -33,34 +33,46 @@ class PosixTerminal(Terminal):
 
     def __init__(self, *args):
         super(PosixTerminal, self).__init__(*args)
-        self._tty = os.open('/dev/tty', os.O_RDWR)
-        curses.setupterm()
+        try:
+            self._tty = os.open('/dev/tty', os.O_RDWR)
+            curses.setupterm()
+        except OSError:
+            self._tty = None
 
     def _get_width(self):
-        packed = fcntl.ioctl(self._tty, termios.TIOCGWINSZ, 'xxxx')
-        width = struct.unpack('@HH', packed)[1]
+        if self._tty:
+            packed = fcntl.ioctl(self._tty, termios.TIOCGWINSZ, 'xxxx')
+            width = struct.unpack('@HH', packed)[1]
+        else:
+            width = 80
         return width
 
     width = property(_get_width)
 
     def _get_height(self):
-        packed = fcntl.ioctl(self._tty, termios.TIOCGWINSZ, 'xxxx')
-        height = struct.unpack('@HH', packed)[0]
+        if self._tty:
+            packed = fcntl.ioctl(self._tty, termios.TIOCGWINSZ, 'xxxx')
+            height = struct.unpack('@HH', packed)[0]
+        else:
+            height = 25
         return height
 
     def clear(self):
-        os.system("clear")
+        if self._tty:
+            os.system("clear")
 
     def set_echo(self, echo):
-        attrs = termios.tcgetattr(self._tty)
-        if echo:
-            attrs[3] |= termios.ECHO
-        else:
-            attrs[3] &= ~termios.ECHO
-        termios.tcsetattr(self._tty, termios.TCSANOW, attrs)
+        if self._tty:
+            attrs = termios.tcgetattr(self._tty)
+            if echo:
+                attrs[3] |= termios.ECHO
+            else:
+                attrs[3] &= ~termios.ECHO
+            termios.tcsetattr(self._tty, termios.TCSANOW, attrs)
 
     def close(self):
-        os.close(self._tty)
+        if self._tty:
+            os.close(self._tty)
 
     def readline(self, prompt):
         line = raw_input(prompt)
