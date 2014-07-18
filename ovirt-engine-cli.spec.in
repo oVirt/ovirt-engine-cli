@@ -52,6 +52,9 @@ popd
 %doc LICENSE
 
 %changelog
+* Fri Jul 18 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.5.0.2-1
+- Don't fail when there is no tty #1119412.
+
 * Wed Jul 9 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.5.0.1-1
 - Don't break long lines #1077806.
 
