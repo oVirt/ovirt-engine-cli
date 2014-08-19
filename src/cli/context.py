@@ -454,9 +454,9 @@ class ExecutionContext(object):
             elif type_ == '<<':
                 self.terminal.stdin = StringIO(arg)
             elif type_ == '>':
-                self.terminal.stdout = file(arg, 'w')
+                self.terminal.stdout = codecs.open(arg, 'w', 'utf8')
             elif type_ == '>>':
-                self.terminal.stdout = file(arg, 'a')
+                self.terminal.stdout = codecs.open(arg, 'a', 'utf8')
 
     def _restore_io_streams(self):
         """INTERNAL: reset IO streams."""
