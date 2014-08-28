@@ -319,10 +319,6 @@ class OvirtCommand(Command):
         """Return an object by id or name."""
         self.check_connection()
         connection = self.context.connection
-        name, kwargs = self._get_query_params(opts, query_arg='--name')
-
-        candidate = typ if typ is not None and isinstance(typ, type('')) \
-                        else type(typ).__name__.lower()
 
         if base:
             options = self.get_options(method='get', resource=base,
@@ -336,25 +332,11 @@ class OvirtCommand(Command):
 
         self.validate_options(opts, options)
 
-        if name and 'name' not in options:
-            self.error(Messages.Error.NO_NAME)
-        if kwargs and kwargs.has_key('id') and 'id' not in options:
-            self.error(Messages.Error.NO_ID % 'show')
+        candidate = typ if typ is not None and isinstance(typ, type('')) \
+                        else type(typ).__name__.lower()
 
         if hasattr(base, candidate + 's'):
             coll = getattr(base, candidate + 's')
-            if coll is not None:
-                if name:
-                    return self.__get_by_name(coll, name, kwargs)
-                if kwargs and kwargs.has_key('id'):
-                    id, kwargs = self._get_query_params(opts, query_arg='--id')
-                    return self.__get_by_id(coll, str(id), kwargs)
-                else:
-                    identifier = self.__produce_identifier(obj_id)
-                    if identifier:
-                        return self.__get_by_id(coll, str(obj_id), kwargs)
-                    else:
-                        return self.__get_by_name(coll, obj_id, kwargs)
         else:
             err_str = Messages.Error.NO_SUCH_TYPE_OR_ARS_NOT_VALID
             if context_variants:
@@ -362,15 +344,53 @@ class OvirtCommand(Command):
                                       % str(context_variants))
             self.error(err_str % candidate)
 
-        return None
+        if obj_id is not None:
+            obj_uuid = self.__produce_identifier(obj_id)
+            _, kwargs = self._get_query_params(opts)
+            if obj_uuid is not None and 'id' in options:
+                return self.__get_by_id(coll, obj_id, kwargs)
+            if 'name' in options:
+                return self.__get_by_name(coll, obj_id, kwargs)
+            if 'alias' in options:
+                return self.__get_by_alias(coll, obj_id, kwargs)
+            return None
+
+        if 'id' in options:
+            obj_id, kwargs = self._get_query_params(opts, query_arg='--id')
+            if obj_id is not None:
+                return self.__get_by_id(coll, obj_id, kwargs)
+
+        if 'name' in options:
+            obj_id, kwargs = self._get_query_params(opts, query_arg='--name')
+            if obj_id is not None:
+                return self.__get_by_name(coll, obj_id, kwargs)
+
+        if 'alias' in options:
+            obj_id, kwargs = self._get_query_params(opts, query_arg='--alias')
+            if obj_id is not None:
+                return self.__get_by_alias(coll, obj_id, kwargs)
+
+        self.error(Messages.Error.NO_ID % 'show')
+
+    def __get_by_alias(self, coll, alias, kwargs):
+        if 'alias' in kwargs:
+            del kwargs['alias']
+        if kwargs:
+            return coll.get(alias=alias, **kwargs)
+        else:
+            return coll.get(alias=alias)
 
     def __get_by_name(self, coll, name, kwargs):
+        if 'name' in kwargs:
+            del kwargs['name']
         if kwargs:
             return coll.get(name=name, **kwargs)
         else:
             return coll.get(name=name)
 
     def __get_by_id(self, coll, id, kwargs):
+        if 'id' in kwargs:
+            del kwargs['id']
         if kwargs:
             return coll.get(id=id, **kwargs)
         else:
