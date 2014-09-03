@@ -52,6 +52,9 @@ popd
 %doc LICENSE
 
 %changelog
+* Wed Sep 3 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.5.0.4-1
+- Support show by alias #1091725.
+
 * Wed Aug 20 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.5.0.3-1
 - No regular expression for IP, UUID or number #1110366.
 - Use UTF-8 for writing output files #1126763.
