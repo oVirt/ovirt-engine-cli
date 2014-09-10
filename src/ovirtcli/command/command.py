@@ -98,8 +98,9 @@ class OvirtCommand(Command):
             return param
 
     def __do_set_primitive_list_data(self, obj, prop, val):
-        for param in self.__split_with_escape(str(val), delimiter=','):
-            getattr(obj, prop).append(param)
+        if val is not None:
+            for param in self.__split_with_escape(str(val), delimiter=','):
+                getattr(obj, prop).append(param)
 
     def __do_set_data(self, obj, prop, fq_prop, val):
         """INTERNAL: set data in to object based on 'prop' map segmentation"""
