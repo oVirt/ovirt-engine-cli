@@ -58,7 +58,7 @@ class OvirtCommand(Command):
                     parnet_candidate_locator += 1
                     typename = key[2:-11]
 
-                    coll = typename + 's'
+                    coll = TypeHelper.to_plural(typename)
                     if not (TypeHelper.isKnownType(typename) or  TypeHelper.isKnownType(coll)):
                         self.error(Messages.Error.NO_SUCH_TYPE % typename)
 
@@ -336,8 +336,8 @@ class OvirtCommand(Command):
         candidate = typ if typ is not None and isinstance(typ, type('')) \
                         else type(typ).__name__.lower()
 
-        if hasattr(base, candidate + 's'):
-            coll = getattr(base, candidate + 's')
+        if hasattr(base, TypeHelper.to_plural(candidate)):
+            coll = getattr(base, TypeHelper.to_plural(candidate))
         else:
             err_str = Messages.Error.NO_SUCH_TYPE_OR_ARS_NOT_VALID
             if context_variants:
@@ -449,26 +449,26 @@ class OvirtCommand(Command):
 
         if isinstance(resource, type('')):
             if not sub_resource:
-                    if resource and hasattr(connection, resource + 's') and \
-                       type(getattr(connection, resource + 's')).__dict__.has_key(method):
+                    if resource and hasattr(connection, TypeHelper.to_plural(resource)) and \
+                       type(getattr(connection, TypeHelper.to_plural(resource))).__dict__.has_key(method):
                         method_ref = getattr(getattr(connection,
-                                                     resource + 's'),
+                                                     TypeHelper.to_plural(resource)),
                                              method)
             else:
-                if hasattr(sub_resource, resource + 's') and \
-                type(getattr(sub_resource, resource + 's')).__dict__.has_key(method):
+                if hasattr(sub_resource, TypeHelper.to_plural(resource)) and \
+                type(getattr(sub_resource, TypeHelper.to_plural(resource))).__dict__.has_key(method):
                     method_ref = getattr(getattr(sub_resource,
-                                                 resource + 's'),
+                                                 TypeHelper.to_plural(resource)),
                                          method)
-                elif hasattr(sub_resource, resource + 's') and \
+                elif hasattr(sub_resource, TypeHelper.to_plural(resource)) and \
                 hasattr(brokers, TypeHelper.to_singular(type(getattr(sub_resource,
-                                                             resource + 's')).__name__)) and \
+                                                             TypeHelper.to_plural(resource))).__name__)) and \
                 hasattr(getattr(brokers, TypeHelper.to_singular(type(getattr(sub_resource,
-                                                                     resource + 's')).__name__)),
+                                                                     TypeHelper.to_plural(resource))).__name__)),
                         method):
                     method_ref = getattr(getattr(brokers,
                                                  TypeHelper.to_singular(type(getattr(sub_resource,
-                                                                             resource + 's')).__name__)),
+                                                                             TypeHelper.to_plural(resource))).__name__)),
                                          method)
 
             if not method_ref:
@@ -481,9 +481,9 @@ class OvirtCommand(Command):
         elif isinstance(resource, brokers.Base):
             if hasattr(resource, method):
                 method_ref = getattr(resource, method)
-            elif hasattr(brokers, type(resource).__name__ + 's') and \
-            hasattr(getattr(brokers, type(resource).__name__ + 's'), method):
-                method_ref = getattr(getattr(brokers, type(resource).__name__ + 's'), method)
+            elif hasattr(brokers, TypeHelper.to_plural(type(resource).__name__)) and \
+            hasattr(getattr(brokers, TypeHelper.to_plural(type(resource).__name__)), method):
+                method_ref = getattr(getattr(brokers, TypeHelper.to_plural(type(resource).__name__)), method)
 
         return MethodHelper.get_arguments_documentation(method_ref, as_params_collection)
 
