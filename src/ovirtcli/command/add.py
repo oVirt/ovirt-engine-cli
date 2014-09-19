@@ -15,8 +15,9 @@
 #
 
 
-from ovirtcli.command.command import OvirtCommand
 from cli.messages import Messages
+from ovirtcli.command.command import OvirtCommand
+from ovirtcli.utils.typehelper import TypeHelper
 
 class AddCommand(OvirtCommand):
 
@@ -136,7 +137,7 @@ class AddCommand(OvirtCommand):
         args = self.arguments
         opts = self.options
         base = self.resolve_base(opts)
-        typ = args[0] + 's'
+        typ = TypeHelper.to_plural(args[0])
         collection = None
         typs = self.get_singular_types(method='add', typ=args[0])
 

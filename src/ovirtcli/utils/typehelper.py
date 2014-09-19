@@ -120,7 +120,7 @@ class TypeHelper():
                 dct = getattr(brokers, decorator).__dict__
                 if dct.has_key(method):
                     if decorator.endswith('s'):
-                        cls_name = TypeHelper.getDecoratorType(decorator[:len(decorator) - 1])
+                        cls_name = TypeHelper.getDecoratorType(TypeHelper.to_singular(decorator))
                         if cls_name:
                             MethodHelper.get_method_params(brokers,
                                                            cls_name,
@@ -138,12 +138,16 @@ class TypeHelper():
 
     @staticmethod
     def to_singular(string):
-        if string.endswith('s'):
-            return string[:len(string) - 1]
+        if string.endswith("ies"):
+            return string[:-3] + "y"
+        if string.endswith("s"):
+            return string[:-1]
         return string
 
     @staticmethod
     def to_plural(string):
-        if not string.endswith('s'):
-            return string + 's'
+        if string.endswith("y"):
+            return string[:-1] + "ies"
+        if not string.endswith("s"):
+            return string + "s"
         return string
