@@ -30,7 +30,7 @@ class ShowCommand(OvirtCommand):
     helptext = """\
         == Usage ==
     
-        show <type> <id> [parent identifiers] [command options]
+        show <type> <id|name> [parent identifiers] [command options]
 
         == Description ==
 
@@ -39,6 +39,7 @@ class ShowCommand(OvirtCommand):
 
           * type        The type of object to retrieve
           * id          The object identifier
+          * name        The object name
 
         Objects can be identified by their name and by their unique id.
 
