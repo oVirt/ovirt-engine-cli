@@ -34,7 +34,8 @@ class ConnectCmdShell(CmdShell):
        'filter',
        'port',
        'timeout',
-       'session-timeout'
+       'session-timeout',
+       'kerberos',
     ]
 
     def __init__(self, context, parser):

@@ -59,6 +59,8 @@ class OvirtCliOptionParser(OptionParser):
                         help='display extra information in the prompt')
         self.add_option('-E', '--execute-command',
                         help='execute command and print the output to STDIO')
+        self.add_option('--kerberos', action='store_true',
+                        help='use Kerberos authentication')
         self.disable_interspersed_args()
 
         # list of hidden app. options (long format)

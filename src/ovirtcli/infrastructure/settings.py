@@ -62,7 +62,8 @@ class OvirtCliSettings(Settings):
         ('ovirt-shell:prompt', str, ''),
         ('ovirt-shell:extended_prompt', boolean, False),
         ('ovirt-shell:execute_command', str, None),
-        ('ovirt-shell:renew_session', boolean, False)
+        ('ovirt-shell:renew_session', boolean, False),
+        ('ovirt-shell:kerberos', boolean, False),
     ]
 
     # config file white list
@@ -81,5 +82,6 @@ class OvirtCliSettings(Settings):
         'ovirt-shell:timeout',
         'ovirt-shell:session_timeout',
         'ovirt-shell:extended_prompt',
-        'ovirt-shell:renew_session'
+        'ovirt-shell:renew_session',
+        'ovirt-shell:kerberos',
     ]

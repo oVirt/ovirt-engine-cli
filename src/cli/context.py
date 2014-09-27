@@ -93,12 +93,15 @@ class ExecutionContext(object):
             not self.__is_option_specified_in_cli_args('--url')  and \
             not self.__is_option_specified_in_cli_args('-l'):
                 self.settings['ovirt-shell:url'] = raw_input('URL: ')
-            if self.settings['ovirt-shell:username'] == '' and \
-            not self.__is_option_specified_in_cli_args('--username') and \
-            not self.__is_option_specified_in_cli_args('-u'):
-                self.settings['ovirt-shell:username'] = raw_input('Username: ')
-            if self.settings['ovirt-shell:password'] == '':
-                self.settings['ovirt-shell:password'] = getpass.getpass()
+            kerberos = self.settings['ovirt-shell:kerberos'] is True \
+                or self.__is_option_specified_in_cli_args('--kerberos')
+            if not kerberos:
+                if not self.settings['ovirt-shell:username'] and \
+                not self.__is_option_specified_in_cli_args('--username') and \
+                not self.__is_option_specified_in_cli_args('-u'):
+                    self.settings['ovirt-shell:username'] = raw_input('Username: ')
+                if not self.settings['ovirt-shell:password']:
+                    self.settings['ovirt-shell:password'] = getpass.getpass()
         except KeyboardInterrupt:
             sys.exit('')
         except EOFError:

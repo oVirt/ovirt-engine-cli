@@ -52,8 +52,8 @@ class ConnectCommand(OvirtCommand):
         == Arguments ==
 
          * url               - The URL to connect to (http[s]://server[:port]/ovirt-engine/api).
-         * username          - The user to connect as. (user@domain).
-         * password          - The password to use.
+         * [username]        - The user to connect as. (user@domain).
+         * [password]        - The password to use.
          * [key-file]        - The client PEM key file to use.
          * [cert-file]       - The client PEM certificate file to use.
          * [ca-file]         - The server CA certificate file to use.
@@ -62,6 +62,7 @@ class ConnectCommand(OvirtCommand):
          * [port]            - The port to use (if not specified in url).
          * [timeout]         - The request timeout.
          * [session-timeout] - The authentication session timeout in minutes (positive number).
+         * [kerberos]        - Use Kerberos authentication.
         """
 
     def execute(self):
@@ -82,6 +83,7 @@ class ConnectCommand(OvirtCommand):
         insecure = settings.get('ovirt-shell:insecure')
         dont_validate_cert_chain = settings.get('ovirt-shell:dont_validate_cert_chain')
         filter_ = settings.get('ovirt-shell:filter')
+        kerberos = settings.get('ovirt-shell:kerberos')
 
         if self.context.connection is not None and \
            self.context.status != self.context.COMMUNICATION_ERROR and \
@@ -99,16 +101,20 @@ class ConnectCommand(OvirtCommand):
                 self.error(
                        Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'url'
                 )
-            username = settings.get('ovirt-shell:username')
-            if not username:
-                self.error(
-                       Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'username'
-                )
-            password = settings.get('ovirt-shell:password')
-            if not password:
-                self.error(
-                   Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'password'
-                )
+            if kerberos:
+                username = None
+                password = None
+            else:
+                username = settings.get('ovirt-shell:username')
+                if not username:
+                    self.error(
+                        Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'username'
+                    )
+                password = settings.get('ovirt-shell:password')
+                if not password:
+                    self.error(
+                        Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'password'
+                    )
 
         if not self.is_valid_url(url):
             self.error(
@@ -133,7 +139,8 @@ class ConnectCommand(OvirtCommand):
                          timeout=timeout if timeout != -1 else None,
                          session_timeout=session_timeout if session_timeout != -1 else None,
                          renew_session=renew_session,
-                         debug=debug
+                         debug=debug,
+                         kerberos=kerberos
                      ),
                      url=url
              )

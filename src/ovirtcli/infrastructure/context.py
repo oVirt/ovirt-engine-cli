@@ -153,8 +153,8 @@ class OvirtCliExecutionContext(ExecutionContext):
 
     def _clean_settings(self):
         self.settings['ovirt-shell:url'] = ''
-        self.settings['ovirt-shell:username'] = ''
-        self.settings['ovirt-shell:password'] = ''
+        self.settings['ovirt-shell:username'] = None
+        self.settings['ovirt-shell:password'] = None
         self.settings['ovirt-shell:key_file'] = None
         self.settings['ovirt-shell:cert_file'] = None
         self.settings['ovirt-shell:ca_file'] = None
@@ -162,3 +162,4 @@ class OvirtCliExecutionContext(ExecutionContext):
         self.settings['ovirt-shell:port'] = -1
         self.settings['ovirt-shell:timeout'] = -1
         self.settings['ovirt-shell:session_timeout'] = -1
+        self.settings['ovirt-shell:kerberos'] = False
