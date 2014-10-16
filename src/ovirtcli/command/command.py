@@ -27,7 +27,6 @@ from ovirtsdk.utils.ordereddict import OrderedDict
 import itertools
 from cli.messages import Messages
 import types
-import re
 import keyword
 import __builtin__
 
@@ -346,9 +345,8 @@ class OvirtCommand(Command):
             self.error(err_str % candidate)
 
         if obj_id is not None:
-            obj_uuid = self.__produce_identifier(obj_id)
             _, kwargs = self._get_query_params(opts)
-            if obj_uuid is not None and 'id' in options:
+            if 'id' in options:
                 return self.__get_by_id(coll, obj_id, kwargs)
             if 'name' in options:
                 return self.__get_by_name(coll, obj_id, kwargs)
@@ -396,24 +394,6 @@ class OvirtCommand(Command):
             return coll.get(id=id, **kwargs)
         else:
             return coll.get(id=id)
-
-    def __produce_identifier(self, candidate):
-        if type(candidate) == str:
-            match = re.search(r'[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}', candidate)
-            if match:
-                return self._toUUID(candidate)
-            match = re.search(r'[-+]?\d+', candidate)
-            if match:
-                return self._toLong(candidate)
-        elif type(candidate) == int or type(candidate) == long:
-            return candidate
-        return None
-
-    def _toLong(self, string):
-        try:
-            return long(string)
-        except:
-            return None
 
     def _toUUID(self, string):
         try:
