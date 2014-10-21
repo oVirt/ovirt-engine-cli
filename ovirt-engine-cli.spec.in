@@ -5,10 +5,10 @@ Summary:        oVirt Engine Command Line Interface
 Group:          Development/Libraries
 License:        ASL 2.0
 URL:            http://ovirt.org
-Source0:        http://ovirt.org/releases/stable/src/%{name}-%{version}.tar.gz
+Source0:        http://resources.ovirt.org/pub/ovirt-master-snapshot/src/%{name}/%{name}-%{version}.tar.gz
 
 BuildRequires: python2-devel
-BuildRequires: python-setuptools-devel
+BuildRequires: python-setuptools
 BuildRequires: python-ply
 BuildRequires: python-kitchen
 
@@ -254,7 +254,7 @@ popd
 * Wed May 16 2012 Michael Pasternak <mpastern@redhat.com> - 3.1.0.1-1alpha
 - add basic scripting capabilities
 - Support multiline input #815684
-- Version format refactoring to align with oVirt version schema 
+- Version format refactoring to align with oVirt version schema
 - Alpha release
 
 * Thu May 10 2012 Michael Pasternak <mpastern@redhat.com> - 2.1.6-1
@@ -295,7 +295,7 @@ popd
   version of sdk (unless sdk introduced cli incompatible change)
 - same naming convention in ovirt-engine-cli and ovirt-engine-sdk
 - reformatted output to support reduced and expended modes in
-  list in show commands by --show-all argument 
+  list in show commands by --show-all argument
 - object fields formatting
 - added support for linux shell commands redirection
 - shell output redirection support
