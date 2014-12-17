@@ -25,8 +25,8 @@ from ovirtcli.utils.methodhelper import MethodHelper
 class ActionCmdShell(CmdShell):
     NAME = 'action'
 
-    def __init__(self, context, parser):
-        CmdShell.__init__(self, context, parser)
+    def __init__(self, context):
+        CmdShell.__init__(self, context)
         self.complete_exceptions = ['delete', 'update']
         self.identifier_template = '--%s-identifier'
 

@@ -21,8 +21,8 @@ from cli.executionmode import ExecutionMode
 class FileCmdShell(CmdShell):
     NAME = 'file'
 
-    def __init__(self, context, parser):
-        CmdShell.__init__(self, context, parser)
+    def __init__(self, context):
+        CmdShell.__init__(self, context)
 
     def do_file(self, arg):
         """\

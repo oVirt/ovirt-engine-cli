@@ -21,24 +21,21 @@ from ovirtcli.infrastructure.context import OvirtCliExecutionContext
 from ovirtcli.infrastructure.object import create
 from ovirtcli.shell.engineshell import EngineShell
 
-    ############################## MAIN #################################
 def main():
+    # Parse the command line:
     parser = create(OvirtCliOptionParser)
-    context = OvirtCliExecutionContext(sys.argv)
-    shell = EngineShell(context, parser)
+    opts, args = parser.parse_args()
 
-    if len(sys.argv) > 1:
-        args = ''
-        if len(sys.argv) > 2:
-            args = sys.argv[1] + " "
-            for item in sys.argv[2:]:
-                args += '"' + item + '" '
-        else:
-            args = ' '.join(sys.argv[1:])
-        shell.onecmd_loop(args)
-    else:
-        shell.onecmd_loop('')
-    ########################### __main__ #################################
+    # Convert the options to a dictionary, so the rest of the code doesn't
+    # have to deal with optparse specifics:
+    opts = vars(opts)
+
+    # Create the execution context:
+    context = OvirtCliExecutionContext(opts=opts, args=args)
+
+    # Create the command interpreter:
+    shell = EngineShell(context)
+    shell.onecmd_loop()
+
 if __name__ == '__main__':
     main()
-    ######################################################################

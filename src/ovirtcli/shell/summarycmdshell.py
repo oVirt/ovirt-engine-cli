@@ -21,8 +21,8 @@ from ovirtcli.shell.cmdshell import CmdShell
 class SummaryCmdShell(CmdShell):
     NAME = 'summary'
 
-    def __init__(self, context, parser):
-        CmdShell.__init__(self, context, parser)
+    def __init__(self, context):
+        CmdShell.__init__(self, context)
 
     def do_summary(self, args):
         return self.context.execute_string(SummaryCmdShell.NAME + ' ' + args + '\n')

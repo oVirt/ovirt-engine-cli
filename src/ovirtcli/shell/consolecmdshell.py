@@ -21,8 +21,8 @@ from ovirtcli.shell.cmdshell import CmdShell
 class ConsoleCmdShell(CmdShell):
     NAME = 'console'
 
-    def __init__(self, context, parser):
-        CmdShell.__init__(self, context, parser)
+    def __init__(self, context):
+        CmdShell.__init__(self, context)
 
     def do_console(self, args):
         return self.context.execute_string(ConsoleCmdShell.NAME + ' ' + args + '\n')

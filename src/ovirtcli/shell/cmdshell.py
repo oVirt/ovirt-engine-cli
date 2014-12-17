@@ -23,23 +23,17 @@ from ovirtcli.infrastructure.settings import OvirtCliSettings
 
 
 class CmdShell(object):
-    def __init__(self, context, parser):
+    def __init__(self, context):
         self.__context = context
-        self.__parser = parser
         self.__owner = self
 
     def get_owner(self):
         return self.__owner
 
-
-    def get_parser(self):
-        return self.__parser
-
     def get_context(self):
         return self.__context
 
     context = property(get_context, None, None, None)
-    parser = property(get_parser, None, None, None)
     owner = property(get_owner, None, None, None)
 
     ############################ CONFIG #################################

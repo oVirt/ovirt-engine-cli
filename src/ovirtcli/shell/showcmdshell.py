@@ -26,8 +26,8 @@ class ShowCmdShell(CmdShell):
     NAME = 'show'
     ALIAS = 'get'
 
-    def __init__(self, context, parser):
-        CmdShell.__init__(self, context, parser)
+    def __init__(self, context):
+        CmdShell.__init__(self, context)
 
     def do_show(self, args):
         return self.context.execute_string(ShowCmdShell.NAME + ' ' + args + '\n')

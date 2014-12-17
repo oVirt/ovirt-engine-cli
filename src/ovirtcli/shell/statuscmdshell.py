@@ -21,8 +21,8 @@ from ovirtcli.shell.cmdshell import CmdShell
 class StatusCmdShell(CmdShell):
     NAME = 'status'
 
-    def __init__(self, context, parser):
-        CmdShell.__init__(self, context, parser)
+    def __init__(self, context):
+        CmdShell.__init__(self, context)
 
     def do_status(self, args):
         return self.context.execute_string(StatusCmdShell.NAME + ' ' + args + '\n')

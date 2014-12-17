@@ -62,6 +62,7 @@ class OvirtCliSettings(Settings):
         ('ovirt-shell:prompt', str, ''),
         ('ovirt-shell:extended_prompt', boolean, False),
         ('ovirt-shell:execute_command', str, None),
+        ('ovirt-shell:file', str, None),
         ('ovirt-shell:renew_session', boolean, False),
         ('ovirt-shell:kerberos', boolean, False),
     ]

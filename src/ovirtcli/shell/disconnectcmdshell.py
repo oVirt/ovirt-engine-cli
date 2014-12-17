@@ -21,8 +21,8 @@ from ovirtcli.shell.cmdshell import CmdShell
 class DisconnectCmdShell(CmdShell):
     NAME = 'disconnect'
 
-    def __init__(self, context, parser):
-        CmdShell.__init__(self, context, parser)
+    def __init__(self, context):
+        CmdShell.__init__(self, context)
 
     def do_disconnect(self, args):
         return self.context.execute_string(DisconnectCmdShell.NAME + ' ' + args + '\n')

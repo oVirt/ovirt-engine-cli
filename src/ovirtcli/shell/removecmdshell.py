@@ -26,8 +26,8 @@ class RemoveCmdShell(CmdShell):
     NAME = 'remove'
     ALIAS = 'delete'
 
-    def __init__(self, context, parser):
-        CmdShell.__init__(self, context, parser)
+    def __init__(self, context):
+        CmdShell.__init__(self, context)
 
     def do_remove(self, args):
         return self.context.execute_string(RemoveCmdShell.ALIAS + ' ' + args + '\n')

@@ -25,8 +25,8 @@ from ovirtcli.utils.methodhelper import MethodHelper
 class UpdateCmdShell(CmdShell):
     NAME = 'update'
 
-    def __init__(self, context, parser):
-        CmdShell.__init__(self, context, parser)
+    def __init__(self, context):
+        CmdShell.__init__(self, context)
 
     def do_update(self, args):
         return self.context.execute_string(UpdateCmdShell.NAME + ' ' + args + '\n')

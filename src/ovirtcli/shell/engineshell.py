@@ -63,25 +63,25 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
 
     ############################# INIT #################################
 
-    def __init__(self, context, parser, completekey='tab', stdin=None, stdout=None):
+    def __init__(self, context, completekey='tab', stdin=None, stdout=None):
         cmd.Cmd.__init__(self, completekey=completekey, stdin=stdin, stdout=stdout)
-        ConnectCmdShell.__init__(self, context, parser)
-        ActionCmdShell.__init__(self, context, parser)
-        ShowCmdShell.__init__(self, context, parser)
-        ListCmdShell.__init__(self, context, parser)
-        UpdateCmdShell.__init__(self, context, parser)
-        RemoveCmdShell.__init__(self, context, parser)
-        AddCmdShell.__init__(self, context, parser)
-        DisconnectCmdShell.__init__(self, context, parser)
-        ConsoleCmdShell.__init__(self, context, parser)
-        PingCmdShell.__init__(self, context, parser)
-        StatusCmdShell.__init__(self, context, parser)
-        ClearCmdShell.__init__(self, context, parser)
-        FileCmdShell.__init__(self, context, parser)
-        HistoryCmdShell.__init__(self, context, parser)
-        InfoCmdShell.__init__(self, context, parser)
-        SummaryCmdShell.__init__(self, context, parser)
-        CapabilitiesCmdShell.__init__(self, context, parser)
+        ConnectCmdShell.__init__(self, context)
+        ActionCmdShell.__init__(self, context)
+        ShowCmdShell.__init__(self, context)
+        ListCmdShell.__init__(self, context)
+        UpdateCmdShell.__init__(self, context)
+        RemoveCmdShell.__init__(self, context)
+        AddCmdShell.__init__(self, context)
+        DisconnectCmdShell.__init__(self, context)
+        ConsoleCmdShell.__init__(self, context)
+        PingCmdShell.__init__(self, context)
+        StatusCmdShell.__init__(self, context)
+        ClearCmdShell.__init__(self, context)
+        FileCmdShell.__init__(self, context)
+        HistoryCmdShell.__init__(self, context)
+        InfoCmdShell.__init__(self, context)
+        SummaryCmdShell.__init__(self, context)
+        CapabilitiesCmdShell.__init__(self, context)
 
         self.__last_output = ''
         self.__input_buffer = ''
@@ -329,20 +329,19 @@ class EngineShell(cmd.Cmd, ConnectCmdShell, ActionCmdShell, \
     def _get_last_status(self):
         return self.__last_status
 
-    def onecmd_loop(self, s):
-        opts, args = self.parser.parse_args()
-        del args
-        self.__persist_cmd_options(opts)
-        if opts.connect or self.context.settings.get('cli:autoconnect'):
+    def onecmd_loop(self):
+        if self.context.settings.get('cli:autoconnect'):
             self.context._collect_connection_data()
-            if not self.context.settings.get('ovirt-shell:execute_command'):
+            file = self.context.settings.get('ovirt-shell:file')
+            execute_command = self.context.settings.get('ovirt-shell:execute_command')
+            if not execute_command:
                 self.do_clear('')
-            self.do_connect(s)
-            if opts.file:
-                self.do_file(opts.file)
+            self.do_connect('')
+            if file:
+                self.do_file(file)
                 self.do_exit('')
-            elif opts.execute_command:
-                self.__execute_command(opts.execute_command)
+            elif execute_command:
+                self.__execute_command(execute_command)
                 self.do_exit('')
             else:
                 self.cmdloop(clear=False)

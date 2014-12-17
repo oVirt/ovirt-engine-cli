@@ -25,8 +25,8 @@ from ovirtcli.utils.methodhelper import MethodHelper
 class AddCmdShell(CmdShell):
     NAME = 'add'
 
-    def __init__(self, context, parser):
-        CmdShell.__init__(self, context, parser)
+    def __init__(self, context):
+        CmdShell.__init__(self, context)
 
     def do_add(self, args):
         return self.context.execute_string(AddCmdShell.NAME + ' ' + args + '\n')

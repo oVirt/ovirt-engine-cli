@@ -26,8 +26,8 @@ class ListCmdShell(CmdShell):
     NAME = 'list'
     OPTIONS = ['show-all']
 
-    def __init__(self, context, parser):
-        CmdShell.__init__(self, context, parser)
+    def __init__(self, context):
+        CmdShell.__init__(self, context)
 
     def do_list(self, args):
         return self.context.execute_string(ListCmdShell.NAME + ' ' + args + '\n')

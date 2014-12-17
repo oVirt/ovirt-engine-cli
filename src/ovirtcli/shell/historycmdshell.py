@@ -25,8 +25,8 @@ class HistoryCmdShell(CmdShell):
        'last', 'first'
     ]
 
-    def __init__(self, context, parser):
-        CmdShell.__init__(self, context, parser)
+    def __init__(self, context):
+        CmdShell.__init__(self, context)
 
     def do_history(self, args):
         return self.context.execute_string(HistoryCmdShell.NAME + ' ' + args + '\n')

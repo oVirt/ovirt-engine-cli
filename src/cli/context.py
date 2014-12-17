@@ -57,7 +57,7 @@ class ExecutionContext(object):
     welcome = None
     goodbye = None
 
-    def __init__(self, cmdin=None, args=None):
+    def __init__(self, cmdin=None, args=None, opts=None):
         """Constructor."""
         self.parameters_cash = {}
         self.cmdin = cmdin or sys.stdin
@@ -75,6 +75,23 @@ class ExecutionContext(object):
         self.setup_commands()
         self.__setup_pager()
         self.__encoding = None
+
+        # Copy the command line options into the settings:
+        if opts is not None:
+            for name, value in opts.iteritems():
+                if value is None:
+                    continue
+                name = name.replace('-', '_')
+                if name in ('debug', 'verbosity'):
+                    key = 'cli:%s' % name
+                else:
+                    key = 'ovirt-shell:%s' % name
+                try:
+                    self.settings[key] = value
+                except KeyError:
+                    pass
+                except ValueError, e:
+                    sys.stderr.write('error: %s\n' % str(e))
 
     def _setup_logging(self):
         """Configure logging."""
