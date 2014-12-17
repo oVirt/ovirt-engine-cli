@@ -43,8 +43,8 @@ class OvirtCliExecutionContext(ExecutionContext):
     CLI_MODULE_NAME = "ovirt-shell"
     DEFAULT_VERSION = (0, 0, 0, 0)
 
-    def __init__(self, args=None, option_parser=None):
-        super(OvirtCliExecutionContext, self).__init__(args=args, option_parser=option_parser)
+    def __init__(self, args=None):
+        super(OvirtCliExecutionContext, self).__init__(args=args)
         self.connection = None
         self.url = None
         self.formatter = create(Formatter, self.settings['ovirt-shell:output_format'])

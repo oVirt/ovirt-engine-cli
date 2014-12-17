@@ -15,9 +15,8 @@
 #
 
 
-import sys
 import textwrap
-from optparse import OptionParser, BadOptionError, AmbiguousOptionError
+from optparse import OptionParser
 from ovirtcli.infrastructure import settings
 
 
@@ -63,88 +62,4 @@ class OvirtCliOptionParser(OptionParser):
                         help='use Kerberos authentication')
         self.disable_interspersed_args()
 
-        # list of hidden app. options (long format)
-        self.app_options = ['--password', '-p']
 
-    def exit(self, status=0, msg=None):
-        self.values._exit = True
-        if msg: print (msg + 'see help for more details.\n')
-        sys.exit(status)
-
-    def _match_long_opt(self, opt):
-        """_match_long_opt(opt : string) -> string
-
-        Determine which long option string 'opt' matches, ie. which one
-        it is an unambiguous abbrevation for.  Raises BadOptionError if
-        'opt' doesn't unambiguously match any long option string.
-        """
-        return self._match_abbrev(opt, self._long_opt)
-
-    def _match_abbrev(self, s, wordmap):
-        """_match_abbrev(s : string, wordmap : {string : Option}) -> string
-
-        Return the string key in 'wordmap' for which 's' is an unambiguous
-        abbreviation.  If 's' is found to be ambiguous or doesn't match any of
-        'words', raise BadOptionError.
-        """
-
-        # Is there an exact match?
-        if s in wordmap:
-            return s
-        else:
-            # Isolate all words with s as a prefix.
-            option_keys = wordmap.keys()
-            for item in self.app_options:
-                if item not in  option_keys:
-                    option_keys.append(item)
-            possibilities = [word for word in option_keys
-                             if word.startswith(s)]
-            # No exact match, so there had better be just one possibility.
-            if len(possibilities) == 1:
-                return possibilities[0]
-            elif not possibilities:
-                raise BadOptionError(s)
-            else:
-                # More than one possible completion: ambiguous prefix.
-                possibilities.sort()
-                raise AmbiguousOptionError(s, possibilities)
-
-    def _process_long_opt(self, rargs, values):
-        arg = rargs.pop(0)
-
-        # Value explicitly attached to arg?  Pretend it's the next
-        # argument.
-        if "=" in arg:
-            (opt, next_arg) = arg.split("=", 1)
-            rargs.insert(0, next_arg)
-            had_explicit_value = True
-        else:
-            opt = arg
-            had_explicit_value = False
-
-        opt = self._match_long_opt(opt)
-        if opt not in self._long_opt.keys() and opt in self.app_options:
-            # This is app. option (long format)
-            self.add_option('', opt, help='private app. option')
-        option = self._long_opt[opt]
-        if option.takes_value():
-            nargs = option.nargs
-            if len(rargs) < nargs:
-                if nargs == 1:
-                    self.error("%s option requires an argument" % opt)
-                else:
-                    self.error("%s option requires %d arguments"
-                               % (opt, nargs))
-            elif nargs == 1:
-                value = rargs.pop(0)
-            else:
-                value = tuple(rargs[0:nargs])
-                del rargs[0:nargs]
-
-        elif had_explicit_value:
-            self.error("%s option does not take a value" % opt)
-
-        else:
-            value = None
-
-        option.process(opt, value, values, self)

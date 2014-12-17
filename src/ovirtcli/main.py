@@ -24,7 +24,7 @@ from ovirtcli.shell.engineshell import EngineShell
     ############################## MAIN #################################
 def main():
     parser = create(OvirtCliOptionParser)
-    context = OvirtCliExecutionContext(sys.argv, parser)
+    context = OvirtCliExecutionContext(sys.argv)
     shell = EngineShell(context, parser)
 
     if len(sys.argv) > 1:
