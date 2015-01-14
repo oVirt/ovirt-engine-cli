@@ -347,11 +347,17 @@ class OvirtCommand(Command):
         if obj_id is not None:
             _, kwargs = self._get_query_params(opts)
             if 'id' in options:
-                return self.__get_by_id(coll, obj_id, kwargs)
+                obj = self.__get_by_id(coll, obj_id, kwargs)
+                if obj is not None:
+                    return obj
             if 'name' in options:
-                return self.__get_by_name(coll, obj_id, kwargs)
+                obj = self.__get_by_name(coll, obj_id, kwargs)
+                if obj is not None:
+                    return obj
             if 'alias' in options:
-                return self.__get_by_alias(coll, obj_id, kwargs)
+                obj = self.__get_by_alias(coll, obj_id, kwargs)
+                if obj is not None:
+                    return obj
             return None
 
         if 'id' in options:
