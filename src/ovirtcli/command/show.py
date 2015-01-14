@@ -14,10 +14,11 @@
 # limitations under the License.
 #
 
+import re
 
+from cli.messages import Messages
 from ovirtcli.command.command import OvirtCommand
 from ovirtcli.utils.typehelper import TypeHelper
-from cli.messages import Messages
 
 
 class ShowCommand(OvirtCommand):
@@ -59,14 +60,15 @@ class ShowCommand(OvirtCommand):
 
         == Object Identifiers ==
 
-        Some objects can only exist inside other objects. For example, a disk
-        can only exist in the content of a virtual machine. In this case, one
-        or more object identifier opties needs to be provided to identify the
+	Some objects can exist inside other objects. For example, a disk can
+        exist in the content of a virtual machine. In this case, one or more
+        object identifier options need to be provided to identify the
         containing object.
 
-        An object identifier is an option of the form '--<type>id <id>'. This
-        would identify an object with type <type> and id <id>. See the
-        examples section below for a few examples.
+        An object identifier is an option of the form '--<type>-identifier
+        <id>' or '--<type>-name <name>'. This would identify an object with
+        type <type> and id <id> or name <name>. See the examples section below
+        for a few examples.
 
         == Examples ==
 
@@ -74,10 +76,16 @@ class ShowCommand(OvirtCommand):
 
           $ show vm myvm
 
-        - This example shows information about the nic named 'nic1' of the 
-          virtual machine "myvm"
+        - This example shows information about the disk named 'disk1' of the 
+          virtual machine with identifier
+          "a71ff45c-d2d7-44d7-98e6-be06f5a82016":
 
-          $ show nic nic1 --vm-identifier myvm
+          $ show disk disk1 --vm-identifier a71ff45c-d2d7-44d7-98e6-be06f5a82016
+
+        - This example shows information about the nic named 'nic1' of the 
+          virtual machine with name "myvm":
+
+          $ show nic nic1 --vm-name myvm
 
         == Return values ==
 
@@ -122,15 +130,16 @@ class ShowCommand(OvirtCommand):
         # e.g:
         # show vm xxx
         # show disk xxx --vm-identifier yyy
+        # show disk xxx --vm-name zzz
         if len(args) < 2 and (
                           len(opts) == 0 or
                           (
                            len(opts) == 1
                            and
-                           opts.keys()[0].endswith('-identifier')
+                           re.search(r"-(identifier|name)$", opts.keys()[0])
                           )):
             self.error(
-              Messages.Error.NO_IDENTIFIER % args[0]
+              Messages.Error.NO_IDENTIFIER_OR_NAME % args[0]
             )
 
         types = self.get_singular_types(method='get')

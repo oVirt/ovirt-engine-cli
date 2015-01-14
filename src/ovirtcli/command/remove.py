@@ -62,14 +62,15 @@ class RemoveCommand(OvirtCommand):
 
         == Object Identifiers ==
 
-        Some objects can only exist inside other objects. For example, a disk
-        can only exist in the content of a virtual machine. In this case, one
-        or more object identifier opties needs to be provided to identify the
+        Some objects can exist inside other objects. For example, a disk can
+        exist in the content of a virtual machine. In this case, one or more
+        object identifier options need to be provided to identify the
         containing object.
 
-        An object identifier is an option of the form '--<type>id <id>'. This
-        would identify an object with type <type> and id <id>. See the
-        examples section below for a few examples.
+        An object identifier is an option of the form '--<type>-identifier
+        <id>' or '--<type>-name <name>'. This would identify an object with
+        type <type> and id <id> or name <name>. See the examples section below
+        for a few examples.
 
         == Examples ==
 
@@ -79,7 +80,7 @@ class RemoveCommand(OvirtCommand):
 
         - This example removes the disk "disk0" from the virtual machine named "myvm"
 
-          $ remove disk disk0 --vm-identifier myvm
+          $ remove disk disk0 --vm-name myvm
 
         - This example removes the storagedomain "mydomain" using host named "myhost"
 

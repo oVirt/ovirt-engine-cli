@@ -50,7 +50,7 @@ class UpdateCommand(OvirtCommand):
         - This help will list all available attribute options for given subresource update
           
           * format      - help update type --parentid
-          * example     - help update disk --vm-identifier myvm
+          * example     - help update disk --vm-name myvm
 
         == Available Types ==
 
@@ -60,11 +60,15 @@ class UpdateCommand(OvirtCommand):
 
         == Base Identifiers ==
 
-        Some objects can only exist inside other objects. For example a disk
-        can only exist as part of a virtual machine. In this case you want to
-        update such an object, one or more base identifier options need to be
-        given to identify the containing object. These options have the form
-        --<type>id <id>.
+        Some objects can exist inside other objects. For example, a disk can
+        exist in the content of a virtual machine. In this case, one or more
+        object identifier options need to be provided to identify the
+        containing object.
+
+        An object identifier is an option of the form '--<type>-identifier
+        <id>' or '--<type>-name <name>'. This would identify an object with
+        type <type> and id <id> or name <name>. See the examples section below
+        for a few examples.
 
         == Attribute Options ==
 

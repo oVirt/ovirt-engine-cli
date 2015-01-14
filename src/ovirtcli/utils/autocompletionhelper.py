@@ -23,7 +23,7 @@ class AutoCompletionHelper(object):
             if args[key] != None:
                 vals = []
                 for val in args[key].split(','):
-                    if val and val != '': vals.append(
+                    if val and val != '': vals.extend(
                           AutoCompletionHelper._resolve_value(
                                   val.strip(),
                                   common_options,
@@ -56,19 +56,14 @@ class AutoCompletionHelper(object):
 
     @staticmethod
     def _resolve_value(val, common_options=[], specific_options={}, specific_arguments={}):
-        if val == 'None': return val
-        return val + (
-              '-identifier' if val not in common_options \
-                                and (not AutoCompletionHelper._is_verb_in_dict_values(
-                                              specific_options, val
-                                              )
-                                    )
-                                and (not AutoCompletionHelper._is_verb_in_dict_values(
-                                              specific_arguments, val
-                                              )
-                                    )
-                             else ' '
-        )
+        if val == 'None': return []
+        is_option = val in common_options \
+                or AutoCompletionHelper._is_verb_in_dict_values(specific_options, val) \
+                or AutoCompletionHelper._is_verb_in_dict_values(specific_arguments, val)
+        if not is_option:
+            return ['%s-identifier' % val, '%s-name' % val]
+        else:
+            return [val]
 
     @staticmethod
     def _get_verb_replecations(container, text):

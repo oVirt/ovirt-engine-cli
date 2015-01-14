@@ -14,21 +14,20 @@
 # limitations under the License.
 #
 
+import __builtin__
+import itertools
+import keyword
+import re
+import types
 
 from cli.command import Command
-from ovirtcli.utils.typehelper import TypeHelper
-
-from ovirtsdk.xml import params
-from ovirtsdk.utils.parsehelper import ParseHelper
-import uuid
+from cli.messages import Messages
 from ovirtcli.utils.methodhelper import MethodHelper
+from ovirtcli.utils.typehelper import TypeHelper
 from ovirtsdk.infrastructure import brokers
 from ovirtsdk.utils.ordereddict import OrderedDict
-import itertools
-from cli.messages import Messages
-import types
-import keyword
-import __builtin__
+from ovirtsdk.utils.parsehelper import ParseHelper
+from ovirtsdk.xml import params
 
 
 class OvirtCommand(Command):
@@ -41,12 +40,19 @@ class OvirtCommand(Command):
         return self.context.connection
 
     def resolve_base(self, options):
-        """resolves a base object from a set of '--type-identifier value' options."""
+        """
+        Resolves a base object from a set of
+        '--type-(identifier|name) value' options.
+        """
+
         collection_candidate = self.check_connection()
         parnet_candidate_locator = 0
         base = None
 
-        parnet_candidates = [key for key in options.keys() if key.endswith('-identifier')]
+        parnet_candidates = [
+                key for key in options.keys()
+                if re.match(r"--(.+)-(identifier|name)$", key)
+        ]
         parnet_candidates_permutations = list(itertools.permutations(parnet_candidates))
 
         if parnet_candidates_permutations[0]:
@@ -55,7 +61,7 @@ class OvirtCommand(Command):
                     key = item
                     val = options[key]
                     parnet_candidate_locator += 1
-                    typename = key[2:-11]
+                    typename = re.sub(r"--(.+)-(identifier|name)$", r"\1", key)
 
                     coll = TypeHelper.to_plural(typename)
                     if not (TypeHelper.isKnownType(typename) or  TypeHelper.isKnownType(coll)):
@@ -66,10 +72,9 @@ class OvirtCommand(Command):
                         if hasattr(coll_ins, 'get'):
                             if not val:
                                 self.error(Messages.Error.INVALID_OPTION % key)
-                            uuid_cand = self._toUUID(val)
-                            if uuid_cand != None:
+                            if key.endswith('-identifier'):
                                 base = coll_ins.get(id=val)
-                            else:
+                            elif key.endswith('-name'):
                                 base = coll_ins.get(name=val)
 
                             if not base:
@@ -255,7 +260,7 @@ class OvirtCommand(Command):
                 self.error(Messages.Error.INVALID_KWARGS_CONTENT)
         mopts = {}
         for k, v in opts.iteritems():
-            if k != query_arg and k != kwargs_arg and not k.endswith('-identifier'):
+            if k != query_arg and k != kwargs_arg and not re.search(r"-(identifier|name)$", k):
                 mopts[k if not k.startswith('--') else k[2:]] = v
         kw.update(mopts)
 
@@ -312,7 +317,7 @@ class OvirtCommand(Command):
             if opt.startswith('--'):
                 opt_item = opt[2:]
             else: opt_item = opt
-            if opt_item not in options and not opt_item.endswith('-identifier'):
+            if opt_item not in options and not re.search(r"-(identifier|name)$", opt_item):
                 self.error(Messages.Error.NO_SUCH_OPTION % opt)
 
     def get_object(self, typ, obj_id, base=None, opts={}, context_variants=[]):
@@ -400,12 +405,6 @@ class OvirtCommand(Command):
             return coll.get(id=id, **kwargs)
         else:
             return coll.get(id=id)
-
-    def _toUUID(self, string):
-        try:
-            return uuid.UUID(string)
-        except:
-            return None
 
     def get_singular_types(self, method, typ=None, expendNestedTypes=True, groupOptions=True):
         """Return a list of singular types."""

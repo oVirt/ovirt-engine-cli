@@ -56,10 +56,15 @@ class AddCommand(OvirtCommand):
 
         == Base Identifiers ==
 
-        Some objects can only be created inside other objects. For example a
-        disk can only be created inside a virtual machine. In this case, one
-        or more base identifier options need to be given to identify the
-        containing object. These options have the form --<type>id <id>.
+        Some objects can exist inside other objects. For example, a disk can
+        exist in the content of a virtual machine. In this case, one or more
+        object identifier options need to be provided to identify the
+        containing object.
+
+        An object identifier is an option of the form '--<type>-identifier
+        <id>' or '--<type>-name <name>'. This would identify an object with
+        type <type> and id <id> or name <name>. See the examples section below
+        for a few examples.
 
         == Attribute Options ==
 

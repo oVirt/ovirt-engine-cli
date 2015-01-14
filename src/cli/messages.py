@@ -26,7 +26,7 @@ class Messages():
         NO_SUCH_TYPE = 'type "%s" does not exist.'
         NO_SUCH_CONTEXT = 'cannot find any context for type "%s" using given arguments.'
         NO_SUCH_TYPE_OR_ARS_NOT_VALID = 'no such type "%s" or given arguments not valid.'
-        NO_IDENTIFIER = '%s identifier required.'
+        NO_IDENTIFIER_OR_NAME = '%s identifier or name required.'
         NO_QUERY_ARGS = '"--query" argument is not available for this type of listing.'
         NO_KWARGS = '"--kwargs" argument is not available for this type of %s.'
         NO_ID = '"--id" argument is not available for this type of %s.'
