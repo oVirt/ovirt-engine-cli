@@ -132,7 +132,8 @@ class MethodHelper():
             expended_types_tmp = getMethodArgs(module, typ, method, drop_self=True)
             if len(expended_types_tmp) > 1:
                 for item in expended_types_tmp:
-                    expend_nested_type(item, module, method, expended_types)
+                    if item != type_name:
+                        expend_nested_type(item, module, method, expended_types)
             elif len(expended_types_tmp) > 0:
                 expended_types.append(expended_types_tmp[0])
         else:
