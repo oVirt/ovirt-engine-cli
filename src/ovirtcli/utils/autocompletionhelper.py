@@ -23,14 +23,11 @@ class AutoCompletionHelper(object):
             if args[key] != None:
                 vals = []
                 for val in args[key].split(','):
-                    if val and val != '': vals.extend(
-                          AutoCompletionHelper._resolve_value(
-                                  val.strip(),
-                                  common_options,
-                                  specific_options,
-                                  specific_arguments
-                          )
-                    )
+                    if val:
+                        val = val.strip()
+                        vals.extend(
+                            AutoCompletionHelper._get_parent_id_options(val)
+                        )
                 if common_options:
                     vals.extend(common_options[:])
 
@@ -55,15 +52,17 @@ class AutoCompletionHelper(object):
         return mp
 
     @staticmethod
-    def _resolve_value(val, common_options=[], specific_options={}, specific_arguments={}):
-        if val == 'None': return []
-        is_option = val in common_options \
-                or AutoCompletionHelper._is_verb_in_dict_values(specific_options, val) \
-                or AutoCompletionHelper._is_verb_in_dict_values(specific_arguments, val)
-        if not is_option:
-            return ['%s-identifier' % val, '%s-name' % val]
-        else:
-            return [val]
+    def _get_parent_id_options(obj):
+        """
+        Returns the options corresponding to parent identifiers. The
+        parameter is the name of the object, and the result is a list
+        containing the options that can be used to specify that object as a
+        parent. For example, if the object name is 'vm' then the result
+        will be a list containing 'vm-identifier' and 'vm-name'.
+        """
+        if obj == 'None':
+            return []
+        return ['%s-identifier' % obj, '%s-name' % obj]
 
     @staticmethod
     def _get_verb_replecations(container, text):
