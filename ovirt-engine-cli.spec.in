@@ -1,6 +1,6 @@
 Name:           ovirt-engine-cli
-Version:        [?]
-Release:        1%{?dist}
+Version:        @RPM_VERSION@
+Release:        @RPM_RELEASE@
 Summary:        oVirt Engine Command Line Interface
 Group:          Development/Libraries
 License:        ASL 2.0

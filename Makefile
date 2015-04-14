@@ -1,40 +1,44 @@
 all: rpm
 
-rpmrelease:=0.2$(rpmsuffix)
-rpmversion=3.6.0.0
-RPMTOP=$(shell bash -c "pwd -P")/rpmtop
-SPEC=ovirt-engine-cli.spec
+PWD=$(shell bash -c "pwd -P")
+version=3.6.0.0
+rpmversion=$(version)
+rpmdist=$(shell rpm --eval '%dist')
+rpmrelease:=0.2$(rpmsuffix)$(rpmdist)
 
-TARBALL=ovirt-engine-cli-$(rpmversion).tar.gz
-SRPM=$(RPMTOP)/SRPMS/ovirt-engine-cli-$(rpmversion)-$(rpmrelease)*.src.rpm
+RPMTOP=$(PWD)/rpmtop
+NAME=ovirt-engine-cli
+SPEC=$(NAME).spec
 
-TESTS=pyflakes
+TARBALL=$(NAME)-$(version).tar.gz
+SRPM=$(RPMTOP)/SRPMS/$(NAME)-$(rpmversion)-$(rpmrelease).src.rpm
 
-test: pyflakes exceptions
-	echo $(rpmrelease) $(rpmversion)
-
-pyflakes:
-	@git ls-files '*.py' | xargs pyflakes \
-	    || (echo "Pyflakes errors or pyflakes not found"; exit 1)
+.PHONY: spec
+spec: $(SPEC).in
+	sed \
+		-e 's/@RPM_VERSION@/$(rpmversion)/g' \
+		-e 's/@RPM_RELEASE@/$(rpmrelease)/g' \
+		-e 's/@TARBALL@/$(TARBALL)/g' \
+		< $(SPEC).in \
+		> $(SPEC)
 
 .PHONY: tarball
-tarball: $(TARBALL)
-$(TARBALL): Makefile #$(TESTS)
-	git config tar.umask 0022
-	git archive --format=tar --prefix ovirt-engine-cli/ HEAD | gzip > $(TARBALL)
+tarball: spec
+	git ls-files | tar --transform='s|^|$(NAME)/|' --files-from /proc/self/fd/0 -czf $(TARBALL) $(SPEC)
 
-.PHONY: srpm rpm
-srpm: $(SRPM)
-$(SRPM): $(TARBALL) ovirt-engine-cli.spec.in
-	sed 's/^Version:.*/Version: $(rpmversion)/;s/^Release:.*/Release: $(rpmrelease)%{dist}/;s/%{release}/$(rpmrelease)/' ovirt-engine-cli.spec.in > $(SPEC)
-	mkdir -p $(RPMTOP)/{RPMS,SRPMS,SOURCES,BUILD}
-	rpmbuild -bs \
-	    --define="_topdir $(RPMTOP)" \
-	    --define="_sourcedir ." $(SPEC)
+.PHONY: srpm
+srpm: tarball
+	rpmbuild \
+		--define="_topdir $(RPMTOP)" \
+		-ts $(TARBALL)
 
-rpm: $(SRPM)
-	rpmbuild --define="_topdir $(RPMTOP)" --rebuild $<
+.PHONY: rpm
+rpm: srpm
+	rpmbuild \
+		--define="_topdir $(RPMTOP)" \
+		--rebuild $(SRPM)
 
+.PHONY:
 clean:
-	$(RM) *~ *.pyc ovirt-engine-cli*.tar.gz $(SPEC)
+	$(RM) $(NAME)*.tar.gz $(SPEC)
 	$(RM) -r rpmtop
