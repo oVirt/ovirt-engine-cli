@@ -68,13 +68,13 @@ class ActionCommand(OvirtCommand):
         
         - This help will list all available attribute options for specific subresource 
         
-          * format      - help action resource resource_name --subresource-identifier mysubresource
-          * example     - help action nic bond0 --host-identifier myhost
+          * format      - help action resource resource_name --parent-subresource-identifier mysubresource
+          * example     - help action nic bond0 --parent-host-identifier myhost
         
         - This help will display all available attribute options for specific action on given subresource
 
-          * format      - help action action_name resource resource_name --subresource-identifier mysubresource
-          * example     - help action attach nic bond0 --host-identifier myhost
+          * format      - help action action_name resource resource_name --parent-subresource-identifier mysubresource
+          * example     - help action attach nic bond0 --parent-host-identifier myhost
 
         == Available types ==
 
@@ -138,13 +138,13 @@ class ActionCommand(OvirtCommand):
 
         Some objects can exist inside other objects. For example, a disk can
         exist in the content of a virtual machine. In this case, one or more
-        object identifier options need to be provided to identify the
-        containing object.
+        parent object identifier options need to be provided to identify the
+        parent object.
 
-        An object identifier is an option of the form '--<type>-identifier
-        <id>' or '--<type>-name <name>'. This would identify an object with
-        type <type> and id <id> or name <name>. See the examples section below
-        for a few examples.
+        An parent object identifier is an option of the form
+        '--parent-<type>-identifier <id>' or '--parent-<type>-name <name>'. This
+        would identify a parent object with type <type> and id <id> or name
+        <name>. See the examples section below for a few examples.
 
         == Attribute Options ==
 
@@ -161,7 +161,7 @@ class ActionCommand(OvirtCommand):
 
         - This example detaches a host nic with id 'mynic' from host 'myhost':
 
-          $ action nic mynic detach --host-identifier myhost
+          $ action nic mynic detach --parent-host-name myhost
     
         == Return values ==
 

@@ -58,11 +58,11 @@ class AutoCompletionHelper(object):
         parameter is the name of the object, and the result is a list
         containing the options that can be used to specify that object as a
         parent. For example, if the object name is 'vm' then the result
-        will be a list containing 'vm-identifier' and 'vm-name'.
+        will be a list containing 'parent-vm-identifier' and 'parent-vm-name'.
         """
         if obj == 'None':
             return []
-        return ['%s-identifier' % obj, '%s-name' % obj]
+        return ['parent-%s-identifier' % obj, 'parent-%s-name' % obj]
 
     @staticmethod
     def _get_verb_replecations(container, text):

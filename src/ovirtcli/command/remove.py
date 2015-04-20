@@ -51,8 +51,8 @@ class RemoveCommand(OvirtCommand):
 
         - This help will list all available attribute options for given subresource removal
           
-          * format      - help remove subtype --resource-identifier
-          * example     - help remove disk --vm-identifier iscsi_desktop
+          * format      - help remove subtype --parent-resource-identifier
+          * example     - help remove disk --parent-vm-name iscsi_desktop
 
         == Available Types ==
 
@@ -67,10 +67,10 @@ class RemoveCommand(OvirtCommand):
         object identifier options need to be provided to identify the
         containing object.
 
-        An object identifier is an option of the form '--<type>-identifier
-        <id>' or '--<type>-name <name>'. This would identify an object with
-        type <type> and id <id> or name <name>. See the examples section below
-        for a few examples.
+	An object identifier is an option of the form
+        '--parent-<type>-identifier <id>' or '--parent-<type>-name <name>'. This
+        would identify an object with type <type> and id <id> or name <name>.
+        See the examples section below for a few examples.
 
         == Examples ==
 
@@ -80,11 +80,11 @@ class RemoveCommand(OvirtCommand):
 
         - This example removes the disk "disk0" from the virtual machine named "myvm"
 
-          $ remove disk disk0 --vm-name myvm
+          $ remove disk disk0 --parent-vm-name myvm
 
         - This example removes the storagedomain "mydomain" using host named "myhost"
 
-          $ remove storagedomain mydomain --host-id myhost
+          $ remove storagedomain mydomain --parent-host-name myhost
           
         == Return values ==
 

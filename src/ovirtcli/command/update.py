@@ -65,10 +65,10 @@ class UpdateCommand(OvirtCommand):
         object identifier options need to be provided to identify the
         containing object.
 
-        An object identifier is an option of the form '--<type>-identifier
-        <id>' or '--<type>-name <name>'. This would identify an object with
-        type <type> and id <id> or name <name>. See the examples section below
-        for a few examples.
+        An object identifier is an option of the form
+        '--parent-<type>-identifier <id>' or '--parent-<type>-name <name>'. This
+        would identify an object with type <type> and id <id> or name <name>.
+        See the examples section below for a few examples.
 
         == Attribute Options ==
 
@@ -88,7 +88,7 @@ class UpdateCommand(OvirtCommand):
         - This example updates a virtual machine disk with name "mydisk", setting 
           "bootable" to true.
 
-          $ update disk "mydisk" --vm-identifier "myvm" --bootable true
+          $ update disk "mydisk" --parent-vm-name "myvm" --bootable true
 
         == Return Values ==
 

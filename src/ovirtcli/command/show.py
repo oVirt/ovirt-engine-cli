@@ -65,8 +65,8 @@ class ShowCommand(OvirtCommand):
         object identifier options need to be provided to identify the
         containing object.
 
-        An object identifier is an option of the form '--<type>-identifier
-        <id>' or '--<type>-name <name>'. This would identify an object with
+        An object identifier is an option of the form '--parent-<type>-identifier
+        <id>' or '--parent-<type>-name <name>'. This would identify an object with
         type <type> and id <id> or name <name>. See the examples section below
         for a few examples.
 
@@ -80,12 +80,12 @@ class ShowCommand(OvirtCommand):
           virtual machine with identifier
           "a71ff45c-d2d7-44d7-98e6-be06f5a82016":
 
-          $ show disk disk1 --vm-identifier a71ff45c-d2d7-44d7-98e6-be06f5a82016
+          $ show disk disk1 --parent-vm-identifier a71ff45c-d2d7-44d7-98e6-be06f5a82016
 
         - This example shows information about the nic named 'nic1' of the 
           virtual machine with name "myvm":
 
-          $ show nic nic1 --vm-name myvm
+          $ show nic nic1 --parent-vm-name myvm
 
         == Return values ==
 
@@ -129,8 +129,8 @@ class ShowCommand(OvirtCommand):
         # Raise an error if object identifier xxx is not specified #855750
         # e.g:
         # show vm xxx
-        # show disk xxx --vm-identifier yyy
-        # show disk xxx --vm-name zzz
+        # show disk xxx --parent-vm-identifier yyy
+        # show disk xxx --parent-vm-name zzz
         if len(args) < 2 and (
                           len(opts) == 0 or
                           (
