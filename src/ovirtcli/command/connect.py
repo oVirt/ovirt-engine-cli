@@ -52,7 +52,7 @@ class ConnectCommand(OvirtCommand):
         == Arguments ==
 
          * url               - The URL to connect to (http[s]://server[:port]/ovirt-engine/api).
-         * [username]        - The user to connect as. (user@domain).
+         * [user]            - The user to connect as. (user@domain).
          * [password]        - The password to use.
          * [key-file]        - The client PEM key file to use.
          * [cert-file]       - The client PEM certificate file to use.
@@ -66,24 +66,20 @@ class ConnectCommand(OvirtCommand):
         """
 
     def execute(self):
-        args = self.arguments
-        settings = self.context.settings
-        context = self.context
-
         MIN_FORCE_CREDENTIALS_CHECK_VERSION = ('00000003', '00000001', '00000000', '00000004')
 
-        key_file = self.xNoneType(settings.get('ovirt-shell:key_file'))
-        cert_file = self.xNoneType(settings.get('ovirt-shell:cert_file'))
-        ca_file = self.xNoneType(settings.get('ovirt-shell:ca_file'))
-        port = settings.get('ovirt-shell:port')
-        timeout = settings.get('ovirt-shell:timeout')
-        session_timeout = settings.get('ovirt-shell:session_timeout')
-        renew_session = settings.get('ovirt-shell:renew_session')
-        debug = settings.get('cli:debug')
-        insecure = settings.get('ovirt-shell:insecure')
-        dont_validate_cert_chain = settings.get('ovirt-shell:dont_validate_cert_chain')
-        filter_ = settings.get('ovirt-shell:filter')
-        kerberos = settings.get('ovirt-shell:kerberos')
+        key_file = self.__option_or_setting('ke-file', 'ovirt-shell:key_file')
+        cert_file = self.__option_or_setting('cert-file', 'ovirt-shell:cert_file')
+        ca_file = self.__option_or_setting('ca-file', 'ovirt-shell:ca_file')
+        port = self.__option_or_setting('port', 'ovirt-shell:port')
+        timeout = self.__option_or_setting('timeout', 'ovirt-shell:timeout')
+        session_timeout = self.__option_or_setting('session-timeout', 'ovirt-shell:session_timeout')
+        renew_session = self.__option_or_setting(None, 'ovirt-shell:renew_session')
+        debug = self.__option_or_setting(None, 'cli:debug')
+        insecure = self.__option_or_setting('insecure', 'ovirt-shell:insecure')
+        dont_validate_cert_chain = self.__option_or_setting(None, 'ovirt-shell:dont_validate_cert_chain')
+        filter_ = self.__option_or_setting('filter', 'ovirt-shell:filter')
+        kerberos = self.__option_or_setting('kerberos', 'ovirt-shell:kerberos')
 
         if self.context.connection is not None and \
            self.context.status != self.context.COMMUNICATION_ERROR and \
@@ -93,11 +89,11 @@ class ConnectCommand(OvirtCommand):
                    Messages.Warning.ALREADY_CONNECTED
             )
             return
-        if len(args) == 3:
-            url, username, password = args
+        if len(self.arguments) == 3:
+            url, username, password = self.arguments
         else:
-            url = settings.get('ovirt-shell:url')
-            if not url:
+            url = self.__option_or_setting('url', 'ovirt-shell:url')
+            if url is None:
                 self.error(
                        Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'url'
                 )
@@ -105,13 +101,13 @@ class ConnectCommand(OvirtCommand):
                 username = None
                 password = None
             else:
-                username = settings.get('ovirt-shell:username')
-                if not username:
+                username = self.__option_or_setting('user', 'ovirt-shell:username')
+                if username is None:
                     self.error(
                         Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'username'
                     )
-                password = settings.get('ovirt-shell:password')
-                if not password:
+                password = self.__option_or_setting('password', 'ovirt-shell:password')
+                if password is None:
                     self.error(
                         Messages.Error.MISSING_CONFIGURATION_VARIABLE % 'password'
                     )
@@ -145,7 +141,7 @@ class ConnectCommand(OvirtCommand):
                      url=url
              )
 
-            if context.sdk_version < MIN_FORCE_CREDENTIALS_CHECK_VERSION:
+            if self.context.sdk_version < MIN_FORCE_CREDENTIALS_CHECK_VERSION:
                 self.__test_connectivity()
 
             StateMachine.connected()  # @UndefinedVariable
@@ -252,5 +248,23 @@ class ConnectCommand(OvirtCommand):
             finally:
                 self.context.connection = None
 
-    def xNoneType(self, s):
-        return None if s == 'None' else s
+    def __option_or_setting(self, option_key, setting_key):
+        # Try to find a matching option:
+        if option_key is not None:
+            option_key = "--" + option_key
+            if option_key in self.options:
+                value = self.options[option_key]
+                if value == '' or value == 'None':
+                    value = None
+                return value
+
+        # Then try to find a matching setting:
+        if setting_key is not None:
+            if setting_key in self.context.settings:
+                value = self.context.settings[setting_key]
+                if value == '' or value == 'None':
+                    value = None
+                return value
+
+        # No luck:
+        return None
