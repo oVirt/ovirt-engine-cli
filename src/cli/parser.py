@@ -69,6 +69,7 @@ class Parser(PLYParser):
         r'''(?s)("([^"\\]|\\.)*"|'[^']*')'''
         if t.value[0] == '"':
             t.value = t.value[1:-1].replace(r'\\', '\\')
+            t.value = t.value.replace('\\"', '"')
         else:
             t.value = t.value[1:-1]
         t.value = t.value.replace('\\\n', '')
