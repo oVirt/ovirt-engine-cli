@@ -101,7 +101,10 @@ def launch_spicec(cmd, host, host_subject, port, secport, ticket,
     args = ['spicec']
     if cmd.startswith('/usr/libexec'):
         args.extend([host])
-        args.extend([str(port)])
+        if port is not None:
+            args.append([str(port)])
+        else:
+            args.extend(["0"])
         if secport:
             args.extend([str(secport)])
             args.extend(['--ssl-channels', 'smain,sinputs'])
@@ -111,7 +114,8 @@ def launch_spicec(cmd, host, host_subject, port, secport, ticket,
         args.extend(['-p', ticket])
     else:
         args.extend(['-h', host])
-        args.extend(['-p', str(port)])
+        if port is not None:
+            args.extend(['-p', str(port)])
         if secport:
             args.extend([ '-s', str(secport) ])
             args.extend(['--ca-file', ca_file])
