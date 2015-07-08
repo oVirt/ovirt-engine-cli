@@ -349,7 +349,7 @@ class OvirtCommand(Command):
             if opt.startswith('--'):
                 opt_item = opt[2:]
             else: opt_item = opt
-            if opt_item not in options and not _is_parent_id_option(opt_item):
+            if opt_item not in options and not _is_parent_id_option(opt):
                 self.error(Messages.Error.NO_SUCH_OPTION % opt)
 
     def get_object(self, typ, obj_id, base=None, opts={}, context_variants=[]):
