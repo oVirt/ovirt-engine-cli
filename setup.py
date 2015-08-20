@@ -3,6 +3,7 @@ import os
 import sys
 
 from distutils.command.build import build
+from distutils.command.build_py import build_py
 from setuptools import setup, Command
 
 
@@ -23,6 +24,30 @@ version_info = {
         'Programming Language :: Python :: 2.4' ],
 }
 
+class custom_build_py(build_py):
+    """
+    This custom build implementation is needed in order to generate
+    the parsing and lexing tables used by ply during buildtime, so
+    that it won't attempt to generate them during runtime.
+    """
+    def run(self):
+        build_py.run(self)
+        if not self.dry_run:
+            self.generate_parsing_tables()
+
+    def generate_parsing_tables(self):
+        """
+        Generates the parsing tables used by ply.
+        """
+        print("generating parsing tables")
+        old_path = sys.path
+        try:
+            sys.path = [self.build_lib] + sys.path
+            import cli.parser
+            parser = cli.parser.Parser()
+            parser._write_tables()
+        finally:
+            sys.path = old_path
 
 setup(
     package_dir={ '': 'src' },
@@ -34,5 +59,8 @@ setup(
                  'ovirtcli.state'],
     install_requires=[ 'ovirt-engine-sdk-python >= 3.6.0.0', 'ply >= 3.3', 'kitchen >= 1' ],
     entry_points={ 'console_scripts': [ 'ovirt-shell = ovirtcli.main:main' ] },
+    cmdclass={
+        "build_py": custom_build_py,
+    },
     **version_info
 )

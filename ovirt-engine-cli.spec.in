@@ -28,18 +28,11 @@ The command line interface for oVirt-Engine.
 %setup -q -n %{name}
 
 %build
-
-# Call the method that generates the parsing tables, so that they
-# are generated and included in the package:
-pushd src
-  %{__python} -c 'import cli.parser; parser = cli.parser.Parser(); parser._write_tables()'
-popd
-
-%{__python} -c 'import setuptools; execfile("setup.py")' build
+%{__python} setup.py build
 
 
 %install
-%{__python} -c 'import setuptools; execfile("setup.py")' install -O1 --skip-build --root %{buildroot}
+%{__python} setup.py install -O1 --skip-build --root %{buildroot}
 
 %files
 %defattr(-,root,root,-)
