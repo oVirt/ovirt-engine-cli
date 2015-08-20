@@ -38,13 +38,12 @@ class PLYParser(object):
         parent = os.path.split(path)[0]
         # Need to change directories to get the file written at the right
         # location.
-        cwd = os.getcwd()
-        os.chdir(parent)
         tabname = self._table_name('lex', relative=True)
-        lex.lex(object=self, lextab=tabname, optimize=True, debug=False)
+        lex.lex(object=self, lextab=tabname, optimize=True, debug=False,
+                outputdir=parent)
         tabname = self._table_name('tab', relative=True)
-        yacc.yacc(module=self, tabmodule=tabname, optimize=True, debug=False)
-        os.chdir(cwd)
+        yacc.yacc(module=self, tabmodule=tabname, optimize=True, debug=False,
+                  outputdir=parent)
 
     def parse(self, input, fname=None, debug=False):
         optimize = not debug
@@ -56,7 +55,8 @@ class PLYParser(object):
         lexer.input(input)
         tabname = self._table_name('tab')
         parser = yacc.yacc(module=self, tabmodule=tabname,
-                           optimize=optimize, debug=debug)
+                           optimize=optimize, debug=debug,
+                           write_tables=0)
         if debug:
             logger = logging.getLogger()
         else:
