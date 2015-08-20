@@ -1,7 +1,7 @@
 
 import sys
 
-if sys.platform in ('linux2',):
+if sys.platform in ['linux2', 'darwin']:
     from ovirtcli.platform.posix import util
     from ovirtcli.platform.posix import vnc
     from ovirtcli.platform.posix import spice
