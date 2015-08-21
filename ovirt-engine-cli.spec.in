@@ -52,6 +52,20 @@ popd
 %doc LICENSE
 
 %changelog
+* Fri Aug 21 2015 Juan Hernandez <juan.hernandez@redhat.com> - 3.6.0.0-1
+- Add support for engine version 3.6.
+- Add "parent" prefix to parent identifier options #1213393.
+- Add support for --type-name options #1177367.
+- Add support for Kerberos authentication #1145239.
+- Allow identifiers that aren't UUIDs #1148941.
+- Always add -identifier and -name options #1206875.
+- Don't remove "--" before validating parent options #1241117.
+- Support escape of double quote in strings #1211670.
+- Try id, name and alias for show #1148941.
+
+* Tue Jun 23 2015 Juan Hernandez <juan.hernandez@redhat.com> - 3.5.0.6-1
+- Check if Spice port is available #1234382.
+
 * Fri Sep 26 2014 Juan Hernandez <juan.hernandez@redhat.com> - 3.5.0.5-1
 - Calculate singulars and plurals correctly #1144110.
 - Explicitly document use of name in show #1091725.
