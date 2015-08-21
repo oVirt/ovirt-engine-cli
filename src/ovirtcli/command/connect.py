@@ -66,8 +66,6 @@ class ConnectCommand(OvirtCommand):
         """
 
     def execute(self):
-        MIN_FORCE_CREDENTIALS_CHECK_VERSION = ('00000003', '00000001', '00000000', '00000004')
-
         key_file = self.__option_or_setting('ke-file', 'ovirt-shell:key_file')
         cert_file = self.__option_or_setting('cert-file', 'ovirt-shell:cert_file')
         ca_file = self.__option_or_setting('ca-file', 'ovirt-shell:ca_file')
@@ -140,9 +138,6 @@ class ConnectCommand(OvirtCommand):
                      ),
                      url=url
              )
-
-            if self.context.sdk_version < MIN_FORCE_CREDENTIALS_CHECK_VERSION:
-                self.__test_connectivity()
 
             StateMachine.connected()  # @UndefinedVariable
 
