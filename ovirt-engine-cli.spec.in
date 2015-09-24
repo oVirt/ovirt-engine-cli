@@ -52,7 +52,7 @@ popd
 %doc LICENSE
 
 %changelog
-* Fri Aug 21 2015 Juan Hernandez <juan.hernandez@redhat.com> - 3.6.0.0-1
+* Thu Sep 24 2015 Juan Hernandez <juan.hernandez@redhat.com> - 3.6.0.1-1
 - Add support for engine version 3.6.
 - Add "parent" prefix to parent identifier options #1213393.
 - Add support for --type-name options #1177367.
