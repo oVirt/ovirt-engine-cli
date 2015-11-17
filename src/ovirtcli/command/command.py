@@ -23,44 +23,12 @@ import types
 from cli.command import Command
 from cli.messages import Messages
 from ovirtcli.utils.methodhelper import MethodHelper
+from ovirtcli.utils.optionhelper import OptionHelper
 from ovirtcli.utils.typehelper import TypeHelper
 from ovirtsdk.infrastructure import brokers
 from ovirtsdk.utils.ordereddict import OrderedDict
 from ovirtsdk.utils.parsehelper import ParseHelper
 from ovirtsdk.xml import params
-
-
-# These are the regular expressions used to check if an option should be
-# used to find a parent entity. The preferred way is using the "parent"
-# prefix, as it avoid potential conflicts with other options, but we
-# need to support the "identifier" suffix without the "parent" prefix
-# for backwards compatibility.
-PARENT_ID_OPTION_EXPRESSIONS = [
-    re.compile(r"^--parent-(?P<type>.+)-(identifier|name)$"),
-    re.compile(r"^--(?P<type>.+)-identifier$"),
-]
-
-def _is_parent_id_option(option):
-    """
-    Checks if the given option name is a reference to a parent
-    entity.
-    """
-    for parent_id_option_expression in PARENT_ID_OPTION_EXPRESSIONS:
-        if parent_id_option_expression.match(option):
-            return True
-    return False
-
-def _get_parent_id_type(option):
-    """
-    Extracts the name of the type from an option that is a reference to
-    a parent entity. For example, if the option is "--parent-host-name"
-    this method will return "host".
-    """
-    for parent_id_option_expression in PARENT_ID_OPTION_EXPRESSIONS:
-        match = parent_id_option_expression.match(option)
-        if match is not None:
-            return match.group("type")
-    return None
 
 
 class OvirtCommand(Command):
@@ -83,7 +51,7 @@ class OvirtCommand(Command):
 
         parnet_candidates = [
                 key for key in options.keys()
-                if _is_parent_id_option(key)
+                if OptionHelper.is_parent_id_option(key)
         ]
         parnet_candidates_permutations = list(itertools.permutations(parnet_candidates))
 
@@ -93,7 +61,7 @@ class OvirtCommand(Command):
                     key = item
                     val = options[key]
                     parnet_candidate_locator += 1
-                    typename = _get_parent_id_type(key)
+                    typename = OptionHelper.get_parent_id_type(key)
 
                     coll = TypeHelper.to_plural(typename)
                     if not (TypeHelper.isKnownType(typename) or  TypeHelper.isKnownType(coll)):
@@ -247,7 +215,7 @@ class OvirtCommand(Command):
         """Updates object properties with values from `options'."""
 
         for key in options.keys():
-            if _is_parent_id_option(key): continue
+            if OptionHelper.is_parent_id_option(key): continue
             prop = key.replace('--', '')
             val = options[key]
             if type(val) == types.ListType:
@@ -292,7 +260,7 @@ class OvirtCommand(Command):
                 self.error(Messages.Error.INVALID_KWARGS_CONTENT)
         mopts = {}
         for k, v in opts.iteritems():
-            if k != query_arg and k != kwargs_arg and not _is_parent_id_option(k):
+            if k != query_arg and k != kwargs_arg and not OptionHelper.is_parent_id_option(k):
                 mopts[k if not k.startswith('--') else k[2:]] = v
         kw.update(mopts)
 
@@ -349,7 +317,7 @@ class OvirtCommand(Command):
             if opt.startswith('--'):
                 opt_item = opt[2:]
             else: opt_item = opt
-            if opt_item not in options and not _is_parent_id_option(opt):
+            if opt_item not in options and not OptionHelper.is_parent_id_option(opt):
                 self.error(Messages.Error.NO_SUCH_OPTION % opt)
 
     def get_object(self, typ, obj_id, base=None, opts={}, context_variants=[]):
