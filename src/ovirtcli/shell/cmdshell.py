@@ -13,13 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import sys
-import os
 
 import itertools
+import os
+import sys
 
-from ovirtcli.utils.typehelper import TypeHelper
 from ovirtcli.infrastructure.settings import OvirtCliSettings
+from ovirtcli.utils.optionhelper import OptionHelper
+from ovirtcli.utils.typehelper import TypeHelper
 
 
 class CmdShell(object):
@@ -92,16 +93,19 @@ class CmdShell(object):
             return specific_options
 
     def _resolve_base(self, args):
-        """resolves a base object from a set of '--type-identifier value' options."""
-        PARENT_IDENTIFIER = '-identifier'
-        parnet_candidates = [item for item in args
-                                      if item.endswith(PARENT_IDENTIFIER)]
-        parnet_candidates_permutations = list(itertools.permutations(parnet_candidates))
+        """
+        Resolves a base object from a set of '--parent-type-identifier'
+        or '--parent-type-name' options.
+        """
+        parent_candidates = [item for item in args
+                if OptionHelper.is_parent_id_option(item)]
+        parent_candidates_permutations = list(itertools.permutations(parent_candidates))
 
-        if parnet_candidates_permutations[0]:
-            for combination in parnet_candidates_permutations:
-                candidates = [item[2:-11] for item in combination
-                                              if item.endswith(PARENT_IDENTIFIER)]
+        if parent_candidates_permutations[0]:
+            for combination in parent_candidates_permutations:
+                candidates = [OptionHelper.get_parent_id_type(item)
+                        for item in combination
+                        if OptionHelper.is_parent_id_option(item)]
                 candidate = (''.join(candidates) + args[0]).lower()
                 dt = TypeHelper.getDecoratorType(candidate)
                 if dt: return dt
