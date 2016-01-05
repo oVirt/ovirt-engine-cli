@@ -26,7 +26,7 @@ from cli.messages import Messages
 
 
 # Template to generate the remote viewer configuration file:
-CONFIG_TEMPLATE = """\
+CONFIG_TEMPLATE = u"""\
 [virt-viewer]
 type=spice
 title={title}:%d - Press SHIFT+F12 to Release Cursor
@@ -146,7 +146,7 @@ def launch_remote_viewer(cmd, host, host_subject, port, secport, ticket,
     )
     config_fd, config_path = tempfile.mkstemp()
     with os.fdopen(config_fd, "w") as config_stream:
-        config_stream.write(config_text)
+        config_stream.write(config_text.encode("utf-8"))
 
     # Run the remote-viewwer command:
     args = ["remote-viewer", config_path]
