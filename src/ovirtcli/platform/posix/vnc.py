@@ -60,7 +60,7 @@ def launch_vnc_client(host, port, ticket, title, debug=False):
         return
 
     # No luck, no known command is available:
-    raise Error, Messages.Error.NO_CONSOLE_FOUND % ('vnc', 'vnc')
+    raise Error, Messages.Error.NO_VNC_VIEWER_FOUND
 
 
 def launch_vncviewer(cmd, host, port, ticket, debug=False):

@@ -91,7 +91,7 @@ def launch_spice_client(host, host_subject, port, secport, ticket, url,
         return
 
     # No luck, no known command is available:
-    raise Error, Messages.Error.NO_CONSOLE_FOUND % ('spice', 'spice')
+    raise Error, Messages.Error.NO_SPICE_VIEWER_FOUND
 
 
 def launch_spicec(cmd, host, host_subject, port, secport, ticket,
