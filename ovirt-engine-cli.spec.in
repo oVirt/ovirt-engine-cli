@@ -45,6 +45,9 @@ The command line interface for oVirt-Engine.
 %doc LICENSE
 
 %changelog
+* Mon Jan 11 2016 Juan Hernandez <juan.hernandez@redhat.com> - 3.6.2.0-1
+- Generate remote viewer configuration using Unicode #807696.
+
 * Fri Nov 27 2015 Juan Hernandez <juan.hernandez@redhat.com> - 3.6.1.0-1
 - Process correctly "--parent..." options #1282832.
 
