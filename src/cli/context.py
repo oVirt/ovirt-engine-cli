@@ -122,8 +122,6 @@ class ExecutionContext(object):
             sys.exit('')
         except EOFError:
             sys.exit('')
-        finally:
-            sys.stdin.flush()
 
     def __option_error(self, opt):
         from cli.messages import Messages
