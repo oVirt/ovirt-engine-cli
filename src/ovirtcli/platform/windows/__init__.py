@@ -1,10 +1,10 @@
 
-import sys
+import os
 
-if sys.platform in ('linux2',):
+if os.name == "posix":
     from src.ovirtcli.platform.posix import util
     from src.ovirtcli.platform.posix import vnc
     from src.ovirtcli.platform.posix import spice
 
-elif sys.platform in ('win32',):
+else:
     pass
