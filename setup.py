@@ -9,7 +9,7 @@ from setuptools import setup, Command
 
 version_info = {
     'name': 'ovirt-shell',
-    'version': '4.0.0.0preview1',
+    'version': '3.6.5.0',
     'description': 'A command-line interface to oVirt Virtualization',
     'author': 'Michael Pasternak',
     'author_email': 'mpastern@redhat.com',
