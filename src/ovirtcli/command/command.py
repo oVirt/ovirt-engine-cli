@@ -45,50 +45,73 @@ class OvirtCommand(Command):
         Resolves a base object from a set of parent identifier options.
         """
 
-        collection_candidate = self.check_connection()
-        parnet_candidate_locator = 0
-        base = None
+        # Initially the base is the connection:
+        connection = self.check_connection()
+        base = connection
 
-        parnet_candidates = [
-                key for key in options.keys()
-                if OptionHelper.is_parent_id_option(key)
+        # Find all the options that are parent identifiers, and sort them
+        # so that the process will be always the same regardless of the
+        # order of the options dictionary:
+        identifiers = [
+            key for key in options.keys()
+            if OptionHelper.is_parent_id_option(key)
         ]
-        parnet_candidates_permutations = list(itertools.permutations(parnet_candidates))
+        identifiers.sort()
 
-        if parnet_candidates_permutations[0]:
-            for combination in parnet_candidates_permutations:
-                for item in combination:
-                    key = item
-                    val = options[key]
-                    parnet_candidate_locator += 1
-                    typename = OptionHelper.get_parent_id_type(key)
+        # Calculate the set of permutations of all the parent identifiers, as
+        # we are going to try each permutation till we find one that results
+        # in a valid base:
+        permutations = list(itertools.permutations(identifiers))
 
-                    coll = TypeHelper.to_plural(typename)
-                    if not (TypeHelper.isKnownType(typename) or  TypeHelper.isKnownType(coll)):
-                        self.error(Messages.Error.NO_SUCH_TYPE % typename)
+        for permutation in permutations:
 
-                    if hasattr(collection_candidate, coll):
-                        coll_ins = getattr(collection_candidate, coll)
-                        if hasattr(coll_ins, 'get'):
-                            if not val:
-                                self.error(Messages.Error.INVALID_OPTION % key)
-                            if key.endswith('-identifier'):
-                                base = coll_ins.get(id=val)
-                            elif key.endswith('-name'):
-                                base = coll_ins.get(name=val)
+            # Restart the search from the connection for each permutation:
+            base = connection
 
-                            if not base:
-                                if len(combination) > parnet_candidate_locator:
-                                    continue
-                                else:
-                                    self.error(Messages.Error.NO_SUCH_OBJECT % (typename, val))
+            for item in permutation:
+                # Get the name and value of the current parent identifier:
+                key = item
+                value = options[key]
 
-                    if len(parnet_candidates) == parnet_candidate_locator:
-                        return base
+                # Calculate the type and collection names:
+                type_name = OptionHelper.get_parent_id_type(key)
+                collection_name = TypeHelper.to_plural(type_name)
+                if not (TypeHelper.isKnownType(type_name) or TypeHelper.isKnownType(collection_name)):
+                    self.error(Messages.Error.NO_SUCH_TYPE % type_name)
+
+                # Try to extract the next base from the current one:
+                if hasattr(base, collection_name):
+                    collection = getattr(base, collection_name)
+                    if hasattr(collection, 'get'):
+                        if not value:
+                            self.error(Messages.Error.INVALID_OPTION % key)
+                        if key.endswith('-identifier'):
+                            base = collection.get(id=value)
+                        elif key.endswith('-name'):
+                            base = collection.get(name=value)
+                        else:
+                            base = None
                     else:
-                        collection_candidate = base
+                        base = None
+                else:
+                    base = None
 
-            self.error(Messages.Error.CANNOT_CONSTRUCT_COLLECTION_MEMBER_VIEW % str(parnet_candidates_permutations))
+                # If we haven't been able to find a valid base for the current
+                # parent identifier, then we should discard this permutation:
+                if base is None:
+                    break
+
+            # If we already found a valid base, then we should discard the
+            # rest of the permutations, i.e., the first valid permutation is
+            # the winner:
+            if base != None:
+                break
+
+        # Generate an error message if no permutation results in a valid base:
+        if base is None:
+            self.error(Messages.Error.CANNOT_CONSTRUCT_COLLECTION_MEMBER_VIEW % str(permutations))
+
+        return base
 
     def __try_parse(self, param):
         """INTERNAL: try parsing data to int"""
