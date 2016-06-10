@@ -96,6 +96,7 @@ class ConsoleCommand(OvirtCommand):
                           ticket,
                           self.context.url,
                           vm.name,
+                          vm.display.proxy,
                           debug
             )
         else:
