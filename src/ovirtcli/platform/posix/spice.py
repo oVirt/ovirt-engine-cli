@@ -50,7 +50,7 @@ ca={ca_text}
 
 
 def launch_spice_client(host, host_subject, port, secport, ticket, url,
-                        title, debug=False):
+                        title, proxy, debug=False):
     """Launch the SPICE client."""
 
     # Check that there is a X display available:
@@ -77,7 +77,7 @@ def launch_spice_client(host, host_subject, port, secport, ticket, url,
     cmd = util.which("remote-viewer")
     if cmd is not None:
         launch_remote_viewer(cmd, host, host_subject, port, secport, ticket,
-                             title, ca_file, debug)
+                             title, ca_file, proxy, debug)
         return
 
     # Try to use spicec (this is older, so we try only if remote-viewer isn't
@@ -127,14 +127,14 @@ def launch_spicec(cmd, host, host_subject, port, secport, ticket,
 
 
 def launch_remote_viewer(cmd, host, host_subject, port, secport, ticket,
-                         title, ca_file, debug=False):
+                         title, ca_file, proxy, debug=False):
     """Launch the SPICE client using the remote-viewer command."""
 
     # Load the CA certificate:
     with open(ca_file, "r") as ca_stream:
         ca_text = ca_stream.read()
 
-    # Generate the configuration file:
+    # Generate the configuration:
     config_text = CONFIG_TEMPLATE.format(
         title=title,
         host=host,
@@ -144,6 +144,12 @@ def launch_remote_viewer(cmd, host, host_subject, port, secport, ticket,
         host_subject=host_subject,
         ca_text=ca_text.replace("\n", "\\n"),
     )
+
+    # Add the proxy:
+    if proxy is not None:
+        config_text += "proxy=%s\n" % proxy
+
+    # Write the configuation to a temporary file:
     config_fd, config_path = tempfile.mkstemp()
     with os.fdopen(config_fd, "w") as config_stream:
         config_stream.write(config_text.encode("utf-8"))
