@@ -9,7 +9,7 @@ from setuptools import setup, Command
 
 version_info = {
     'name': 'ovirt-shell',
-    'version': '3.6.2.2preview0',
+    'version': '3.6.7.0',
     'description': 'A command-line interface to oVirt Virtualization',
     'author': 'Michael Pasternak',
     'author_email': 'mpastern@redhat.com',
@@ -57,7 +57,7 @@ setup(
                  'cli.command', 'cli.platform', 'cli.platform.posix', 'ovirtcli.infrastructure',
                  'ovirtcli.annotations', 'ovirtcli.events', 'ovirtcli.listeners', 'ovirtcli.meta',
                  'ovirtcli.state'],
-    install_requires=[ 'ovirt-engine-sdk-python >= 3.6.2.0', 'ply >= 3.3', 'kitchen >= 1' ],
+    install_requires=[ 'ovirt-engine-sdk-python >= 3.6.7.0', 'ply >= 3.3', 'kitchen >= 1' ],
     entry_points={ 'console_scripts': [ 'ovirt-shell = ovirtcli.main:main' ] },
     cmdclass={
         "build_py": custom_build_py,

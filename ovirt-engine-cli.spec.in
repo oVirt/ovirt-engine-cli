@@ -45,6 +45,9 @@ The command line interface for oVirt-Engine.
 %doc LICENSE
 
 %changelog
+* Sat Jun 11 2016 Juan Hernandez <juan.hernandez@redhat.com> - 3.6.7.0-1
+- Add proxy to virt-viewer configuration file #1343890.
+
 * Thu May 19 2016 Juan Hernandez <juan.hernandez@redhat.com> - 3.6.2.1-1
 - Iterate all permutations of parent identifiers #1335844.
 
