@@ -374,18 +374,15 @@ class OvirtCommand(Command):
 
         if obj_id is not None:
             _, kwargs = self._get_query_params(opts)
-            if 'id' in options:
-                obj = self.__get_by_id(coll, obj_id, kwargs)
-                if obj is not None:
-                    return obj
-            if 'name' in options:
-                obj = self.__get_by_name(coll, obj_id, kwargs)
-                if obj is not None:
-                    return obj
-            if 'alias' in options:
-                obj = self.__get_by_alias(coll, obj_id, kwargs)
-                if obj is not None:
-                    return obj
+            obj = self.__get_by_id(coll, obj_id, kwargs)
+            if obj is not None:
+                return obj
+            obj = self.__get_by_name(coll, obj_id, kwargs)
+            if obj is not None:
+                return obj
+            obj = self.__get_by_alias(coll, obj_id, kwargs)
+            if obj is not None:
+                return obj
             return None
 
         if 'id' in options:
@@ -408,26 +405,35 @@ class OvirtCommand(Command):
     def __get_by_alias(self, coll, alias, kwargs):
         if 'alias' in kwargs:
             del kwargs['alias']
-        if kwargs:
-            return coll.get(alias=alias, **kwargs)
-        else:
-            return coll.get(alias=alias)
+        try:
+            if kwargs:
+                return coll.get(alias=alias, **kwargs)
+            else:
+                return coll.get(alias=alias)
+        except TypeError:
+            return None
 
     def __get_by_name(self, coll, name, kwargs):
         if 'name' in kwargs:
             del kwargs['name']
-        if kwargs:
-            return coll.get(name=name, **kwargs)
-        else:
-            return coll.get(name=name)
+        try:
+            if kwargs:
+                return coll.get(name=name, **kwargs)
+            else:
+                return coll.get(name=name)
+        except TypeError:
+            return None
 
     def __get_by_id(self, coll, id, kwargs):
         if 'id' in kwargs:
             del kwargs['id']
-        if kwargs:
-            return coll.get(id=id, **kwargs)
-        else:
-            return coll.get(id=id)
+        try:
+            if kwargs:
+                return coll.get(id=id, **kwargs)
+            else:
+                return coll.get(id=id)
+        except TypeError:
+            return None
 
     def get_singular_types(self, method, typ=None, expendNestedTypes=True, groupOptions=True):
         """Return a list of singular types."""
