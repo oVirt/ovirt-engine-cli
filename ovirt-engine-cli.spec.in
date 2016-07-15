@@ -45,6 +45,9 @@ The command line interface for oVirt-Engine.
 %doc LICENSE
 
 %changelog
+* Fri Jul 15 2016 Juan Hernandez <juan.hernandez@redhat.com> - 3.6.8.1-1
+- Try to locate objects using id, name and alias #1356607.
+
 * Tue Jul 5 2016 Juan Hernandez <juan.hernandez@redhat.com> - 3.6.8.0-1
 - Make CLI more portable #1304643, #1303635.
 
