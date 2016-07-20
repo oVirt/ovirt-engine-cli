@@ -42,6 +42,7 @@ class ShowCmdShell(CmdShell):
                                                                         as_params_collection=True,
                                                                         spilt_or=True)
                     if method_args:
+                        method_args = [x for x in method_args if x not in ['id', 'name']]
                         specific_options[obj if key == None else key] = method_args
 
     def complete_show(self, text, line, begidx, endidx):
