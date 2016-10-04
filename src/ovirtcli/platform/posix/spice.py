@@ -161,15 +161,20 @@ def launch_remote_viewer(cmd, host, host_subject, port, secport, ticket,
 
 def download_ca_certificate(url):
     """Downloads the CA certificate from the engine."""
-
-    ca_url = re.sub("^https?://([^/]+)/.*", "http://\\1/ca.crt", url)
+    ca_urls = [
+        "http://\\1/ca.crt",
+        "http://\\1/ovirt-engine/services/pki-resource?resource=ca-certificate&format=X509-PEM-CA",
+    ]
     ca_file = None
     try:
-        ca_fd, ca_file = tempfile.mkstemp()
-        urllib.urlretrieve(ca_url, ca_file)
-        with os.fdopen(ca_fd, "r") as ca_stream:
-            ca_text = ca_stream.read()
-        return ca_text
+        for ca_url in ca_urls:
+            ca_url = re.sub("^https?://([^/]+)/.*", ca_url, url)
+            if urllib.urlopen(ca_url).code != 404:
+                ca_fd, ca_file = tempfile.mkstemp()
+                urllib.urlretrieve(ca_url, ca_file)
+                with os.fdopen(ca_fd, "r") as ca_stream:
+                    ca_text = ca_stream.read()
+                return ca_text
     finally:
         if ca_file is not None:
             os.remove(ca_file)
