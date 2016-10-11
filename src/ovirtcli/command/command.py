@@ -111,6 +111,11 @@ class OvirtCommand(Command):
         if base is None:
             self.error(Messages.Error.CANNOT_CONSTRUCT_COLLECTION_MEMBER_VIEW % str(permutations))
 
+        # The connection is the starting point for the search, so if the
+        # result is the connection we can conclude that there is no
+        # base:
+        if base == connection:
+            base = None
         return base
 
     def __try_parse(self, param):
