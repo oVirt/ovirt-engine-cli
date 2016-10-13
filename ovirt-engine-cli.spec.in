@@ -45,6 +45,9 @@ The command line interface for oVirt-Engine.
 %doc LICENSE
 
 %changelog
+* Thu Oct 13 2016 Juan Hernandez <juan.hernandez@redhat.com> - 3.6.9.2-1
+- Fix handling of the "--all_content" option #1383735.
+
 * Wed Oct 5 2016 Juan Hernandez <juan.hernandez@redhat.com> - 3.6.9.1-1
 - Use alternative CA certificate location #1362222.
 
