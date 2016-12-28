@@ -57,7 +57,7 @@ setup(
                  'cli.command', 'cli.platform', 'cli.platform.posix', 'ovirtcli.infrastructure',
                  'ovirtcli.annotations', 'ovirtcli.events', 'ovirtcli.listeners', 'ovirtcli.meta',
                  'ovirtcli.state'],
-    install_requires=[ 'ovirt-engine-sdk-python >= 4.0.0.0preview0', 'ply >= 3.3', 'kitchen >= 1' ],
+    install_requires=[ 'ovirt-engine-sdk-python >= 3.6.7.0, < 4.0.0.0a0', 'ply >= 3.3', 'kitchen >= 1' ],
     entry_points={ 'console_scripts': [ 'ovirt-shell = ovirtcli.main:main' ] },
     cmdclass={
         "build_py": custom_build_py,
