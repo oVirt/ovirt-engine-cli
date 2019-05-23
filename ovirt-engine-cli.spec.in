@@ -28,21 +28,21 @@ The command line interface for oVirt-Engine.
 %setup -q -n %{name}
 
 %build
-%{__python} setup.py build
+%{__python2} setup.py build
 
 
 %install
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+%{__python2} setup.py install -O1 --skip-build --root %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/ovirtcli
-%{python_sitelib}/cli
-%{python_sitelib}/ovirt_shell-*
+%{python2_sitelib}/ovirtcli
+%{python2_sitelib}/cli
+%{python2_sitelib}/ovirt_shell-*
 %attr (755,root,root)/usr/bin/ovirt-shell
 %doc README
 %doc AUTHORS
-%doc LICENSE
+%license LICENSE
 
 %changelog
 * Thu Oct 13 2016 Juan Hernandez <juan.hernandez@redhat.com> - 3.6.9.2-1
